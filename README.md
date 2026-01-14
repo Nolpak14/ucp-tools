@@ -1,130 +1,62 @@
-# UCP Profile Manager
+# @ucptools/validator
 
-Generate, validate, and host **UCP (Universal Commerce Protocol) Business Profiles** compliant with the [official UCP specification](https://ucp.dev/specification/overview/).
+[![npm version](https://img.shields.io/npm/v/@ucptools/validator)](https://www.npmjs.com/package/@ucptools/validator)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Features
+**Validate and generate UCP (Universal Commerce Protocol) Business Profiles** for AI-powered shopping agents like ChatGPT, Google AI Mode, and Copilot checkout.
 
-- **Profile Generator**: Create valid UCP profiles with smart defaults
-- **Multi-level Validator**: Structural, UCP rules, and network validation
-- **Hosting Artifacts**: Generate configs for Nginx, Apache, Vercel, Netlify, Cloudflare Workers
-- **REST API**: Full-featured API for integration
-- **CLI Tool**: Command-line validation and generation
+> **Try it online:** [ucptools.dev](https://ucptools.dev) - Free AI Commerce Readiness Checker
+
+---
+
+## What is UCP?
+
+The [Universal Commerce Protocol](https://ucp.dev) is an open standard enabling AI agents to discover, browse, and complete purchases on any UCP-enabled merchant. Google announced UCP on January 11, 2026, with support from Shopify, Target, Walmart, and 20+ ecosystem partners.
+
+This library helps you:
+- **Validate** your UCP profile for compliance
+- **Generate** properly formatted UCP profiles
+- **Verify** schemas and capability declarations
+
+---
 
 ## Installation
 
 ```bash
-npm install
-npm run build
+npm install @ucptools/validator
 ```
+
+---
 
 ## Quick Start
 
-### Generate a Minimal Profile
-
-```bash
-npm run generate -- generate-minimal -e https://api.yourstore.com/ucp/v1 -o ucp.json
-```
-
-### Generate a Full Profile
-
-```bash
-npm run generate -- generate \
-  -d yourstore.com \
-  -e https://api.yourstore.com/ucp/v1 \
-  --order \
-  --fulfillment \
-  -o ucp.json
-```
-
 ### Validate a Profile
 
-```bash
-# Validate local file
-npm run validate -- validate -f ucp.json
+```typescript
+import { validateProfile, validateQuick, validateRemote } from '@ucptools/validator';
 
-# Validate remote profile
-npm run validate -- validate -r yourstore.com
+// Validate a local profile object
+const report = await validateProfile(myProfile);
+console.log(report.ok ? 'Valid!' : 'Issues found:', report.issues);
 
-# Quick validation (no network checks)
-npm run validate -- validate -f ucp.json --quick
+// Quick validation (no network calls)
+const quickReport = validateQuick(myProfile);
+
+// Validate a remote profile by domain
+const remoteReport = await validateRemote('example.com');
 ```
 
-### Generate Hosting Configuration
-
-```bash
-npm run validate -- hosting \
-  -f ucp.json \
-  -d yourstore.com \
-  -m static \
-  -p nginx \
-  -o ./hosting
-```
-
-## API Usage
-
-### Start the API Server
-
-```bash
-npm run dev    # Development with hot reload
-npm run start  # Production
-```
-
-### API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/v1/profiles/generate` | Generate full profile |
-| POST | `/v1/profiles/generate-minimal` | Generate minimal profile |
-| POST | `/v1/profiles/validate` | Validate profile JSON |
-| POST | `/v1/profiles/validate-quick` | Quick validation (no network) |
-| POST | `/v1/profiles/validate-remote` | Validate remote profile |
-| POST | `/v1/hosting/artifacts` | Generate hosting configs |
-| GET | `/health` | Health check |
-
-### Generate Profile
-
-```bash
-curl -X POST http://localhost:3000/v1/profiles/generate \
-  -H "Content-Type: application/json" \
-  -d '{
-    "merchant": {
-      "merchantId": "store-123",
-      "primaryDomain": "yourstore.com"
-    },
-    "transport": {
-      "rest": {
-        "endpoint": "https://api.yourstore.com/ucp/v1"
-      }
-    },
-    "capabilities": {
-      "checkout": true,
-      "order": true
-    }
-  }'
-```
-
-### Validate Profile
-
-```bash
-curl -X POST http://localhost:3000/v1/profiles/validate \
-  -H "Content-Type: application/json" \
-  -d '{
-    "profile": { "ucp": { ... } },
-    "options": { "mode": "full" }
-  }'
-```
-
-## Programmatic Usage
+### Generate a Profile
 
 ```typescript
-import {
-  buildProfile,
-  validateProfile,
-  generateMinimalProfile,
-  generateHostingArtifacts,
-} from 'ucp-profile-manager';
+import { buildProfile, generateMinimalProfile } from '@ucptools/validator';
 
-// Generate a profile
+// Generate a minimal profile (checkout only)
+const minimal = generateMinimalProfile({
+  endpoint: 'https://api.yourstore.com/ucp/v1',
+});
+
+// Generate a full profile
 const result = await buildProfile({
   merchant: {
     merchantId: 'store-123',
@@ -144,11 +76,18 @@ const result = await buildProfile({
 });
 
 console.log(result.profileJson);
-
-// Validate a profile
-const report = await validateProfile(result.profile);
-console.log(report.ok ? 'Valid!' : 'Invalid!', report.issues);
 ```
+
+### Generate Signing Keys
+
+```typescript
+import { generateSigningKeyPair } from '@ucptools/validator';
+
+// Generate Ed25519 key pair for Order capability
+const { publicKey, privateKey, kid } = await generateSigningKeyPair('Ed25519');
+```
+
+---
 
 ## Validation Levels
 
@@ -168,87 +107,97 @@ console.log(report.ok ? 'Valid!' : 'Invalid!', report.issues);
 - Self-describing schema validation
 - Schema/capability version matching
 
-## Validation Report Format
+---
 
-```json
-{
-  "ok": false,
-  "profile_url": "https://yourstore.com/.well-known/ucp",
-  "ucp_version": "2026-01-11",
-  "issues": [
-    {
-      "severity": "error",
-      "code": "UCP_NS_ORIGIN_MISMATCH",
-      "path": "$.ucp.capabilities[0].schema",
-      "message": "dev.ucp.* schema must be hosted on ucp.dev",
-      "hint": "Use https://ucp.dev/schemas/shopping/checkout.json"
-    }
-  ],
-  "validated_at": "2026-01-14T10:30:00.000Z",
-  "validation_mode": "full"
+## Validation Report
+
+```typescript
+interface ValidationReport {
+  ok: boolean;                    // true if no errors
+  profile_url?: string;           // URL of validated profile
+  ucp_version?: string;           // UCP version from profile
+  issues: ValidationIssue[];      // Array of issues found
+  validated_at: string;           // ISO timestamp
+  validation_mode: ValidationMode;
+}
+
+interface ValidationIssue {
+  severity: 'error' | 'warn' | 'info';
+  code: string;                   // e.g., 'UCP_NS_ORIGIN_MISMATCH'
+  path: string;                   // JSON path, e.g., '$.ucp.capabilities[0]'
+  message: string;
+  hint?: string;                  // Suggestion to fix
 }
 ```
 
-## Hosting Modes
+---
 
-### Static File
-Upload `ucp.json` and configure your web server:
-- Nginx, Apache, Vercel, Netlify, Cloudflare Pages, S3+CloudFront
+## Error Codes
 
-### Edge Worker
-Proxy from our hosted service via Cloudflare Worker:
-```javascript
-// Generated worker.js proxies from hosted profile
-export default {
-  async fetch(request) {
-    return fetch('https://profiles.ucptools.dev/{merchant}/ucp.json');
-  }
-};
+| Code | Severity | Description |
+|------|----------|-------------|
+| `UCP_MISSING_ROOT` | error | Missing `ucp` object at root |
+| `UCP_MISSING_VERSION` | error | Missing version field |
+| `UCP_INVALID_VERSION_FORMAT` | error | Version not in YYYY-MM-DD format |
+| `UCP_NS_ORIGIN_MISMATCH` | error | Schema URL doesn't match namespace origin |
+| `UCP_ORPHANED_EXTENSION` | error | Extends references non-existent capability |
+| `UCP_ENDPOINT_NOT_HTTPS` | error | Endpoint must use HTTPS |
+| `UCP_ENDPOINT_TRAILING_SLASH` | warn | Remove trailing slash from endpoint |
+| `UCP_MISSING_SIGNING_KEYS` | error | Order capability requires signing_keys |
+| `UCP_SCHEMA_FETCH_FAILED` | warn | Could not fetch remote schema |
+
+---
+
+## CLI Usage
+
+```bash
+# Validate a local file
+npx @ucptools/validator validate -f ucp.json
+
+# Validate a remote profile
+npx @ucptools/validator validate -r yourstore.com
+
+# Generate a minimal profile
+npx @ucptools/validator generate-minimal -e https://api.example.com/ucp/v1 -o ucp.json
 ```
 
-### Reverse Proxy
-Nginx/Apache proxy configuration to hosted service.
+---
 
-## UCP Profile Structure
+## Online Tool
 
-Based on [UCP Specification](https://github.com/Universal-Commerce-Protocol/ucp):
+Don't want to install anything? Use our free online tool:
 
-```json
-{
-  "ucp": {
-    "version": "2026-01-11",
-    "services": {
-      "dev.ucp.shopping": {
-        "version": "2026-01-11",
-        "spec": "https://ucp.dev/specification/overview/",
-        "rest": {
-          "schema": "https://ucp.dev/services/shopping/rest.openapi.json",
-          "endpoint": "https://api.yourstore.com/ucp/v1"
-        }
-      }
-    },
-    "capabilities": [
-      {
-        "name": "dev.ucp.shopping.checkout",
-        "version": "2026-01-11",
-        "spec": "https://ucp.dev/specification/checkout/",
-        "schema": "https://ucp.dev/schemas/shopping/checkout.json"
-      }
-    ]
-  },
-  "payment": {
-    "handlers": [...]
-  },
-  "signing_keys": [...]
-}
-```
+**[ucptools.dev](https://ucptools.dev)** - AI Commerce Readiness Checker
 
-## References
+- Validates UCP profiles + Schema.org requirements
+- Generates UCP profiles with a simple form
+- Creates Schema.org snippets (MerchantReturnPolicy, shippingDetails)
+- Provides A-F grading and actionable recommendations
+
+---
+
+## Resources
 
 - [UCP Specification](https://ucp.dev/specification/overview/)
 - [UCP GitHub Repository](https://github.com/Universal-Commerce-Protocol/ucp)
 - [Google UCP Business Profile Guide](https://developers.google.com/merchant/ucp/guides/business-profile)
+- [UCP JavaScript SDK](https://github.com/Universal-Commerce-Protocol/js-sdk)
+
+---
+
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details.
+
+---
 
 ## License
 
-MIT
+MIT - See [LICENSE](LICENSE) for details.
+
+---
+
+<p align="center">
+  Built with love for the AI Commerce ecosystem<br>
+  <a href="https://ucptools.dev">ucptools.dev</a>
+</p>
