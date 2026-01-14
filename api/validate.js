@@ -8,7 +8,84 @@
  * 3. Product Schema Quality & Completeness
  * 4. Content Consistency Analysis
  * 5. Overall AI Readiness Score
+ * 6. Industry Benchmark Comparison
  */
+
+import pg from 'pg';
+
+const { Pool } = pg;
+
+let benchmarkPool = null;
+
+function getBenchmarkPool() {
+  if (!benchmarkPool && process.env.DATABASE_URL) {
+    benchmarkPool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+      max: 3,
+      idleTimeoutMillis: 30000,
+    });
+  }
+  return benchmarkPool;
+}
+
+/**
+ * Record score and calculate percentile
+ */
+async function recordAndGetBenchmark(score) {
+  const pool = getBenchmarkPool();
+  if (!pool) {
+    return null;
+  }
+
+  try {
+    const bucket = Math.floor(score / 10) * 10;
+
+    // Record the score
+    await pool.query(`
+      UPDATE benchmark_stats SET count = count + 1 WHERE score_bucket = $1
+    `, [bucket]);
+
+    await pool.query(`
+      UPDATE benchmark_summary
+      SET total_validations = total_validations + 1,
+          avg_score = (avg_score * total_validations + $1) / (total_validations + 1),
+          updated_at = NOW()
+      WHERE id = 1
+    `, [score]);
+
+    // Calculate percentile
+    const distResult = await pool.query(`
+      SELECT score_bucket, count, SUM(count) OVER (ORDER BY score_bucket) as cumulative
+      FROM benchmark_stats ORDER BY score_bucket
+    `);
+
+    const summaryResult = await pool.query('SELECT total_validations, avg_score FROM benchmark_summary WHERE id = 1');
+    const total = summaryResult.rows[0]?.total_validations || 1;
+    const avgScore = Math.round((summaryResult.rows[0]?.avg_score || 50) * 10) / 10;
+
+    let belowCount = 0;
+    for (const row of distResult.rows) {
+      if (row.score_bucket < bucket) {
+        belowCount = parseInt(row.cumulative);
+      } else if (row.score_bucket === bucket) {
+        belowCount = parseInt(row.cumulative) - Math.floor(parseInt(row.count) / 2);
+        break;
+      }
+    }
+
+    const percentile = Math.round((belowCount / total) * 100);
+
+    return {
+      percentile,
+      total_validations: total,
+      avg_score: avgScore,
+    };
+  } catch (error) {
+    console.error('Benchmark error:', error);
+    return null;
+  }
+}
 
 const VERSION_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -698,6 +775,9 @@ export default async function handler(req, res) {
   const grade = getGrade(readinessScore);
   const readiness = getReadinessLevel(readinessScore, hasUcp, schemaIssues);
 
+  // Record to benchmark and get percentile (non-blocking)
+  const benchmark = await recordAndGetBenchmark(readinessScore);
+
   // Separate UCP score (for backwards compatibility)
   const ucpErrors = ucpIssues.filter(i => i.severity === 'error').length;
   const ucpScore = hasUcp ? Math.max(0, 100 - ucpErrors * 20 - ucpIssues.filter(i => i.severity === 'warn').length * 5) : 0;
@@ -724,6 +804,14 @@ export default async function handler(req, res) {
       level: readiness.level,
       label: readiness.label,
     },
+
+    // Industry Benchmark
+    benchmark: benchmark ? {
+      percentile: benchmark.percentile,
+      comparison: `Your site scores better than ${benchmark.percentile}% of sites analyzed`,
+      total_sites_analyzed: benchmark.total_validations,
+      average_score: benchmark.avg_score,
+    } : null,
 
     // UCP specific
     ucp: {
