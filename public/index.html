@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UCP Tools - AI Commerce Readiness Checker & UCP Validator</title>
+  <meta name="description" content="Check if your store is ready for AI shopping agents. Validates UCP profiles and Schema.org requirements for Google AI Mode, ChatGPT, and Copilot checkout.">
+  <link rel="canonical" href="https://ucptools.dev/">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#2E86AB">
+  <meta name="google-site-verification" content="Ra49U5gMiADsSr9byqzFnI-GJVA4Gj0_i38nJewkhaU" />
+  <meta property="og:title" content="UCP Tools - AI Commerce Readiness">
+  <meta property="og:description" content="Validate and generate Universal Commerce Protocol profiles for your e-commerce store.">
+  <meta property="og:image" content="/og-image.png">
+  <meta property="og:type" content="website">
+  <style>
+    /* UCP.tools Brand Design System */
+    :root {
+      /* Primary Colors (from logo gradient) */
+      --brand-blue: #2E86AB;
+      --brand-teal: #36B5A2;
+      --brand-green: #47C97A;
+      --brand-gradient: linear-gradient(135deg, #2E86AB 0%, #36B5A2 50%, #47C97A 100%);
+      --brand-gradient-hover: linear-gradient(135deg, #267593 0%, #2EA18F 50%, #3BB86B 100%);
+
+      /* Secondary Colors */
+      --color-dark: #1A2B3C;
+      --color-medium: #5A6978;
+      --color-light: #94A3B8;
+      --color-border: #E2E8F0;
+      --color-background: #F8FAFC;
+      --color-card: #FFFFFF;
+
+      /* Semantic Colors */
+      --color-success: #47C97A;
+      --color-warning: #F59E0B;
+      --color-error: #EF4444;
+      --color-info: #2E86AB;
+
+      /* Grade Colors */
+      --grade-a-bg: #DCFCE7;
+      --grade-a-text: #16A34A;
+      --grade-b-bg: #DBEAFE;
+      --grade-b-text: #2563EB;
+      --grade-c-bg: #FEF9C3;
+      --grade-c-text: #CA8A04;
+      --grade-d-bg: #FED7AA;
+      --grade-d-text: #EA580C;
+      --grade-f-bg: #FEE2E2;
+      --grade-f-text: #DC2626;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--color-background);
+      color: var(--color-dark);
+      line-height: 1.6;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+    /* Header */
+    header {
+      background: var(--color-card);
+      border-bottom: 1px solid var(--color-border);
+      padding: 16px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 24px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+    }
+    .logo-text {
+      background: var(--brand-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .logo-suffix {
+      font-weight: 400;
+      -webkit-text-fill-color: var(--color-medium);
+    }
+    nav a {
+      margin-left: 24px;
+      color: var(--color-medium);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--brand-blue); }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 60px 20px;
+      background: linear-gradient(135deg, rgba(46, 134, 171, 0.1) 0%, rgba(54, 181, 162, 0.05) 50%, rgba(71, 201, 122, 0.1) 100%);
+    }
+    .hero h1 {
+      font-size: 42px;
+      margin-bottom: 16px;
+      color: var(--color-dark);
+    }
+    .hero h1 .gradient-text {
+      background: var(--brand-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 18px;
+      color: var(--color-medium);
+      max-width: 600px;
+      margin: 0 auto 32px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 40px;
+    }
+    .tab {
+      padding: 12px 24px;
+      background: var(--color-card);
+      border: 2px solid var(--color-border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .tab:hover { border-color: var(--brand-blue); }
+    .tab.active {
+      background: var(--brand-gradient);
+      color: white;
+      border-color: transparent;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--color-card);
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid var(--color-border);
+      max-width: 700px;
+      margin: 0 auto 40px;
+    }
+
+    /* Forms */
+    .form-group { margin-bottom: 20px; }
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--color-dark);
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--color-border);
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--brand-blue);
+      box-shadow: 0 0 0 3px rgba(46, 134, 171, 0.1);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      padding: 14px 28px;
+      background: var(--brand-gradient);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(46, 134, 171, 0.4);
+    }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-secondary {
+      background: var(--color-card);
+      color: var(--color-dark);
+      border: 2px solid var(--color-border);
+    }
+    .btn-secondary:hover {
+      background: var(--color-background);
+      border-color: var(--brand-blue);
+      color: var(--brand-blue);
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* Results */
+    .result {
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: 8px;
+      display: none;
+    }
+    .result.show { display: block; }
+    .result.success { background: #dcfce7; border: 1px solid #86efac; }
+    .result.error { background: #fee2e2; border: 1px solid #fca5a5; }
+
+    /* Score Badges */
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 24px;
+    }
+    .score-badge.A { background: var(--grade-a-bg); color: var(--grade-a-text); }
+    .score-badge.B { background: var(--grade-b-bg); color: var(--grade-b-text); }
+    .score-badge.C { background: var(--grade-c-bg); color: var(--grade-c-text); }
+    .score-badge.D { background: var(--grade-d-bg); color: var(--grade-d-text); }
+    .score-badge.F { background: var(--grade-f-bg); color: var(--grade-f-text); }
+
+    /* Issues */
+    .issues-list { margin-top: 16px; }
+    .issue {
+      padding: 12px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .issue.error { background: #fef2f2; border-left: 3px solid var(--color-error); }
+    .issue.warn { background: #fefce8; border-left: 3px solid var(--color-warning); }
+    .issue.info { background: rgba(46, 134, 171, 0.1); border-left: 3px solid var(--color-info); }
+    .issue code { background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; }
+
+    /* Code Block */
+    pre {
+      background: var(--color-dark);
+      color: #e2e8f0;
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.5;
+      text-align: left;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Pricing Section */
+    .pricing {
+      padding: 60px 20px;
+      background: var(--color-card);
+    }
+    .pricing h2 {
+      text-align: center;
+      margin-bottom: 40px;
+      color: var(--color-dark);
+    }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .pricing-card {
+      border: 2px solid var(--color-border);
+      border-radius: 12px;
+      padding: 32px;
+      text-align: center;
+      background: var(--color-card);
+    }
+    .pricing-card.featured {
+      border-color: var(--brand-blue);
+      position: relative;
+    }
+    .pricing-card.featured::before {
+      content: 'Most Popular';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--brand-gradient);
+      color: white;
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .pricing-card h3 {
+      margin-bottom: 8px;
+      color: var(--color-dark);
+    }
+    .price {
+      font-size: 48px;
+      font-weight: 700;
+      background: var(--brand-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .price span {
+      font-size: 16px;
+      -webkit-text-fill-color: var(--color-medium);
+      font-weight: 400;
+    }
+    .pricing-card ul {
+      list-style: none;
+      margin: 24px 0;
+      text-align: left;
+    }
+    .pricing-card li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--color-border);
+      color: var(--color-dark);
+    }
+    .pricing-card li::before {
+      content: '\2713';
+      color: var(--color-success);
+      margin-right: 8px;
+      font-weight: bold;
+    }
+
+    /* Footer */
+    footer {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--color-medium);
+      border-top: 1px solid var(--color-border);
+      background: var(--color-card);
+    }
+    footer a {
+      color: var(--brand-blue);
+      text-decoration: none;
+    }
+    footer a:hover { color: var(--brand-teal); }
+
+    /* Utilities */
+    .hidden { display: none !important; }
+    .text-muted { color: var(--color-medium); }
+    .link-brand {
+      color: var(--brand-blue);
+      text-decoration: none;
+    }
+    .link-brand:hover { color: var(--brand-teal); }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 28px; }
+      .tabs { flex-direction: column; }
+      .header-inner { flex-direction: column; gap: 16px; }
+      nav { display: flex; flex-wrap: wrap; justify-content: center; }
+      nav a { margin: 8px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-inner">
+      <a href="/" class="logo">
+        <img src="/logo.jpeg" alt="UCP.tools logo" class="logo-icon">
+        <span class="logo-text">UCP<span class="logo-suffix">.tools</span></span>
+      </a>
+      <nav>
+        <a href="#validate" onclick="switchTab('validate'); return false;">Validate</a>
+        <a href="#generate" onclick="switchTab('generate'); return false;">Generate</a>
+        <a href="#schema" onclick="switchTab('schema'); return false;">Schema</a>
+        <a href="#pricing">Pricing</a>
+        <a href="https://ucp.dev/specification/overview/" target="_blank">Docs</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1>AI Commerce <span class="gradient-text">Readiness</span></h1>
+      <p>Check if your store is ready for ChatGPT, Google AI Mode, and Copilot checkout. Validates UCP profile + Schema.org requirements.</p>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="validate">Check Readiness</button>
+        <button class="tab" data-tab="generate">Generate UCP</button>
+        <button class="tab" data-tab="schema">Schema Snippets</button>
+      </div>
+
+      <!-- Validate Tab -->
+      <div class="card" id="validate-panel">
+        <h3 style="margin-bottom: 20px;">Check AI Commerce Readiness</h3>
+        <form id="validate-form">
+          <div class="form-group">
+            <label for="domain">Your Domain</label>
+            <input type="text" id="domain" placeholder="yourstore.com" required>
+            <small class="text-muted">We'll check UCP profile + Schema.org (MerchantReturnPolicy, shippingDetails)</small>
+          </div>
+          <button type="submit" class="btn" id="validate-btn">Check AI Readiness</button>
+        </form>
+
+        <div class="result" id="validate-result"></div>
+      </div>
+
+      <!-- Generate Tab -->
+      <div class="card hidden" id="generate-panel">
+        <h3 style="margin-bottom: 20px;">Generate UCP Profile</h3>
+        <form id="generate-form">
+          <div class="form-group">
+            <label for="gen-domain">Your Domain</label>
+            <input type="text" id="gen-domain" placeholder="yourstore.com" required>
+          </div>
+          <div class="form-group">
+            <label for="gen-endpoint">REST API Endpoint</label>
+            <input type="url" id="gen-endpoint" placeholder="https://api.yourstore.com/ucp/v1" required>
+          </div>
+          <div class="form-group">
+            <label>Capabilities</label>
+            <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px;">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                <input type="checkbox" id="cap-checkout" checked disabled> Checkout (required)
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                <input type="checkbox" id="cap-order"> Order
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                <input type="checkbox" id="cap-fulfillment"> Fulfillment
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                <input type="checkbox" id="cap-discount"> Discount
+              </label>
+            </div>
+          </div>
+          <button type="submit" class="btn" id="generate-btn">Generate Profile</button>
+        </form>
+
+        <div class="result" id="generate-result"></div>
+      </div>
+
+      <!-- Schema Snippets Tab -->
+      <div class="card hidden" id="schema-panel">
+        <h3 style="margin-bottom: 20px;">Generate Schema.org Snippets</h3>
+        <p style="margin-bottom: 24px; color: var(--color-medium);">
+          Generate ready-to-use JSON-LD snippets for AI Commerce requirements (Jan 2026).
+        </p>
+
+        <div class="form-group">
+          <label>Return Policy Template</label>
+          <select id="return-template">
+            <option value="30-day-free">30-Day Free Returns (Recommended)</option>
+            <option value="14-day-free">14-Day Free Returns</option>
+            <option value="30-day-paid">30-Day Returns (Customer Pays Shipping)</option>
+            <option value="no-returns">No Returns / Final Sale</option>
+            <option value="custom">Custom...</option>
+          </select>
+        </div>
+
+        <div id="custom-return" class="hidden" style="background: var(--color-background); padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 13px;">Return Window (days)</label>
+              <input type="number" id="return-days" value="30" min="0" max="365">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 13px;">Country Code</label>
+              <input type="text" id="return-country" value="US" maxlength="2">
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 12px; margin-bottom: 0;">
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; font-size: 13px;">
+              <input type="checkbox" id="free-returns" checked> Free returns (merchant pays shipping)
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Shipping Template</label>
+          <select id="shipping-template">
+            <option value="us-standard">US Standard ($5.99, 3-7 days)</option>
+            <option value="us-free">US Free Shipping (5-10 days)</option>
+            <option value="us-express">US Express ($14.99, 1-2 days)</option>
+            <option value="international">International ($19.99, 7-21 days)</option>
+            <option value="custom">Custom...</option>
+          </select>
+        </div>
+
+        <div id="custom-shipping" class="hidden" style="background: var(--color-background); padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 13px;">Rate</label>
+              <input type="number" id="shipping-rate" value="5.99" step="0.01" min="0">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 13px;">Currency</label>
+              <input type="text" id="shipping-currency" value="USD" maxlength="3">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 13px;">Country</label>
+              <input type="text" id="shipping-country" value="US" maxlength="2">
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 13px;">Transit Time (min-max days)</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="number" id="transit-min" value="3" min="0" style="width: 50%;">
+                <input type="number" id="transit-max" value="7" min="0" style="width: 50%;">
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 13px;">Handling Time (min-max days)</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="number" id="handling-min" value="1" min="0" style="width: 50%;">
+                <input type="number" id="handling-max" value="2" min="0" style="width: 50%;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn" id="generate-schema-btn" onclick="generateSchema()">Generate Snippets</button>
+
+        <div class="result" id="schema-result"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <h2>Free & Open</h2>
+      <div class="pricing-grid" style="max-width: 650px;">
+        <div class="pricing-card">
+          <h3>Free</h3>
+          <div class="price">$0</div>
+          <ul>
+            <li>Unlimited validations</li>
+            <li>Profile generation</li>
+            <li>Download JSON file</li>
+            <li>A-F grading & recommendations</li>
+          </ul>
+          <a href="#validate" class="btn btn-secondary">Start Validating</a>
+        </div>
+        <div class="pricing-card" style="border-color: var(--brand-teal);">
+          <h3>Support the Project</h3>
+          <div class="price" style="font-size: 36px;">&#9829;</div>
+          <ul>
+            <li>Help keep this tool free</li>
+            <li>Support independent development</li>
+            <li>Get a warm fuzzy feeling</li>
+            <li>Karma points (unverified)</li>
+          </ul>
+          <a href="https://buymeacoffee.com/ucptools" target="_blank" class="btn">Buy Me a Coffee</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Opt-out Info Section -->
+  <section id="optout" style="padding: 40px 20px; background: var(--color-background); border-top: 1px solid var(--color-border);">
+    <div class="container" style="max-width: 800px;">
+      <h2 style="margin-bottom: 20px; text-align: center;">How to Opt Out of AI Commerce</h2>
+      <div style="background: var(--color-card); border: 1px solid var(--color-border); border-radius: 12px; padding: 24px;">
+        <p style="margin-bottom: 16px;">Shopify's Agentic Storefronts are <strong>enabled by default</strong> starting January 26, 2026. If you want to disable AI agent access to your store:</p>
+
+        <h4 style="margin: 16px 0 8px; color: var(--brand-blue);">Shopify Stores:</h4>
+        <ol style="margin-left: 20px; margin-bottom: 16px;">
+          <li>Go to <strong>Sales Channels</strong> in your Shopify admin</li>
+          <li>Find <strong>Agentic Storefronts</strong> or <strong>Shop</strong> channel</li>
+          <li>Click <strong>Settings</strong> and disable the channel</li>
+          <li>Remove products from the Shopify Global Catalog</li>
+        </ol>
+
+        <h4 style="margin: 16px 0 8px; color: var(--brand-blue);">Block Specific AI Agents:</h4>
+        <ul style="margin-left: 20px; margin-bottom: 16px;">
+          <li><strong>Amazon Buy for Me:</strong> Use Cloudflare security rules to block Amazon's bot</li>
+          <li><strong>robots.txt:</strong> Add <code>User-agent: GPTBot</code> and <code>Disallow: /</code> to block ChatGPT</li>
+          <li><strong>Google AI:</strong> Currently no opt-out for Google AI Mode with UCP</li>
+        </ul>
+
+        <div style="background: #fef9c3; border-left: 4px solid #CA8A04; padding: 12px 16px; border-radius: 0 8px 8px 0;">
+          <strong style="color: #92400E;">Warning:</strong> Opting out means AI shopping agents won't be able to complete purchases on your store. This may reduce discoverability as AI-powered shopping grows.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p><strong>UCP.tools</strong> &bull; <a href="https://github.com/Universal-Commerce-Protocol/ucp">UCP Spec</a> &bull; <a href="#optout">Opt-Out Guide</a> &bull; <a href="mailto:hello@ucptools.dev">Contact</a></p>
+      <p style="margin-top: 8px; font-size: 14px;">Independent project. Not affiliated with Google or Shopify. UCP is an open protocol.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Switch tab function (called from nav and tab buttons)
+    function switchTab(tabName) {
+      // Update tab buttons
+      document.querySelectorAll('.tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === tabName);
+      });
+      // Show/hide panels
+      document.getElementById('validate-panel').classList.toggle('hidden', tabName !== 'validate');
+      document.getElementById('generate-panel').classList.toggle('hidden', tabName !== 'generate');
+      document.getElementById('schema-panel').classList.toggle('hidden', tabName !== 'schema');
+      // Scroll to hero section
+      document.querySelector('.hero').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Schema template toggles
+    document.getElementById('return-template').addEventListener('change', (e) => {
+      document.getElementById('custom-return').classList.toggle('hidden', e.target.value !== 'custom');
+    });
+    document.getElementById('shipping-template').addEventListener('change', (e) => {
+      document.getElementById('custom-shipping').classList.toggle('hidden', e.target.value !== 'custom');
+    });
+
+    // Generate Schema.org snippets
+    async function generateSchema() {
+      const btn = document.getElementById('generate-schema-btn');
+      const result = document.getElementById('schema-result');
+
+      const returnTemplate = document.getElementById('return-template').value;
+      const shippingTemplate = document.getElementById('shipping-template').value;
+
+      btn.disabled = true;
+      btn.textContent = 'Generating...';
+
+      try {
+        let options = {
+          returnPolicy: returnTemplate !== 'custom' ? returnTemplate : undefined,
+          shipping: shippingTemplate !== 'custom' ? shippingTemplate : undefined,
+        };
+
+        if (returnTemplate === 'custom') {
+          options.customReturn = {
+            returnDays: parseInt(document.getElementById('return-days').value),
+            country: document.getElementById('return-country').value,
+            freeReturns: document.getElementById('free-returns').checked,
+          };
+        }
+
+        if (shippingTemplate === 'custom') {
+          options.customShipping = {
+            rate: parseFloat(document.getElementById('shipping-rate').value),
+            currency: document.getElementById('shipping-currency').value,
+            country: document.getElementById('shipping-country').value,
+            transitMin: parseInt(document.getElementById('transit-min').value),
+            transitMax: parseInt(document.getElementById('transit-max').value),
+            handlingMin: parseInt(document.getElementById('handling-min').value),
+            handlingMax: parseInt(document.getElementById('handling-max').value),
+          };
+        }
+
+        const res = await fetch('/api/generate-schema', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'complete', options })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to generate schema');
+        }
+
+        window.generatedSchemaCode = data.embedCode;
+
+        result.className = 'result show success';
+        result.innerHTML = `
+          <p style="margin-bottom: 16px;">\u2713 Schema snippets generated!</p>
+          <p style="font-size: 13px; margin-bottom: 12px; color: var(--color-medium);">Copy this code and paste it into your HTML &lt;head&gt; section:</p>
+          <pre style="font-size: 12px;">${escapeHtml(data.embedCode)}</pre>
+          <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
+            <button class="btn" onclick="copySchemaCode()">Copy to Clipboard</button>
+            <button class="btn btn-secondary" onclick="downloadSchemaCode()">Download HTML</button>
+          </div>
+          <div style="margin-top: 20px; padding: 16px; background: rgba(46,134,171,0.1); border-radius: 8px;">
+            <h4 style="margin-bottom: 8px; font-size: 14px;">Next Steps:</h4>
+            <ol style="margin: 0; padding-left: 20px; font-size: 13px; color: var(--color-dark);">
+              <li>Paste this code in your HTML &lt;head&gt;</li>
+              <li>For product pages, add Product schema with @id references</li>
+              <li>Validate at <a href="https://validator.schema.org/" target="_blank" class="link-brand">validator.schema.org</a></li>
+              <li>Re-check your AI Readiness score!</li>
+            </ol>
+          </div>
+        `;
+      } catch (err) {
+        result.className = 'result show error';
+        result.innerHTML = `<p>Error: ${err.message}</p>`;
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Generate Snippets';
+    }
+
+    function copySchemaCode() {
+      navigator.clipboard.writeText(window.generatedSchemaCode);
+      alert('Copied to clipboard!');
+    }
+
+    function downloadSchemaCode() {
+      const blob = new Blob([window.generatedSchemaCode], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'schema-snippets.html';
+      a.click();
+    }
+
+    // Tab button click handlers
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        switchTab(tab.dataset.tab);
+      });
+    });
+
+    // Validate form
+    document.getElementById('validate-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('validate-btn');
+      const result = document.getElementById('validate-result');
+      const domain = document.getElementById('domain').value.replace(/^https?:\/\//, '').replace(/\/$/, '');
+
+      btn.disabled = true;
+      btn.textContent = 'Checking AI Readiness...';
+      result.className = 'result';
+      result.innerHTML = '';
+
+      try {
+        const res = await fetch('/api/validate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ domain })
+        });
+        const data = await res.json();
+
+        // Use new AI readiness score
+        const score = data.ai_readiness?.score ?? 0;
+        const grade = data.ai_readiness?.grade ?? 'F';
+        const readinessLabel = data.ai_readiness?.label ?? 'Not Ready';
+
+        // Separate issues by category
+        const ucpIssues = data.ucp?.issues || [];
+        const schemaIssues = data.schema?.issues || [];
+        const ucpErrors = ucpIssues.filter(i => i.severity === 'error').length;
+        const ucpWarnings = ucpIssues.filter(i => i.severity === 'warn').length;
+        const schemaErrors = schemaIssues.filter(i => i.severity === 'error').length;
+        const schemaWarnings = schemaIssues.filter(i => i.severity === 'warn').length;
+
+        const levelColors = {
+          'ready': '#16A34A',
+          'partial': '#CA8A04',
+          'limited': '#EA580C',
+          'not_ready': '#DC2626'
+        };
+        const levelColor = levelColors[data.ai_readiness?.level] || '#DC2626';
+
+        result.className = 'result show';
+        result.style.background = score >= 70 ? '#dcfce7' : score >= 50 ? '#fef9c3' : '#fee2e2';
+        result.style.border = '1px solid ' + (score >= 70 ? '#86efac' : score >= 50 ? '#fde047' : '#fca5a5');
+
+        result.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <span class="score-badge ${grade}">${grade} ${score}/100</span>
+              <span style="margin-left: 12px; padding: 4px 12px; border-radius: 12px; font-size: 14px; font-weight: 600; background: ${levelColor}20; color: ${levelColor};">${readinessLabel}</span>
+            </div>
+            <span>${data.ucp?.found ? '\u2713 UCP Found' : '\u2717 No UCP Profile'}</span>
+          </div>
+
+          ${data.ucp_version ? `<p style="margin-bottom: 16px;">UCP Version: ${data.ucp_version}</p>` : ''}
+
+          <!-- UCP Section -->
+          <div style="margin-bottom: 16px; padding: 16px; background: rgba(46,134,171,0.1); border-radius: 8px;">
+            <h4 style="margin-bottom: 8px; color: #2E86AB;">UCP Profile (/.well-known/ucp)</h4>
+            ${data.ucp?.found
+              ? `<p style="color: #16A34A; margin-bottom: 8px;">\u2713 Profile found</p>`
+              : `<p style="color: #DC2626; margin-bottom: 8px;">\u2717 No profile - create one at /.well-known/ucp</p>`
+            }
+            ${ucpIssues.length > 0 ? `
+              <div class="issues-list">
+                <small><strong>${ucpErrors} error(s), ${ucpWarnings} warning(s)</strong></small>
+                ${ucpIssues.slice(0, 5).map(i => `
+                  <div class="issue ${i.severity}" style="margin-top: 8px;">
+                    <strong>[${i.code}]</strong> ${i.message}
+                    ${i.hint ? `<br><small>${i.hint}</small>` : ''}
+                  </div>
+                `).join('')}
+                ${ucpIssues.length > 5 ? `<p style="margin-top: 8px; font-size: 12px;">...and ${ucpIssues.length - 5} more</p>` : ''}
+              </div>
+            ` : (data.ucp?.found ? '<p style="color: #16A34A;">\u2713 No UCP issues</p>' : '')}
+          </div>
+
+          <!-- Schema Section -->
+          <div style="margin-bottom: 16px; padding: 16px; background: rgba(71,201,122,0.1); border-radius: 8px;">
+            <h4 style="margin-bottom: 8px; color: #36B5A2;">Schema.org (Jan 2026 Requirements)</h4>
+            ${data.schema?.checked
+              ? `<p style="margin-bottom: 8px; font-size: 13px;">Found: ${data.schema.stats?.products || 0} Product(s), ${data.schema.stats?.returnPolicies || 0} ReturnPolicy</p>`
+              : `<p style="color: #CA8A04; margin-bottom: 8px;">Could not check schema</p>`
+            }
+            ${schemaIssues.length > 0 ? `
+              <div class="issues-list">
+                <small><strong>${schemaErrors} error(s), ${schemaWarnings} warning(s)</strong></small>
+                ${schemaIssues.map(i => `
+                  <div class="issue ${i.severity}" style="margin-top: 8px;">
+                    <strong>[${i.code}]</strong> ${i.message}
+                    ${i.hint ? `<br><small>${i.hint}</small>` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            ` : '<p style="color: #16A34A;">\u2713 Schema looks good</p>'}
+          </div>
+
+          <!-- Product Quality Section -->
+          ${data.product_quality && (data.product_quality.issues?.length > 0 || data.product_quality.completeness > 0) ? `
+          <div style="margin-bottom: 16px; padding: 16px; background: rgba(245,158,11,0.1); border-radius: 8px;">
+            <h4 style="margin-bottom: 8px; color: #D97706; display: flex; justify-content: space-between; align-items: center;">
+              <span>Product Data Quality</span>
+              ${data.product_quality.completeness > 0 ? `<span style="font-size: 14px; padding: 4px 10px; border-radius: 12px; background: ${data.product_quality.completeness >= 80 ? '#dcfce7' : data.product_quality.completeness >= 60 ? '#fef9c3' : '#fee2e2'}; color: ${data.product_quality.completeness >= 80 ? '#16A34A' : data.product_quality.completeness >= 60 ? '#CA8A04' : '#DC2626'};">${data.product_quality.completeness}% Complete</span>` : ''}
+            </h4>
+            ${data.product_quality.issues?.length > 0 ? `
+              <div class="issues-list">
+                ${data.product_quality.issues.slice(0, 5).map(i => `
+                  <div class="issue ${i.severity}" style="margin-top: 8px;">
+                    <strong>[${i.code}]</strong> ${i.message}
+                    ${i.hint ? `<br><small>${i.hint}</small>` : ''}
+                  </div>
+                `).join('')}
+                ${data.product_quality.issues.length > 5 ? `<p style="margin-top: 8px; font-size: 12px; color: #666;">...and ${data.product_quality.issues.length - 5} more issues</p>` : ''}
+              </div>
+            ` : '<p style="color: #16A34A;">\u2713 Product data looks good</p>'}
+          </div>
+          ` : ''}
+
+          <!-- Shipping Quality Section -->
+          ${data.shipping?.issues?.length > 0 ? `
+          <div style="margin-bottom: 16px; padding: 16px; background: rgba(59,130,246,0.1); border-radius: 8px;">
+            <h4 style="margin-bottom: 8px; color: #2563EB;">Shipping Details</h4>
+            <div class="issues-list">
+              ${data.shipping.issues.map(i => `
+                <div class="issue ${i.severity}" style="margin-top: 8px;">
+                  <strong>[${i.code}]</strong> ${i.message}
+                  ${i.hint ? `<br><small>${i.hint}</small>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          ` : ''}
+
+          <!-- Recommendations Section -->
+          ${data.product_quality?.recommendations?.length > 0 ? `
+          <div style="margin-bottom: 16px; padding: 16px; background: rgba(139,92,246,0.1); border-radius: 8px;">
+            <h4 style="margin-bottom: 12px; color: #7C3AED;">Recommendations</h4>
+            <ul style="margin: 0; padding-left: 20px; font-size: 14px;">
+              ${data.product_quality.recommendations.slice(0, 5).map(r => `
+                <li style="margin-bottom: 8px;">
+                  <span style="padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 6px; background: ${r.priority === 'high' ? '#fef2f2' : r.priority === 'medium' ? '#fefce8' : '#f0fdf4'}; color: ${r.priority === 'high' ? '#DC2626' : r.priority === 'medium' ? '#CA8A04' : '#16A34A'};">${r.priority.toUpperCase()}</span>
+                  ${r.message}
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+          ` : ''}
+
+          <!-- Badge Section -->
+          ${score >= 50 ? `
+          <div style="margin-top: 24px; padding: 20px; background: linear-gradient(135deg, rgba(46,134,171,0.1), rgba(71,201,122,0.1)); border-radius: 8px; border: 1px solid var(--color-border);">
+            <h4 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 20px;">\u{1F3C6}</span> Share Your Score
+            </h4>
+            <p style="font-size: 13px; color: var(--color-medium); margin-bottom: 16px;">
+              Add this badge to your website to show you're AI Commerce ready:
+            </p>
+            <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;">
+              <img src="/api/badge?domain=${encodeURIComponent(domain)}&style=flat" alt="AI Commerce Badge" style="height: 20px;">
+              <img src="/api/badge?domain=${encodeURIComponent(domain)}&style=large" alt="AI Commerce Badge" style="height: 80px;">
+            </div>
+            <div style="background: var(--color-dark); padding: 12px; border-radius: 6px; font-family: monospace; font-size: 12px; color: #e2e8f0; overflow-x: auto;">
+              &lt;a href="https://ucptools.dev/verify.html?domain=${encodeURIComponent(domain)}"&gt;&lt;img src="https://ucptools.dev/api/badge?domain=${encodeURIComponent(domain)}" alt="AI Commerce Ready"&gt;&lt;/a&gt;
+            </div>
+            <button class="btn btn-secondary" style="margin-top: 12px; padding: 8px 16px; font-size: 13px;" onclick="copyBadgeCode('${domain}')">Copy Badge Code</button>
+          </div>
+          ` : ''}
+
+          <p style="margin-top: 16px; font-size: 14px;" class="text-muted">
+            Found this useful? <a href="#pricing" class="link-brand">Support the project \u2192</a>
+          </p>
+        `;
+
+        // Store domain for badge copy
+        window.lastValidatedDomain = domain;
+      } catch (err) {
+        result.className = 'result show error';
+        result.innerHTML = `<p>Error: ${err.message}</p>`;
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Check AI Readiness';
+    });
+
+    function copyBadgeCode(domain) {
+      const code = '<a href="https://ucptools.dev/verify.html?domain=' + encodeURIComponent(domain) + '"><img src="https://ucptools.dev/api/badge?domain=' + encodeURIComponent(domain) + '" alt="AI Commerce Ready"></a>';
+      navigator.clipboard.writeText(code);
+      alert('Badge code copied to clipboard!');
+    }
+
+    // Generate form
+    document.getElementById('generate-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('generate-btn');
+      const result = document.getElementById('generate-result');
+
+      const domain = document.getElementById('gen-domain').value.replace(/^https?:\/\//, '').replace(/\/$/, '');
+      const endpoint = document.getElementById('gen-endpoint').value;
+      const capabilities = {
+        checkout: true,
+        order: document.getElementById('cap-order').checked,
+        fulfillment: document.getElementById('cap-fulfillment').checked,
+        discount: document.getElementById('cap-discount').checked,
+      };
+
+      btn.disabled = true;
+      btn.textContent = 'Generating...';
+
+      try {
+        const res = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ domain, endpoint, capabilities })
+        });
+        const data = await res.json();
+
+        const profileJson = JSON.stringify(data.profile, null, 2);
+
+        result.className = 'result show success';
+        result.innerHTML = `
+          <p style="margin-bottom: 16px;">\u2713 Profile generated! Copy the JSON below:</p>
+          <pre>${escapeHtml(profileJson)}</pre>
+          <div style="margin-top: 16px; display: flex; gap: 12px;">
+            <button class="btn" onclick="downloadProfile('${domain}')">Download JSON</button>
+            <button class="btn btn-secondary" onclick="copyProfile()">Copy to Clipboard</button>
+          </div>
+          <p style="margin-top: 16px; font-size: 14px;" class="text-muted">
+            Deploy to <code>https://${domain}/.well-known/ucp</code> &bull;
+            <a href="#" onclick="showInstructions(); return false;" class="link-brand">See setup instructions \u2192</a>
+          </p>
+        `;
+
+        window.generatedProfile = profileJson;
+      } catch (err) {
+        result.className = 'result show error';
+        result.innerHTML = `<p>Error: ${err.message}</p>`;
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Generate Profile';
+    });
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function downloadProfile(domain) {
+      const blob = new Blob([window.generatedProfile], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ucp.json';
+      a.click();
+    }
+
+    function copyProfile() {
+      navigator.clipboard.writeText(window.generatedProfile);
+      alert('Copied to clipboard!');
+    }
+
+    function showInstructions() {
+      alert('Setup instructions:\n\n1. Upload ucp.json to your server\n2. Configure your web server to serve it at /.well-known/ucp\n3. Set Content-Type: application/json\n4. Add CORS headers: Access-Control-Allow-Origin: *\n\nSee our documentation for platform-specific guides.');
+    }
+  </script>
+</body>
+</html>

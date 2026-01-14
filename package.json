@@ -1,0 +1,53 @@
+{
+  "name": "ucp-profile-manager",
+  "version": "1.0.0",
+  "description": "UCP Business Profile Generator, Validator, and Hosting Service",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "ucp-validate": "./dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/api/server.ts",
+    "start": "node dist/api/server.js",
+    "test": "vitest",
+    "lint": "eslint src --ext .ts",
+    "validate": "tsx src/cli/index.ts",
+    "generate": "tsx src/cli/generate.ts"
+  },
+  "keywords": [
+    "ucp",
+    "universal-commerce-protocol",
+    "profile-generator",
+    "validator"
+  ],
+  "author": "UCP.tools",
+  "license": "MIT",
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "express": "^4.21.0",
+    "jose": "^5.9.6",
+    "nanoid": "^5.0.7",
+    "pg": "^8.13.0",
+    "pino": "^9.5.0",
+    "pino-pretty": "^11.3.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.9.0",
+    "@types/pg": "^8.11.10",
+    "png-to-ico": "^3.0.1",
+    "sharp": "^0.34.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is UCP? - Universal Commerce Protocol Explained | UCP Tools</title>
+  <meta name="description" content="Learn about the Universal Commerce Protocol (UCP) - the new standard by Google and Shopify that lets AI agents shop on your store. Essential for e-commerce in 2026.">
+  <link rel="canonical" href="https://ucptools.dev/learn.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <meta name="theme-color" content="#2E86AB">
+  <meta name="google-site-verification" content="Ra49U5gMiADsSr9byqzFnI-GJVA4Gj0_i38nJewkhaU" />
+  <meta property="og:title" content="What is UCP? Universal Commerce Protocol Explained">
+  <meta property="og:description" content="Learn about the new standard by Google and Shopify that lets AI agents shop on your store.">
+  <meta property="og:image" content="/og-image.png">
+  <style>
+    :root {
+      --brand-blue: #2E86AB;
+      --brand-teal: #36B5A2;
+      --brand-green: #47C97A;
+      --brand-gradient: linear-gradient(135deg, #2E86AB 0%, #36B5A2 50%, #47C97A 100%);
+      --color-dark: #1A2B3C;
+      --color-medium: #5A6978;
+      --color-border: #E2E8F0;
+      --color-background: #F8FAFC;
+      --color-card: #FFFFFF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--color-background);
+      color: var(--color-dark);
+      line-height: 1.7;
+    }
+    .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+    header {
+      background: var(--color-card);
+      border-bottom: 1px solid var(--color-border);
+      padding: 16px 0;
+    }
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 24px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .logo-icon { width: 40px; height: 40px; border-radius: 8px; }
+    .logo-text {
+      background: var(--brand-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .logo-suffix { font-weight: 400; -webkit-text-fill-color: var(--color-medium); }
+    nav a {
+      margin-left: 24px;
+      color: var(--color-medium);
+      text-decoration: none;
+    }
+    nav a:hover { color: var(--brand-blue); }
+    .hero {
+      padding: 60px 20px;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(46, 134, 171, 0.1) 0%, rgba(71, 201, 122, 0.1) 100%);
+    }
+    .hero h1 { font-size: 42px; margin-bottom: 16px; }
+    .hero p { font-size: 20px; color: var(--color-medium); max-width: 600px; margin: 0 auto; }
+    .content { padding: 60px 20px; }
+    .content h2 {
+      font-size: 28px;
+      margin: 40px 0 20px;
+      color: var(--color-dark);
+    }
+    .content h2:first-child { margin-top: 0; }
+    .content p { margin-bottom: 16px; color: #374151; }
+    .content ul { margin: 16px 0 16px 24px; }
+    .content li { margin-bottom: 8px; }
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(46, 134, 171, 0.1) 0%, rgba(71, 201, 122, 0.1) 100%);
+      border-left: 4px solid var(--brand-blue);
+      padding: 20px 24px;
+      border-radius: 0 8px 8px 0;
+      margin: 24px 0;
+    }
+    .highlight-box strong { color: var(--brand-blue); }
+    .partners {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .partner-tag {
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .cta-box {
+      background: var(--color-card);
+      border: 2px solid var(--brand-blue);
+      border-radius: 12px;
+      padding: 32px;
+      text-align: center;
+      margin: 40px 0;
+    }
+    .cta-box h3 { margin-bottom: 12px; }
+    .cta-box p { margin-bottom: 20px; color: var(--color-medium); }
+    .btn {
+      display: inline-block;
+      padding: 14px 28px;
+      background: var(--brand-gradient);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(46, 134, 171, 0.4);
+    }
+    .timeline {
+      border-left: 3px solid var(--brand-teal);
+      padding-left: 24px;
+      margin: 24px 0;
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -30px;
+      top: 4px;
+      width: 12px;
+      height: 12px;
+      background: var(--brand-teal);
+      border-radius: 50%;
+    }
+    .timeline-date {
+      font-weight: 600;
+      color: var(--brand-blue);
+    }
+    code {
+      background: #f1f5f9;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    pre {
+      background: var(--color-dark);
+      color: #e2e8f0;
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 13px;
+      margin: 16px 0;
+    }
+    footer {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--color-medium);
+      border-top: 1px solid var(--color-border);
+      background: var(--color-card);
+    }
+    footer a { color: var(--brand-blue); text-decoration: none; }
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 28px; }
+      .header-inner { flex-direction: column; gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <img src="/logo.jpeg" alt="UCP Tools" class="logo-icon">
+        <span class="logo-text">UCP<span class="logo-suffix">.tools</span></span>
+      </a>
+      <nav>
+        <a href="/">Validate</a>
+        <a href="/learn.html" style="color: var(--brand-blue); font-weight: 600;">Learn</a>
+        <a href="https://ucp.dev" target="_blank">Spec</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1>What is UCP?</h1>
+      <p>The Universal Commerce Protocol is the new standard that lets AI agents shop on your store. Here's why it matters.</p>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="container">
+
+      <h2>The Problem UCP Solves</h2>
+      <p>AI assistants like ChatGPT, Google Gemini, and Microsoft Copilot are becoming the new way people shop. But there's a problem: <strong>AI agents can't easily find or buy from most online stores.</strong></p>
+      <p>Without a standard protocol, each AI platform would need custom integrations with every store. That doesn't scale.</p>
+
+      <div class="highlight-box">
+        <strong>UCP is like robots.txt for commerce.</strong> Just as robots.txt tells search engines how to crawl your site, UCP tells AI agents how to shop on your store.
+      </div>
+
+      <h2>Who Created UCP?</h2>
+      <p>UCP was developed by Google and Shopify, with endorsement from 60+ major companies:</p>
+      <div class="partners">
+        <span class="partner-tag">Google</span>
+        <span class="partner-tag">Shopify</span>
+        <span class="partner-tag">Walmart</span>
+        <span class="partner-tag">Target</span>
+        <span class="partner-tag">Stripe</span>
+        <span class="partner-tag">PayPal</span>
+        <span class="partner-tag">Visa</span>
+        <span class="partner-tag">Mastercard</span>
+        <span class="partner-tag">Best Buy</span>
+        <span class="partner-tag">Home Depot</span>
+        <span class="partner-tag">Etsy</span>
+        <span class="partner-tag">Wayfair</span>
+      </div>
+
+      <h2>How Does UCP Work?</h2>
+      <p>Merchants publish a JSON file at a standard location:</p>
+      <pre>https://yourstore.com/.well-known/ucp</pre>
+      <p>This file tells AI agents:</p>
+      <ul>
+        <li><strong>What capabilities your store supports</strong> (checkout, orders, fulfillment)</li>
+        <li><strong>How to connect</strong> (API endpoints, authentication)</li>
+        <li><strong>What version of UCP you use</strong></li>
+      </ul>
+
+      <h2>Why Should You Care?</h2>
+      <p>AI-powered shopping is growing fast:</p>
+      <ul>
+        <li><strong>$20.9 billion</strong> in AI-assisted purchases expected in 2026</li>
+        <li><strong>ChatGPT checkout</strong> already live with Target, Walmart, Etsy</li>
+        <li><strong>Google AI Mode</strong> launching with UCP integration</li>
+        <li><strong>Microsoft Copilot Checkout</strong> auto-enrolling Shopify stores</li>
+      </ul>
+
+      <div class="highlight-box">
+        <strong>If you don't have UCP, AI agents will skip your store</strong> and send customers to competitors who do.
+      </div>
+
+      <h2>Timeline</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-date">January 2026</div>
+          <div>Google and Shopify announce UCP at NRF 2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Q1 2026</div>
+          <div>Google AI Mode in Search launches with UCP</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">2026</div>
+          <div>Major AI platforms integrate UCP checkout</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">2027+</div>
+          <div>UCP becomes standard for AI commerce</div>
+        </div>
+      </div>
+
+      <h2>UCP vs. Other Protocols</h2>
+      <p>UCP isn't the only protocol. OpenAI has the <strong>Agentic Commerce Protocol (ACP)</strong> with Stripe. But UCP has more momentum with Google, Shopify, and 60+ partners backing it.</p>
+      <p>Smart merchants will implement both, but UCP is the priority for now.</p>
+
+      <div class="cta-box">
+        <h3>Check If Your Store is Ready</h3>
+        <p>Our free validator checks your UCP profile and shows exactly what to fix.</p>
+        <a href="/" class="btn">Validate Your Store</a>
+      </div>
+
+      <h2>Resources</h2>
+      <ul>
+        <li><a href="https://ucp.dev" target="_blank">Official UCP Specification</a></li>
+        <li><a href="https://developers.googleblog.com/under-the-hood-universal-commerce-protocol-ucp/" target="_blank">Google Developer Blog: Under the Hood</a></li>
+        <li><a href="https://www.shopify.com/ucp" target="_blank">Shopify UCP Page</a></li>
+        <li><a href="https://shopify.engineering/UCP" target="_blank">Shopify Engineering: Building UCP</a></li>
+      </ul>
+
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p><strong>UCP Tools</strong> &bull; <a href="/">Validator</a> &bull; <a href="/learn.html">Learn</a> &bull; <a href="mailto:hello@ucptools.dev">Contact</a></p>
+      <p style="margin-top: 8px; font-size: 14px;">Independent project. Not affiliated with Google or Shopify.</p>
+    </div>
+  </footer>
+</body>
+</html>

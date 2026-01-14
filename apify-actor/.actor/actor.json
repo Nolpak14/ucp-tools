@@ -1,0 +1,68 @@
+{
+  "actorSpecification": 1,
+  "name": "ucp-profile-validator",
+  "title": "UCP Profile Validator",
+  "description": "Validate any merchant's Universal Commerce Protocol (UCP) business profile at /.well-known/ucp. Check AI commerce readiness with instant A-F grading, detailed issue reports, and fix recommendations. Essential for e-commerce stores preparing for AI shopping agents.",
+  "version": "1.0",
+  "buildTag": "latest",
+  "environmentVariables": {},
+  "dockerfile": "./Dockerfile",
+  "input": "./input_schema.json",
+  "readme": "./README.md",
+  "storages": {
+    "dataset": {
+      "actorSpecification": 1,
+      "title": "UCP Validation Results",
+      "description": "Validation results for UCP business profiles including compliance scores, issues found, and fix recommendations.",
+      "views": {
+        "overview": {
+          "title": "Validation Overview",
+          "description": "Summary of validation results with grades and issue counts.",
+          "transformation": {
+            "fields": ["domain", "valid", "grade", "score", "errors", "warnings", "ucpVersion", "checkedAt"]
+          },
+          "display": {
+            "component": "table",
+            "properties": {
+              "domain": { "label": "Domain", "format": "text" },
+              "valid": { "label": "Valid", "format": "boolean" },
+              "grade": { "label": "Grade", "format": "text" },
+              "score": { "label": "Score", "format": "number" },
+              "errors": { "label": "Errors", "format": "number" },
+              "warnings": { "label": "Warnings", "format": "number" },
+              "ucpVersion": { "label": "UCP Version", "format": "text" },
+              "checkedAt": { "label": "Checked At", "format": "date" }
+            }
+          }
+        },
+        "issues": {
+          "title": "Issues Detail",
+          "description": "Detailed list of all validation issues found.",
+          "transformation": {
+            "fields": ["domain", "grade", "issues"]
+          },
+          "display": {
+            "component": "table",
+            "properties": {
+              "domain": { "label": "Domain", "format": "text" },
+              "grade": { "label": "Grade", "format": "text" },
+              "issues": { "label": "Issues", "format": "array" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "useCases": [
+    "Validate your store's UCP profile before AI agent integration",
+    "Audit competitor UCP readiness",
+    "Monitor multiple merchant profiles for compliance",
+    "Pre-launch check for headless commerce deployments",
+    "Agency bulk validation of client stores"
+  ],
+  "exampleRunInput": {
+    "domain": "google.com",
+    "mode": "full",
+    "includeRecommendations": true
+  }
+}

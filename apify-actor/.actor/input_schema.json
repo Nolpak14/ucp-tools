@@ -1,0 +1,32 @@
+{
+  "title": "UCP Profile Validator",
+  "description": "Enter a domain to validate its UCP (Universal Commerce Protocol) business profile. The validator fetches the profile from <code>/.well-known/ucp</code> and checks compliance with the <a href=\"https://ucp.dev/specification/overview/\" target=\"_blank\">official UCP specification</a>.<br><br><b>Quick start:</b> Just enter a domain and click Run. For help generating a valid profile, visit <a href=\"https://ucptools.dev\" target=\"_blank\">ucptools.dev</a>.",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "domain": {
+      "title": "Domain",
+      "type": "string",
+      "description": "Enter the merchant domain to validate (without https://). We'll fetch and validate the profile at <code>https://{domain}/.well-known/ucp</code>",
+      "editor": "textfield",
+      "prefill": "google.com",
+      "example": "shopify.com"
+    },
+    "mode": {
+      "title": "Validation Mode",
+      "type": "string",
+      "description": "Choose validation depth:<br>• <b>Full</b> - Complete validation including network checks (recommended)<br>• <b>Quick</b> - Structural validation only, faster but less thorough",
+      "editor": "select",
+      "default": "full",
+      "enum": ["full", "quick"],
+      "enumTitles": ["Full (recommended)", "Quick (structural only)"]
+    },
+    "includeRecommendations": {
+      "title": "Include Fix Recommendations",
+      "type": "boolean",
+      "description": "When enabled, the output includes actionable recommendations for fixing each issue found. Useful for developers implementing UCP for the first time.",
+      "default": true
+    }
+  },
+  "required": ["domain"]
+}

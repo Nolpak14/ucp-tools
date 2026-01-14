@@ -1,0 +1,25 @@
+{
+  "ucp": {
+    "version": "2026-01-14",
+    "services": {
+      "shopping": {
+        "version": "1.0",
+        "spec": "https://ucp.dev/specs/shopping/1.0",
+        "rest": {
+          "endpoint": "https://ucptools.dev/api",
+          "auth": {
+            "type": "none"
+          }
+        }
+      }
+    },
+    "capabilities": [
+      {
+        "name": "dev.ucp.shopping.checkout",
+        "version": "1.0",
+        "spec": "https://ucp.dev/specs/shopping/checkout/1.0",
+        "schema": "https://ucp.dev/schemas/shopping/checkout/1.0.json"
+      }
+    ]
+  }
+}

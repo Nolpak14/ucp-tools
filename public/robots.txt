@@ -1,0 +1,6 @@
+# robots.txt for ucptools.dev
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://ucptools.dev/sitemap.xml

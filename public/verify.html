@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Commerce Verification - UCP.tools</title>
+  <meta name="description" content="Verify AI Commerce readiness for any e-commerce store.">
+  <link rel="canonical" href="https://ucptools.dev/verify.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:title" content="AI Commerce Verification - UCP.tools">
+  <meta property="og:description" content="Verify AI Commerce readiness for any e-commerce store.">
+  <meta property="og:type" content="website">
+  <style>
+    :root {
+      --brand-blue: #2E86AB;
+      --brand-teal: #36B5A2;
+      --brand-green: #47C97A;
+      --brand-gradient: linear-gradient(135deg, #2E86AB 0%, #36B5A2 50%, #47C97A 100%);
+      --color-dark: #1A2B3C;
+      --color-medium: #5A6978;
+      --color-light: #94A3B8;
+      --color-border: #E2E8F0;
+      --color-background: #F8FAFC;
+      --color-card: #FFFFFF;
+      --grade-a-bg: #DCFCE7; --grade-a-text: #16A34A;
+      --grade-b-bg: #DBEAFE; --grade-b-text: #2563EB;
+      --grade-c-bg: #FEF9C3; --grade-c-text: #CA8A04;
+      --grade-d-bg: #FED7AA; --grade-d-text: #EA580C;
+      --grade-f-bg: #FEE2E2; --grade-f-text: #DC2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--color-background);
+      color: var(--color-dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+    header {
+      background: var(--color-card);
+      border-bottom: 1px solid var(--color-border);
+      padding: 16px 0;
+    }
+    .header-inner { display: flex; justify-content: space-between; align-items: center; }
+    .logo {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 24px; font-weight: 700; text-decoration: none;
+    }
+    .logo-icon { width: 40px; height: 40px; border-radius: 8px; }
+    .logo-text {
+      background: var(--brand-gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    main { flex: 1; padding: 60px 20px; }
+    .verify-card {
+      background: var(--color-card);
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .grade-circle {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 48px; font-weight: 700;
+    }
+    .grade-A { background: var(--grade-a-bg); color: var(--grade-a-text); }
+    .grade-B { background: var(--grade-b-bg); color: var(--grade-b-text); }
+    .grade-C { background: var(--grade-c-bg); color: var(--grade-c-text); }
+    .grade-D { background: var(--grade-d-bg); color: var(--grade-d-text); }
+    .grade-F { background: var(--grade-f-bg); color: var(--grade-f-text); }
+    .domain-name {
+      font-size: 24px; font-weight: 600;
+      color: var(--color-dark); margin-bottom: 8px;
+    }
+    .readiness-label {
+      display: inline-block;
+      padding: 8px 20px; border-radius: 20px;
+      font-weight: 600; font-size: 14px;
+      margin-bottom: 24px;
+    }
+    .score-detail {
+      font-size: 36px; font-weight: 700;
+      background: var(--brand-gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .verified-date { color: var(--color-medium); font-size: 14px; margin-bottom: 32px; }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 16px; margin-bottom: 32px;
+      text-align: center;
+    }
+    .stat-item {
+      padding: 16px;
+      background: var(--color-background);
+      border-radius: 8px;
+    }
+    .stat-value { font-size: 24px; font-weight: 700; color: var(--color-dark); }
+    .stat-label { font-size: 12px; color: var(--color-medium); }
+    .cta-section {
+      padding-top: 24px;
+      border-top: 1px solid var(--color-border);
+    }
+    .btn {
+      display: inline-block;
+      padding: 14px 28px;
+      background: var(--brand-gradient);
+      color: white;
+      border: none; border-radius: 8px;
+      font-size: 16px; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(46, 134, 171, 0.4);
+    }
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--color-medium);
+    }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--color-border);
+      border-top-color: var(--brand-blue);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    footer {
+      padding: 24px 20px;
+      text-align: center;
+      color: var(--color-medium);
+      border-top: 1px solid var(--color-border);
+      background: var(--color-card);
+      font-size: 14px;
+    }
+    footer a { color: var(--brand-blue); text-decoration: none; }
+    .error-message {
+      background: #FEE2E2;
+      color: #DC2626;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+    .issues-summary {
+      text-align: left;
+      margin-top: 24px;
+      padding: 20px;
+      background: var(--color-background);
+      border-radius: 8px;
+    }
+    .issue-category {
+      margin-bottom: 16px;
+    }
+    .issue-category h4 {
+      font-size: 14px;
+      color: var(--color-dark);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .issue-badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .issue-badge.errors { background: #FEE2E2; color: #DC2626; }
+    .issue-badge.warnings { background: #FEF9C3; color: #CA8A04; }
+    .issue-badge.ok { background: #DCFCE7; color: #16A34A; }
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .verify-card { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-inner">
+      <a href="/" class="logo">
+        <img src="/logo.jpeg" alt="UCP.tools" class="logo-icon">
+        <span class="logo-text">UCP.tools</span>
+      </a>
+      <a href="/" class="btn" style="padding: 10px 20px; font-size: 14px;">Check Your Store</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Verifying AI Commerce readiness...</p>
+      </div>
+
+      <div id="result" class="verify-card" style="display: none;"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p><a href="/">UCP.tools</a> - Free AI Commerce Readiness Checker</p>
+      <p style="margin-top: 4px;">Powered by Universal Commerce Protocol</p>
+    </div>
+  </footer>
+
+  <script>
+    async function verifyDomain() {
+      const params = new URLSearchParams(window.location.search);
+      const domain = params.get('domain') || params.get('d');
+
+      if (!domain) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('result').innerHTML = `
+          <div class="error-message">
+            <strong>No domain specified</strong>
+            <p>Add ?domain=yourstore.com to the URL</p>
+          </div>
+          <a href="/" class="btn">Check Your Store</a>
+        `;
+        return;
+      }
+
+      const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/\/$/, '').split('/')[0];
+      document.title = `${cleanDomain} - AI Commerce Verification`;
+
+      try {
+        const res = await fetch('/api/validate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ domain: cleanDomain })
+        });
+
+        const data = await res.json();
+
+        const grade = data.ai_readiness?.grade || 'F';
+        const score = data.ai_readiness?.score || 0;
+        const label = data.ai_readiness?.label || 'Not Ready';
+        const level = data.ai_readiness?.level || 'not_ready';
+
+        const levelColors = {
+          'ready': { bg: '#DCFCE7', text: '#16A34A' },
+          'partial': { bg: '#FEF9C3', text: '#CA8A04' },
+          'limited': { bg: '#FED7AA', text: '#EA580C' },
+          'not_ready': { bg: '#FEE2E2', text: '#DC2626' }
+        };
+        const colors = levelColors[level] || levelColors.not_ready;
+
+        const ucpErrors = data.ucp?.issues?.filter(i => i.severity === 'error').length || 0;
+        const schemaErrors = data.schema?.issues?.filter(i => i.severity === 'error').length || 0;
+        const productCompleteness = data.product_quality?.completeness || 0;
+
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('result').innerHTML = `
+          <div class="grade-circle grade-${grade}">${grade}</div>
+          <div class="domain-name">${cleanDomain}</div>
+          <div class="readiness-label" style="background: ${colors.bg}; color: ${colors.text};">${label}</div>
+          <div class="score-detail">${score}/100</div>
+          <div class="verified-date">Verified ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-value">${data.ucp?.found ? 'Yes' : 'No'}</div>
+              <div class="stat-label">UCP Profile</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${data.schema?.stats?.products || 0}</div>
+              <div class="stat-label">Products Found</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${productCompleteness}%</div>
+              <div class="stat-label">Data Completeness</div>
+            </div>
+          </div>
+
+          <div class="issues-summary">
+            <div class="issue-category">
+              <h4>
+                UCP Profile
+                ${ucpErrors === 0 && data.ucp?.found
+                  ? '<span class="issue-badge ok">OK</span>'
+                  : ucpErrors > 0
+                    ? `<span class="issue-badge errors">${ucpErrors} errors</span>`
+                    : '<span class="issue-badge warnings">Not found</span>'
+                }
+              </h4>
+            </div>
+            <div class="issue-category">
+              <h4>
+                Schema.org
+                ${schemaErrors === 0
+                  ? '<span class="issue-badge ok">OK</span>'
+                  : `<span class="issue-badge errors">${schemaErrors} issues</span>`
+                }
+              </h4>
+            </div>
+          </div>
+
+          <div class="cta-section">
+            <p style="margin-bottom: 16px; color: var(--color-medium);">
+              ${score >= 70
+                ? 'Great job! Your store is ready for AI shopping agents.'
+                : 'Improve your score to be ready for AI shopping agents.'
+              }
+            </p>
+            <a href="/?domain=${encodeURIComponent(cleanDomain)}" class="btn">View Full Report</a>
+          </div>
+        `;
+      } catch (err) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('result').innerHTML = `
+          <div class="error-message">
+            <strong>Verification failed</strong>
+            <p>${err.message}</p>
+          </div>
+          <a href="/" class="btn">Try Again</a>
+        `;
+      }
+    }
+
+    verifyDomain();
+  </script>
+</body>
+</html>

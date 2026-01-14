@@ -1,0 +1,13 @@
+{
+  "name": "ucp-tools-web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel"
+  },
+  "dependencies": {
+    "@vercel/node": "^3.0.0"
+  }
+}

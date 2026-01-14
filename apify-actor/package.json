@@ -1,0 +1,17 @@
+{
+  "name": "ucp-profile-validator-actor",
+  "version": "1.0.0",
+  "description": "Apify Actor: Validate UCP Business Profiles",
+  "type": "module",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node src/main.js",
+    "test": "echo \"No tests yet\""
+  },
+  "dependencies": {
+    "apify": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
