@@ -55,3 +55,24 @@ export type {
   SecurityCheckStatus,
   SecurityCheckId,
 } from './security/index.js';
+
+// Compliance Generator
+export {
+  generateComplianceDocuments,
+  getAvailableRegions,
+  getLawfulBasisOptions,
+  getAiPlatformOptions,
+  AI_PLATFORM_PROCESSORS,
+  REGION_NAMES,
+  LAWFUL_BASIS_DESCRIPTIONS,
+} from './compliance/index.js';
+export type {
+  ComplianceRegion,
+  LawfulBasis,
+  AgentPlatform,
+  ComplianceGeneratorInput,
+  ComplianceGeneratorOutput,
+  ComplianceDocument,
+  ComplianceSection,
+  DataProcessor,
+} from './compliance/index.js';
