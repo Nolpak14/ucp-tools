@@ -1063,34 +1063,53 @@ function generateLintSuggestions(ucpIssues, schemaIssues, hasUcp, profile, schem
 }
 
 function calculateReadinessScore(ucpIssues, schemaIssues, hasUcp, productCompleteness) {
-  // Base score
-  let score = 100;
+  // Scoring model: UCP is the PRIMARY requirement for AI commerce readiness
+  // Sites without UCP are capped at 40 points max (Grade F)
+  // Sites with UCP start at a higher baseline and can reach 100
 
-  // UCP section (40 points max)
   if (!hasUcp) {
-    score -= 35; // No UCP profile is major deduction
-  } else {
-    const ucpErrors = ucpIssues.filter(i => i.severity === 'error').length;
-    const ucpWarnings = ucpIssues.filter(i => i.severity === 'warn').length;
-    score -= Math.min(35, ucpErrors * 10 + ucpWarnings * 3);
+    // NO UCP PATH: Maximum possible score is 40 (always Grade F)
+    // This reflects that without UCP, AI agents cannot complete purchases
+    let score = 40; // Start at max possible without UCP
+
+    // Schema quality can improve score within the 0-40 range
+    const schemaErrors = schemaIssues.filter(i => i.severity === 'error' && i.category === 'schema').length;
+    const schemaWarnings = schemaIssues.filter(i => i.severity === 'warn' && i.category === 'schema').length;
+    score -= Math.min(25, schemaErrors * 8 + schemaWarnings * 3);
+
+    // Product quality
+    const productErrors = schemaIssues.filter(i => i.severity === 'error' && (i.category === 'product_quality' || i.category === 'content_quality')).length;
+    const productWarnings = schemaIssues.filter(i => i.severity === 'warn' && (i.category === 'product_quality' || i.category === 'content_quality' || i.category === 'shipping_quality')).length;
+    score -= Math.min(15, productErrors * 5 + productWarnings * 2);
+
+    return Math.max(0, Math.round(score));
   }
 
-  // Schema section (35 points max)
+  // HAS UCP PATH: Start at 100, minimum floor of 45 (ensures UCP sites always score higher than non-UCP)
+  let score = 100;
+
+  // UCP quality (35 points max deduction)
+  const ucpErrors = ucpIssues.filter(i => i.severity === 'error').length;
+  const ucpWarnings = ucpIssues.filter(i => i.severity === 'warn').length;
+  score -= Math.min(35, ucpErrors * 12 + ucpWarnings * 4);
+
+  // Schema section (30 points max deduction)
   const schemaErrors = schemaIssues.filter(i => i.severity === 'error' && i.category === 'schema').length;
   const schemaWarnings = schemaIssues.filter(i => i.severity === 'warn' && i.category === 'schema').length;
-  score -= Math.min(35, schemaErrors * 12 + schemaWarnings * 4);
+  score -= Math.min(30, schemaErrors * 10 + schemaWarnings * 3);
 
-  // Product quality section (25 points max)
+  // Product quality section (20 points max deduction)
   const productErrors = schemaIssues.filter(i => i.severity === 'error' && (i.category === 'product_quality' || i.category === 'content_quality')).length;
   const productWarnings = schemaIssues.filter(i => i.severity === 'warn' && (i.category === 'product_quality' || i.category === 'content_quality' || i.category === 'shipping_quality')).length;
-  score -= Math.min(25, productErrors * 8 + productWarnings * 3);
+  score -= Math.min(20, productErrors * 6 + productWarnings * 2);
 
   // Bonus for high product completeness
   if (productCompleteness >= 80) {
     score = Math.min(100, score + 5);
   }
 
-  return Math.max(0, Math.round(score));
+  // Floor: UCP sites never score below 45 (always higher than max non-UCP of 40)
+  return Math.max(45, Math.round(score));
 }
 
 function getGrade(score) {
@@ -1106,13 +1125,22 @@ function getReadinessLevel(score, hasUcp, schemaIssues) {
     i.code === 'SCHEMA_NO_RETURN_POLICY' || i.code === 'SCHEMA_NO_SHIPPING'
   );
 
-  if (score >= 90 && hasUcp && !hasCriticalSchema) {
+  // Without UCP, site is never "ready" - max level is "limited"
+  if (!hasUcp) {
+    if (score >= 30) {
+      return { level: 'limited', label: 'Limited Readiness (No UCP)', color: '#EA580C' };
+    }
+    return { level: 'not_ready', label: 'Not Ready', color: '#DC2626' };
+  }
+
+  // With UCP, can achieve full readiness
+  if (score >= 90 && !hasCriticalSchema) {
     return { level: 'ready', label: 'AI Commerce Ready', color: '#16A34A' };
   }
-  if (score >= 70 && hasUcp) {
+  if (score >= 70) {
     return { level: 'partial', label: 'Partially Ready', color: '#CA8A04' };
   }
-  if (hasUcp || score >= 50) {
+  if (score >= 50) {
     return { level: 'limited', label: 'Limited Readiness', color: '#EA580C' };
   }
   return { level: 'not_ready', label: 'Not Ready', color: '#DC2626' };
