@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-J5JSHV7H1E"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-J5JSHV7H1E');
+  </script>
+  <!-- Ahrefs Analytics -->
+  <script src="https://analytics.ahrefs.com/analytics.js" data-key="w/KDij6w81HzA8oXaw60JA" async></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UCP Merchant Directory - Discover AI-Ready Stores</title>
+  <meta name="description" content="Browse the public directory of UCP-enabled merchants ready for AI commerce. Find stores compatible with AI shopping agents.">
+  <link rel="canonical" href="https://ucptools.dev/directory">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#2E86AB">
+  <meta property="og:title" content="UCP Merchant Directory">
+  <meta property="og:description" content="Browse UCP-enabled merchants ready for AI commerce.">
+  <meta property="og:image" content="/og-image.png">
+  <meta property="og:type" content="website">
+  <style>
+    :root {
+      --brand-blue: #2E86AB;
+      --brand-teal: #36B5A2;
+      --brand-green: #47C97A;
+      --brand-gradient: linear-gradient(135deg, #2E86AB 0%, #36B5A2 50%, #47C97A 100%);
+      --brand-gradient-hover: linear-gradient(135deg, #267593 0%, #2EA18F 50%, #3BB86B 100%);
+      --color-dark: #1A2B3C;
+      --color-medium: #5A6978;
+      --color-light: #94A3B8;
+      --color-border: #E2E8F0;
+      --color-background: #F8FAFC;
+      --color-card: #FFFFFF;
+      --color-success: #47C97A;
+      --color-warning: #F59E0B;
+      --color-error: #EF4444;
+      --color-info: #2E86AB;
+      --grade-a-bg: #DCFCE7; --grade-a-text: #16A34A;
+      --grade-b-bg: #DBEAFE; --grade-b-text: #2563EB;
+      --grade-c-bg: #FEF9C3; --grade-c-text: #CA8A04;
+      --grade-d-bg: #FED7AA; --grade-d-text: #EA580C;
+      --grade-f-bg: #FEE2E2; --grade-f-text: #DC2626;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--color-background);
+      color: var(--color-dark);
+      line-height: 1.6;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+    /* Header */
+    header {
+      background: var(--color-card);
+      border-bottom: 1px solid var(--color-border);
+      padding: 16px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .header-inner { display: flex; justify-content: space-between; align-items: center; }
+    .logo { display: flex; align-items: center; gap: 12px; font-size: 24px; font-weight: 700; text-decoration: none; }
+    .logo-icon { width: 40px; height: 40px; border-radius: 8px; }
+    .logo-text { background: var(--brand-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .logo-suffix { font-weight: 400; -webkit-text-fill-color: var(--color-medium); }
+    nav a { margin-left: 24px; color: var(--color-medium); text-decoration: none; transition: color 0.2s; }
+    nav a:hover, nav a.active { color: var(--brand-blue); }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 48px 20px;
+      background: linear-gradient(135deg, rgba(46, 134, 171, 0.1) 0%, rgba(54, 181, 162, 0.05) 50%, rgba(71, 201, 122, 0.1) 100%);
+    }
+    .hero h1 { font-size: 36px; margin-bottom: 12px; }
+    .hero h1 .gradient-text { background: var(--brand-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero p { font-size: 18px; color: var(--color-medium); max-width: 600px; margin: 0 auto 24px; }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    .stat-item { text-align: center; }
+    .stat-value { font-size: 28px; font-weight: 700; background: var(--brand-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .stat-label { font-size: 14px; color: var(--color-medium); }
+
+    /* Main Content */
+    .main-content { padding: 40px 0; }
+    .content-grid { display: grid; grid-template-columns: 280px 1fr; gap: 32px; }
+    @media (max-width: 900px) { .content-grid { grid-template-columns: 1fr; } }
+
+    /* Sidebar */
+    .sidebar { display: flex; flex-direction: column; gap: 24px; }
+    .filter-card {
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .filter-card h3 { font-size: 14px; font-weight: 600; color: var(--color-medium); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .search-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--color-border);
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus { outline: none; border-color: var(--brand-blue); }
+    .filter-list { list-style: none; }
+    .filter-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .filter-item:hover { color: var(--brand-blue); }
+    .filter-item input { margin-right: 10px; }
+    .filter-count { margin-left: auto; font-size: 12px; color: var(--color-light); background: var(--color-background); padding: 2px 8px; border-radius: 10px; }
+
+    /* Submit CTA */
+    .submit-cta {
+      background: var(--brand-gradient);
+      border-radius: 12px;
+      padding: 20px;
+      color: white;
+      text-align: center;
+    }
+    .submit-cta h3 { font-size: 16px; margin-bottom: 8px; }
+    .submit-cta p { font-size: 14px; opacity: 0.9; margin-bottom: 16px; }
+    .submit-btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background: white;
+      color: var(--brand-blue);
+      border-radius: 6px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.2s;
+    }
+    .submit-btn:hover { transform: translateY(-2px); }
+
+    /* Merchant Grid */
+    .merchant-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .merchant-card {
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.2s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .merchant-card:hover { border-color: var(--brand-blue); box-shadow: 0 4px 12px rgba(46, 134, 171, 0.15); }
+    .merchant-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .merchant-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      background: var(--color-background);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--brand-blue);
+    }
+    .merchant-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+    .merchant-info { flex: 1; min-width: 0; }
+    .merchant-name { font-weight: 600; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .merchant-domain { font-size: 13px; color: var(--color-medium); }
+    .merchant-grade {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .grade-A { background: var(--grade-a-bg); color: var(--grade-a-text); }
+    .grade-B { background: var(--grade-b-bg); color: var(--grade-b-text); }
+    .grade-C { background: var(--grade-c-bg); color: var(--grade-c-text); }
+    .grade-D { background: var(--grade-d-bg); color: var(--grade-d-text); }
+    .grade-F { background: var(--grade-f-bg); color: var(--grade-f-text); }
+    .merchant-desc { font-size: 14px; color: var(--color-medium); margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .merchant-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .merchant-tag { font-size: 11px; padding: 3px 8px; background: var(--color-background); border-radius: 4px; color: var(--color-medium); }
+    .transport-tag { background: rgba(46, 134, 171, 0.1); color: var(--brand-blue); }
+
+    /* Pagination */
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 32px; }
+    .page-btn {
+      padding: 8px 16px;
+      border: 1px solid var(--color-border);
+      background: var(--color-card);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .page-btn:hover:not(:disabled) { border-color: var(--brand-blue); color: var(--brand-blue); }
+    .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .page-info { color: var(--color-medium); font-size: 14px; }
+
+    /* Loading & Empty States */
+    .loading, .empty-state { text-align: center; padding: 60px 20px; color: var(--color-medium); }
+    .loading::after { content: ''; display: inline-block; width: 24px; height: 24px; border: 3px solid var(--color-border); border-top-color: var(--brand-blue); border-radius: 50%; animation: spin 1s linear infinite; margin-left: 12px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty-state h3 { font-size: 18px; color: var(--color-dark); margin-bottom: 8px; }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--color-card);
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal h2 { font-size: 24px; margin-bottom: 8px; }
+    .modal p.subtitle { color: var(--color-medium); margin-bottom: 24px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--color-border);
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--brand-blue); }
+    .form-actions { display: flex; gap: 12px; margin-top: 24px; }
+    .btn { padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+    .btn-primary { background: var(--brand-gradient); color: white; }
+    .btn-primary:hover { background: var(--brand-gradient-hover); }
+    .btn-secondary { background: var(--color-background); color: var(--color-dark); }
+    .btn-secondary:hover { background: var(--color-border); }
+    .form-message { padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; }
+    .form-message.error { background: var(--grade-f-bg); color: var(--grade-f-text); }
+    .form-message.success { background: var(--grade-a-bg); color: var(--grade-a-text); }
+
+    /* Footer */
+    footer { text-align: center; padding: 40px 20px; color: var(--color-medium); font-size: 14px; border-top: 1px solid var(--color-border); margin-top: 60px; }
+    footer a { color: var(--brand-blue); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-inner">
+      <a href="/" class="logo">
+        <img src="/logo.jpeg" alt="UCP.tools" class="logo-icon">
+        <span class="logo-text">UCP<span class="logo-suffix">.tools</span></span>
+      </a>
+      <nav>
+        <a href="/">Validator</a>
+        <a href="/learn.html">Learn</a>
+        <a href="/directory.html" class="active">Directory</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1><span class="gradient-text">UCP Merchant</span> Directory</h1>
+      <p>Discover stores ready for AI commerce. Browse verified UCP-enabled merchants compatible with AI shopping agents.</p>
+      <div class="stats-bar" id="stats-bar">
+        <div class="stat-item">
+          <div class="stat-value" id="stat-merchants">-</div>
+          <div class="stat-label">Merchants</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-categories">-</div>
+          <div class="stat-label">Categories</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-countries">-</div>
+          <div class="stat-label">Countries</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-avg-score">-</div>
+          <div class="stat-label">Avg Score</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="main-content">
+    <div class="container">
+      <div class="content-grid">
+        <aside class="sidebar">
+          <div class="filter-card">
+            <h3>Search</h3>
+            <input type="text" class="search-input" id="search-input" placeholder="Search merchants...">
+          </div>
+
+          <div class="filter-card">
+            <h3>Categories</h3>
+            <ul class="filter-list" id="category-filters">
+              <li class="filter-item"><span>Loading...</span></li>
+            </ul>
+          </div>
+
+          <div class="filter-card">
+            <h3>Grade</h3>
+            <ul class="filter-list" id="grade-filters">
+              <li class="filter-item"><label><input type="checkbox" value="A"> Grade A</label></li>
+              <li class="filter-item"><label><input type="checkbox" value="B"> Grade B</label></li>
+              <li class="filter-item"><label><input type="checkbox" value="C"> Grade C</label></li>
+              <li class="filter-item"><label><input type="checkbox" value="D"> Grade D</label></li>
+            </ul>
+          </div>
+
+          <div class="submit-cta">
+            <h3>List Your Store</h3>
+            <p>Get discovered by AI agents and join the directory.</p>
+            <a href="#" class="submit-btn" id="open-submit-modal">Submit Store</a>
+          </div>
+        </aside>
+
+        <section class="merchants-section">
+          <div class="merchant-grid" id="merchant-grid">
+            <div class="loading">Loading merchants</div>
+          </div>
+
+          <div class="pagination" id="pagination" style="display: none;">
+            <button class="page-btn" id="prev-page" disabled>&larr; Previous</button>
+            <span class="page-info" id="page-info">Page 1 of 1</span>
+            <button class="page-btn" id="next-page" disabled>Next &rarr;</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Submit Modal -->
+  <div class="modal-overlay" id="submit-modal">
+    <div class="modal">
+      <h2>Submit Your Store</h2>
+      <p class="subtitle">Add your UCP-enabled store to the directory.</p>
+
+      <div class="form-message" id="form-message" style="display: none;"></div>
+
+      <form id="submit-form">
+        <div class="form-group">
+          <label for="submit-domain">Domain *</label>
+          <input type="text" id="submit-domain" placeholder="example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="submit-name">Display Name</label>
+          <input type="text" id="submit-name" placeholder="Your Store Name">
+        </div>
+        <div class="form-group">
+          <label for="submit-description">Description</label>
+          <textarea id="submit-description" rows="3" placeholder="Brief description of your store..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="submit-category">Category</label>
+          <select id="submit-category">
+            <option value="">Select a category</option>
+            <option value="fashion">Fashion & Apparel</option>
+            <option value="electronics">Electronics</option>
+            <option value="home">Home & Garden</option>
+            <option value="beauty">Beauty & Health</option>
+            <option value="food">Food & Grocery</option>
+            <option value="sports">Sports & Outdoors</option>
+            <option value="toys">Toys & Games</option>
+            <option value="books">Books & Media</option>
+            <option value="automotive">Automotive</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="submit-country">Country</label>
+          <select id="submit-country">
+            <option value="">Select a country</option>
+            <option value="US">United States</option>
+            <option value="GB">United Kingdom</option>
+            <option value="DE">Germany</option>
+            <option value="FR">France</option>
+            <option value="CA">Canada</option>
+            <option value="AU">Australia</option>
+            <option value="NL">Netherlands</option>
+            <option value="ES">Spain</option>
+            <option value="IT">Italy</option>
+            <option value="JP">Japan</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="submit-btn">Submit Store</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 UCP.tools - <a href="https://ucp.dev" target="_blank">Universal Commerce Protocol</a></p>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE = '/api';
+    let currentPage = 1;
+    let totalPages = 1;
+    let currentFilters = { search: '', category: '', country: '' };
+
+    // Load stats
+    async function loadStats() {
+      try {
+        const res = await fetch(`${API_BASE}/directory-stats`);
+        const data = await res.json();
+
+        document.getElementById('stat-merchants').textContent = data.stats.totalMerchants;
+        document.getElementById('stat-categories').textContent = data.stats.totalCategories;
+        document.getElementById('stat-countries').textContent = data.stats.totalCountries;
+        document.getElementById('stat-avg-score').textContent = data.stats.avgScore;
+
+        // Update category filters
+        if (data.topCategories.length > 0) {
+          const categoryList = document.getElementById('category-filters');
+          categoryList.innerHTML = data.topCategories.map(cat => `
+            <li class="filter-item">
+              <label>
+                <input type="checkbox" value="${cat.name}">
+                ${formatCategory(cat.name)}
+              </label>
+              <span class="filter-count">${cat.count}</span>
+            </li>
+          `).join('');
+
+          // Add event listeners
+          categoryList.querySelectorAll('input').forEach(input => {
+            input.addEventListener('change', () => {
+              currentFilters.category = input.checked ? input.value : '';
+              currentPage = 1;
+              loadMerchants();
+            });
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load stats:', error);
+      }
+    }
+
+    // Load merchants
+    async function loadMerchants() {
+      const grid = document.getElementById('merchant-grid');
+      grid.innerHTML = '<div class="loading">Loading merchants</div>';
+
+      try {
+        const params = new URLSearchParams({
+          page: currentPage,
+          limit: 12,
+          ...(currentFilters.search && { search: currentFilters.search }),
+          ...(currentFilters.category && { category: currentFilters.category }),
+        });
+
+        const res = await fetch(`${API_BASE}/directory?${params}`);
+        const data = await res.json();
+
+        totalPages = data.pagination.totalPages;
+
+        if (data.merchants.length === 0) {
+          grid.innerHTML = `
+            <div class="empty-state">
+              <h3>No merchants found</h3>
+              <p>Try adjusting your filters or be the first to submit your store!</p>
+            </div>
+          `;
+        } else {
+          grid.innerHTML = data.merchants.map(renderMerchantCard).join('');
+        }
+
+        updatePagination(data.pagination);
+      } catch (error) {
+        console.error('Failed to load merchants:', error);
+        grid.innerHTML = '<div class="empty-state"><h3>Error loading merchants</h3><p>Please try again later.</p></div>';
+      }
+    }
+
+    function renderMerchantCard(merchant) {
+      const initials = (merchant.displayName || merchant.domain).substring(0, 2).toUpperCase();
+      const transports = merchant.transports || [];
+
+      return `
+        <a href="https://${merchant.domain}" target="_blank" class="merchant-card">
+          <div class="merchant-header">
+            <div class="merchant-logo">
+              ${merchant.logoUrl ? `<img src="${merchant.logoUrl}" alt="${merchant.displayName}">` : initials}
+            </div>
+            <div class="merchant-info">
+              <div class="merchant-name">${merchant.displayName}</div>
+              <div class="merchant-domain">${merchant.domain}</div>
+            </div>
+            ${merchant.ucpGrade ? `<div class="merchant-grade grade-${merchant.ucpGrade}">${merchant.ucpGrade}</div>` : ''}
+          </div>
+          ${merchant.description ? `<div class="merchant-desc">${merchant.description}</div>` : ''}
+          <div class="merchant-tags">
+            ${merchant.category ? `<span class="merchant-tag">${formatCategory(merchant.category)}</span>` : ''}
+            ${merchant.countryCode ? `<span class="merchant-tag">${merchant.countryCode}</span>` : ''}
+            ${transports.map(t => `<span class="merchant-tag transport-tag">${t}</span>`).join('')}
+          </div>
+        </a>
+      `;
+    }
+
+    function formatCategory(cat) {
+      if (!cat) return '';
+      return cat.charAt(0).toUpperCase() + cat.slice(1).replace(/-/g, ' ');
+    }
+
+    function updatePagination(pagination) {
+      const paginationEl = document.getElementById('pagination');
+      const pageInfo = document.getElementById('page-info');
+      const prevBtn = document.getElementById('prev-page');
+      const nextBtn = document.getElementById('next-page');
+
+      if (pagination.totalPages <= 1) {
+        paginationEl.style.display = 'none';
+        return;
+      }
+
+      paginationEl.style.display = 'flex';
+      pageInfo.textContent = `Page ${pagination.page} of ${pagination.totalPages}`;
+      prevBtn.disabled = pagination.page <= 1;
+      nextBtn.disabled = pagination.page >= pagination.totalPages;
+    }
+
+    // Search handler
+    let searchTimeout;
+    document.getElementById('search-input').addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        currentFilters.search = e.target.value;
+        currentPage = 1;
+        loadMerchants();
+      }, 300);
+    });
+
+    // Pagination handlers
+    document.getElementById('prev-page').addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        loadMerchants();
+      }
+    });
+
+    document.getElementById('next-page').addEventListener('click', () => {
+      if (currentPage < totalPages) {
+        currentPage++;
+        loadMerchants();
+      }
+    });
+
+    // Modal handlers
+    const modal = document.getElementById('submit-modal');
+    document.getElementById('open-submit-modal').addEventListener('click', (e) => {
+      e.preventDefault();
+      modal.classList.add('active');
+    });
+
+    document.getElementById('close-modal').addEventListener('click', () => {
+      modal.classList.remove('active');
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('active');
+    });
+
+    // Submit form handler
+    document.getElementById('submit-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formMessage = document.getElementById('form-message');
+      const submitBtn = document.getElementById('submit-btn');
+
+      formMessage.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      try {
+        const res = await fetch(`${API_BASE}/directory`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            domain: document.getElementById('submit-domain').value,
+            displayName: document.getElementById('submit-name').value || undefined,
+            description: document.getElementById('submit-description').value || undefined,
+            category: document.getElementById('submit-category').value || undefined,
+            countryCode: document.getElementById('submit-country').value || undefined,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.details || data.error || 'Submission failed');
+        }
+
+        formMessage.className = 'form-message success';
+        formMessage.textContent = 'Store submitted successfully! It will appear in the directory shortly.';
+        formMessage.style.display = 'block';
+
+        // Reset form and reload
+        document.getElementById('submit-form').reset();
+        setTimeout(() => {
+          modal.classList.remove('active');
+          loadMerchants();
+          loadStats();
+        }, 2000);
+
+      } catch (error) {
+        formMessage.className = 'form-message error';
+        formMessage.textContent = error.message;
+        formMessage.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Store';
+      }
+    });
+
+    // Initialize
+    loadStats();
+    loadMerchants();
+  </script>
+</body>
+</html>
