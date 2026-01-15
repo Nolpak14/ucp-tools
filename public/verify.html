@@ -13,13 +13,52 @@
   <script src="https://analytics.ahrefs.com/analytics.js" data-key="w/KDij6w81HzA8oXaw60JA" async></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Commerce Verification - UCP.tools</title>
-  <meta name="description" content="Verify AI Commerce readiness for any e-commerce store.">
+  <title>AI Commerce Verification Results | Universal Commerce Protocol (UCP) Score | UCP.tools</title>
+  <meta name="description" content="View AI Commerce readiness verification results. Check Universal Commerce Protocol (UCP) compliance score, Schema.org validation, and Google AI Mode compatibility for any e-commerce store.">
+  <meta name="keywords" content="UCP Verification, AI Commerce Score, Universal Commerce Protocol, Schema.org Validation, AI Shopping Agent, Google AI Mode, E-commerce Readiness">
+  <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://ucptools.dev/verify">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <meta property="og:title" content="AI Commerce Verification - UCP.tools">
-  <meta property="og:description" content="Verify AI Commerce readiness for any e-commerce store.">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+  <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ucptools.dev/verify">
+  <meta property="og:title" content="AI Commerce Verification Results | UCP.tools">
+  <meta property="og:description" content="View AI Commerce readiness score and Universal Commerce Protocol (UCP) validation results for e-commerce stores.">
+  <meta property="og:image" content="https://ucptools.dev/og-image.png">
+  <meta property="og:site_name" content="UCP.tools">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://ucptools.dev/verify">
+  <meta name="twitter:title" content="AI Commerce Verification Results | UCP.tools">
+  <meta name="twitter:description" content="Check Universal Commerce Protocol (UCP) compliance and AI shopping agent readiness score.">
+  <meta name="twitter:image" content="https://ucptools.dev/og-image.png">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "AI Commerce Verification Results",
+    "description": "View Universal Commerce Protocol (UCP) verification results and AI Commerce readiness scores for e-commerce stores.",
+    "url": "https://ucptools.dev/verify",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "UCP.tools",
+      "url": "https://ucptools.dev/"
+    },
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://ucptools.dev/"},
+        {"@type": "ListItem", "position": 2, "name": "Verification Results", "item": "https://ucptools.dev/verify"}
+      ]
+    }
+  }
+  </script>
   <style>
     :root {
       --brand-blue: #2E86AB;
@@ -73,17 +112,19 @@
       text-align: center;
     }
     .grade-circle {
-      width: 120px; height: 120px;
+      width: 140px; height: 140px;
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       margin: 0 auto 24px;
-      font-size: 48px; font-weight: 700;
+      font-size: 56px; font-weight: 800;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      color: white;
     }
-    .grade-A { background: var(--grade-a-bg); color: var(--grade-a-text); }
-    .grade-B { background: var(--grade-b-bg); color: var(--grade-b-text); }
-    .grade-C { background: var(--grade-c-bg); color: var(--grade-c-text); }
-    .grade-D { background: var(--grade-d-bg); color: var(--grade-d-text); }
-    .grade-F { background: var(--grade-f-bg); color: var(--grade-f-text); }
+    .grade-A { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .grade-B { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .grade-C { background: linear-gradient(135deg, #eab308, #ca8a04); }
+    .grade-D { background: linear-gradient(135deg, #f97316, #ea580c); }
+    .grade-F { background: linear-gradient(135deg, #ef4444, #dc2626); }
     .domain-name {
       font-size: 24px; font-weight: 600;
       color: var(--color-dark); margin-bottom: 8px;
@@ -270,6 +311,10 @@
         const schemaErrors = data.schema?.issues?.filter(i => i.severity === 'error').length || 0;
         const productCompleteness = data.product_quality?.completeness || 0;
 
+        const ucpWarnings = data.ucp?.issues?.filter(i => i.severity === 'warn').length || 0;
+        const schemaWarnings = data.schema?.issues?.filter(i => i.severity === 'warn').length || 0;
+        const returnPolicies = data.schema?.stats?.returnPolicies || 0;
+
         document.getElementById('loading').style.display = 'none';
         document.getElementById('result').style.display = 'block';
         document.getElementById('result').innerHTML = `
@@ -279,52 +324,71 @@
           <div class="score-detail">${score}/100</div>
           <div class="verified-date">Verified ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
 
+          ${data.benchmark ? `
+          <div style="margin: 20px 0; padding: 16px; background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(168,85,247,0.1)); border-radius: 12px; border: 1px solid rgba(99,102,241,0.2);">
+            <div style="font-size: 28px; font-weight: 800; color: #6366F1;">${data.benchmark.percentile}%</div>
+            <div style="font-size: 14px; color: var(--color-medium);">better than ${data.benchmark.total_sites_analyzed.toLocaleString()} sites analyzed</div>
+          </div>
+          ` : ''}
+
           <div class="stats-grid">
             <div class="stat-item">
-              <div class="stat-value">${data.ucp?.found ? 'Yes' : 'No'}</div>
+              <div class="stat-value" style="color: ${data.ucp?.found ? '#16A34A' : '#DC2626'};">${data.ucp?.found ? '&#10003;' : '&#10005;'}</div>
               <div class="stat-label">UCP Profile</div>
             </div>
             <div class="stat-item">
               <div class="stat-value">${data.schema?.stats?.products || 0}</div>
-              <div class="stat-label">Products Found</div>
+              <div class="stat-label">Products</div>
             </div>
             <div class="stat-item">
-              <div class="stat-value">${productCompleteness}%</div>
-              <div class="stat-label">Data Completeness</div>
+              <div class="stat-value" style="color: ${productCompleteness >= 80 ? '#16A34A' : productCompleteness >= 60 ? '#CA8A04' : '#DC2626'};">${productCompleteness}%</div>
+              <div class="stat-label">Completeness</div>
             </div>
           </div>
 
           <div class="issues-summary">
             <div class="issue-category">
               <h4>
-                UCP Profile
+                <span style="margin-right: 8px;">&#128279;</span> UCP Profile
                 ${ucpErrors === 0 && data.ucp?.found
-                  ? '<span class="issue-badge ok">OK</span>'
+                  ? '<span class="issue-badge ok">&#10003; Valid</span>'
                   : ucpErrors > 0
-                    ? `<span class="issue-badge errors">${ucpErrors} errors</span>`
+                    ? '<span class="issue-badge errors">' + ucpErrors + ' errors</span>'
                     : '<span class="issue-badge warnings">Not found</span>'
                 }
               </h4>
             </div>
             <div class="issue-category">
               <h4>
-                Schema.org
+                <span style="margin-right: 8px;">&#128202;</span> Schema.org
                 ${schemaErrors === 0
-                  ? '<span class="issue-badge ok">OK</span>'
-                  : `<span class="issue-badge errors">${schemaErrors} issues</span>`
+                  ? '<span class="issue-badge ok">&#10003; Valid</span>'
+                  : '<span class="issue-badge errors">' + schemaErrors + ' issues</span>'
+                }
+              </h4>
+            </div>
+            <div class="issue-category">
+              <h4>
+                <span style="margin-right: 8px;">&#128230;</span> Return Policy
+                ${returnPolicies > 0
+                  ? '<span class="issue-badge ok">&#10003; Found</span>'
+                  : '<span class="issue-badge warnings">Missing</span>'
                 }
               </h4>
             </div>
           </div>
 
           <div class="cta-section">
-            <p style="margin-bottom: 16px; color: var(--color-medium);">
+            <p style="margin-bottom: 16px; color: var(--color-medium); font-size: 15px;">
               ${score >= 70
-                ? 'Great job! Your store is ready for AI shopping agents.'
-                : 'Improve your score to be ready for AI shopping agents.'
+                ? '&#127881; Great job! Your store is ready for AI shopping agents.'
+                : '&#128736; Improve your score to be ready for AI shopping agents.'
               }
             </p>
-            <a href="/?domain=${encodeURIComponent(cleanDomain)}" class="btn">View Full Report</a>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+              <a href="/?domain=${encodeURIComponent(cleanDomain)}" class="btn">View Full Report</a>
+              <a href="/" class="btn" style="background: var(--color-background); color: var(--color-dark); border: 1px solid var(--color-border);">Check Another Store</a>
+            </div>
           </div>
         `;
       } catch (err) {
