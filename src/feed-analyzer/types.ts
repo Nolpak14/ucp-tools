@@ -343,12 +343,12 @@ export const CATEGORY_WEIGHTS: Record<CheckCategory, number> = {
 };
 
 /**
- * Grade thresholds
+ * Grade thresholds (aligned with all other scoring models)
  */
 export const GRADE_THRESHOLDS = {
     A: 90,
-    B: 75,
-    C: 60,
-    D: 40,
+    B: 80,
+    C: 70,
+    D: 60,
     F: 0,
 };

@@ -813,6 +813,17 @@ function calculateScore(
 }
 
 /**
+ * Get grade from score (aligned with all other scoring models)
+ */
+function getGrade(score: number): 'A' | 'B' | 'C' | 'D' | 'F' {
+    if (score >= 90) return 'A';
+    if (score >= 80) return 'B';
+    if (score >= 70) return 'C';
+    if (score >= 60) return 'D';
+    return 'F';
+}
+
+/**
  * Main simulation entry point
  * Simulates a complete AI agent interaction with a UCP-enabled merchant
  */
@@ -836,6 +847,7 @@ export async function simulateAgentInteraction(
             simulatedAt: new Date().toISOString(),
             durationMs,
             overallScore: 0,
+            grade: 'F' as const,
             discovery,
             capabilities: [],
             services: [],
@@ -901,6 +913,7 @@ export async function simulateAgentInteraction(
         simulatedAt: new Date().toISOString(),
         durationMs,
         overallScore,
+        grade: getGrade(overallScore),
         discovery,
         capabilities,
         services,
@@ -924,4 +937,5 @@ export {
     checkEndpointResponsive,
     generateRecommendations,
     calculateScore,
+    getGrade,
 };

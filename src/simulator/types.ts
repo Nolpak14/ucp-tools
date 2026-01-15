@@ -122,8 +122,9 @@ export interface AgentSimulationResult {
     simulatedAt: string;
     durationMs: number;
 
-    // Overall scores (0-100)
+    // Overall scores (0-100) and grade (A-F)
     overallScore: number;
+    grade: 'A' | 'B' | 'C' | 'D' | 'F';
 
     // Individual flow results
     discovery: DiscoveryFlowResult;
