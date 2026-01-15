@@ -1198,6 +1198,465 @@
         font-size: 14px;
       }
     }
+
+    /* ========================================
+       NEW REPORT UI - Complete Rebuild
+       ======================================== */
+
+    /* Report Header - Executive Summary */
+    .report-header {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 28px;
+      background: var(--color-card);
+      border-radius: 16px;
+      border: 1px solid var(--color-border);
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .report-grade {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      font-weight: 800;
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .report-grade.grade-A { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .report-grade.grade-B { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .report-grade.grade-C { background: linear-gradient(135deg, #eab308, #ca8a04); }
+    .report-grade.grade-D { background: linear-gradient(135deg, #f97316, #ea580c); }
+    .report-grade.grade-F { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+    .report-score-info {
+      flex: 1;
+    }
+
+    .report-score {
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--color-dark);
+      line-height: 1;
+    }
+
+    .report-score span {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--color-medium);
+    }
+
+    .report-label {
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .report-benchmark {
+      text-align: right;
+      padding: 16px 20px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(168,85,247,0.08));
+      border-radius: 12px;
+      border: 1px solid rgba(99,102,241,0.15);
+    }
+
+    .report-benchmark-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: #6366f1;
+    }
+
+    .report-benchmark-label {
+      font-size: 12px;
+      color: var(--color-medium);
+    }
+
+    /* Quick Stats Row */
+    .report-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .report-stat {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: var(--color-card);
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      transition: all 0.2s;
+    }
+
+    .report-stat:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .report-stat.pass { border-left: 4px solid #22c55e; }
+    .report-stat.warn { border-left: 4px solid #eab308; }
+    .report-stat.fail { border-left: 4px solid #ef4444; }
+
+    .report-stat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .report-stat.pass .report-stat-icon { background: #dcfce7; color: #16a34a; }
+    .report-stat.warn .report-stat-icon { background: #fef9c3; color: #ca8a04; }
+    .report-stat.fail .report-stat-icon { background: #fee2e2; color: #dc2626; }
+
+    .report-stat-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-dark);
+    }
+
+    /* Collapsible Report Sections */
+    .report-section {
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+
+    .report-section:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .report-section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .report-section-header:hover {
+      background: var(--color-background);
+    }
+
+    .report-section-status {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .report-section-status.pass { background: #dcfce7; color: #16a34a; }
+    .report-section-status.warn { background: #fef9c3; color: #ca8a04; }
+    .report-section-status.fail { background: #fee2e2; color: #dc2626; }
+
+    .report-section-title {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .report-section-title strong {
+      display: block;
+      font-size: 15px;
+      color: var(--color-dark);
+    }
+
+    .report-section-title span {
+      font-size: 13px;
+      color: var(--color-medium);
+    }
+
+    .report-section-toggle {
+      font-size: 12px;
+      color: var(--color-light);
+      transition: transform 0.2s;
+    }
+
+    .report-section.collapsed .report-section-toggle {
+      transform: rotate(-90deg);
+    }
+
+    .report-section-body {
+      padding: 0 20px 20px;
+      border-top: 1px solid var(--color-border);
+      background: var(--color-background);
+    }
+
+    .report-section.collapsed .report-section-body {
+      display: none;
+    }
+
+    .report-schema-stats {
+      display: flex;
+      gap: 24px;
+      padding: 16px 0;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--color-border);
+      font-size: 14px;
+      color: var(--color-medium);
+    }
+
+    .report-schema-stats strong {
+      color: var(--color-dark);
+      font-weight: 700;
+    }
+
+    .report-empty-state {
+      text-align: center;
+      padding: 32px 20px;
+    }
+
+    .report-empty-state p {
+      margin-bottom: 16px;
+      color: var(--color-medium);
+    }
+
+    /* Issue Items */
+    .issue-item {
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      margin-top: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .issue-item:hover {
+      border-color: var(--brand-blue);
+    }
+
+    .issue-item-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      cursor: pointer;
+      flex-wrap: wrap;
+    }
+
+    .issue-severity-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .issue-severity-dot.error { background: #ef4444; }
+    .issue-severity-dot.warn { background: #eab308; }
+    .issue-severity-dot.info { background: #3b82f6; }
+
+    .issue-code {
+      font-family: 'Fira Code', 'Consolas', monospace;
+      font-size: 11px;
+      padding: 3px 8px;
+      background: var(--color-background);
+      color: var(--color-medium);
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .issue-message {
+      flex: 1;
+      font-size: 14px;
+      color: var(--color-dark);
+      min-width: 0;
+    }
+
+    .issue-has-fix {
+      font-size: 12px;
+      color: var(--brand-blue);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .issue-hint {
+      padding: 0 16px 14px;
+      font-size: 13px;
+      color: var(--color-medium);
+      font-style: italic;
+    }
+
+    /* Issue Fix Panel (Inline Expandable) */
+    .issue-fix-panel {
+      display: none;
+      padding: 16px;
+      background: linear-gradient(to bottom, rgba(46,134,171,0.04), rgba(46,134,171,0.08));
+      border-top: 1px solid var(--color-border);
+    }
+
+    .issue-item.expanded .issue-fix-panel {
+      display: block;
+    }
+
+    .issue-fix-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-dark);
+      margin-bottom: 8px;
+    }
+
+    .issue-fix-description {
+      font-size: 14px;
+      color: var(--color-dark);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .issue-fix-code {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #334155;
+      margin-bottom: 12px;
+    }
+
+    .issue-fix-code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: #334155;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .issue-copy-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #94a3b8;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+
+    .issue-copy-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .issue-copy-btn.copied {
+      background: #16a34a;
+      color: #fff;
+    }
+
+    .issue-fix-code pre {
+      margin: 0;
+      padding: 12px;
+      background: #1e293b;
+      font-size: 12px;
+      line-height: 1.5;
+      overflow-x: auto;
+    }
+
+    .issue-fix-code code {
+      color: #e2e8f0;
+      font-family: 'Fira Code', 'Consolas', monospace;
+    }
+
+    .issue-fix-links {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .issue-fix-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--brand-blue);
+      text-decoration: none;
+      padding: 6px 12px;
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .issue-fix-links a:hover {
+      background: rgba(46, 134, 171, 0.1);
+      border-color: var(--brand-blue);
+    }
+
+    /* Report Actions */
+    .report-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 24px;
+      background: var(--color-card);
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      margin-top: 20px;
+    }
+
+    /* Responsive for Report UI */
+    @media (max-width: 768px) {
+      .report-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+      }
+
+      .report-benchmark {
+        text-align: center;
+      }
+
+      .report-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .report-actions {
+        justify-content: center;
+      }
+
+      .issue-item-header {
+        flex-wrap: wrap;
+      }
+
+      .issue-message {
+        width: 100%;
+        order: 3;
+        margin-top: 8px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .report-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .report-actions {
+        flex-direction: column;
+      }
+
+      .report-actions .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
   </style>
 </head>
 
@@ -1660,255 +2119,187 @@
 
         result.className = 'result show';
         result.style.background = '#fff';
-        result.style.border = '1px solid var(--color-border)';
-        result.style.borderRadius = '16px';
-        result.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)';
+        result.style.border = 'none';
+        result.style.borderRadius = '0';
+        result.style.boxShadow = 'none';
+        result.style.padding = '0';
 
-        const ucpStatusClass = data.ucp?.found ? (ucpErrors === 0 ? 'pass' : 'warn') : 'fail';
-        const schemaStatusClass = schemaErrors === 0 ? (schemaWarnings === 0 ? 'pass' : 'warn') : 'fail';
         const productCompleteness = data.product_quality?.completeness || 0;
+        const productIssues = data.product_quality?.issues || [];
+        const shippingIssues = data.shipping?.issues || [];
+
+        // Combine all issues and create fix lookup
+        const allIssues = [...ucpIssues, ...schemaIssues, ...productIssues, ...shippingIssues];
+        const suggestions = data.lint_suggestions || [];
+
+        // Create issue code to fix mapping
+        const fixLookup = {};
+        suggestions.forEach((s, idx) => {
+          if (s.code) fixLookup[s.code] = { ...s, idx };
+        });
+
+        // Helper to render issue with inline fix
+        const renderIssue = (issue, idx) => {
+          const fix = fixLookup[issue.code];
+          return `
+            <div class="issue-item" data-issue-idx="${idx}">
+              <div class="issue-item-header">
+                <span class="issue-severity-dot ${issue.severity}"></span>
+                <span class="issue-code">${issue.code}</span>
+                <span class="issue-message">${issue.message}</span>
+                ${fix ? '<span class="issue-has-fix">Fix available &#8594;</span>' : ''}
+              </div>
+              ${issue.hint ? '<div class="issue-hint">' + issue.hint + '</div>' : ''}
+              ${fix ? `
+              <div class="issue-fix-panel">
+                <div class="issue-fix-title">${fix.title}</div>
+                <div class="issue-fix-description">${fix.fix}</div>
+                ${fix.code_snippet ? `
+                <div class="issue-fix-code">
+                  <div class="issue-fix-code-header">
+                    <span>Code</span>
+                    <button class="issue-copy-btn" data-snippet="${idx}">Copy</button>
+                  </div>
+                  <pre><code>${escapeHtml(fix.code_snippet)}</code></pre>
+                </div>
+                ` : ''}
+                <div class="issue-fix-links">
+                  ${fix.doc_link ? '<a href="' + fix.doc_link + '" target="_blank">Documentation</a>' : ''}
+                  ${fix.generator_link ? '<a href="' + fix.generator_link + '">Generator</a>' : ''}
+                </div>
+              </div>
+              ` : ''}
+            </div>
+          `;
+        };
 
         result.innerHTML = `
-          <!-- Enhanced Header with Grade Circle -->
-          <div class="result-header">
-            <div class="result-grade-circle grade-${grade}">${grade}</div>
-            <div class="result-score-info">
-              <h3>${readinessLabel}</h3>
-              <div class="score-value">${score}/100 AI Commerce Readiness Score</div>
-              <div class="result-badges">
-                <span class="result-badge ${data.ucp?.found ? 'success' : 'error'}">${data.ucp?.found ? '&#10003; UCP Found' : '&#10005; No UCP'}</span>
-                ${data.schema?.stats?.products > 0 ? '<span class="result-badge info">' + data.schema.stats.products + ' Products</span>' : ''}
-                ${productCompleteness > 0 ? '<span class="result-badge ' + (productCompleteness >= 80 ? 'success' : productCompleteness >= 60 ? 'warning' : 'error') + '">' + productCompleteness + '% Complete</span>' : ''}
-              </div>
+          <!-- Score Header -->
+          <div class="report-header">
+            <div class="report-grade grade-${grade}">${grade}</div>
+            <div class="report-score-info">
+              <div class="report-score">${score}<span>/100</span></div>
+              <div class="report-label" style="color: ${levelColor}">${readinessLabel}</div>
             </div>
-          </div>
-
-          ${data.benchmark ? `
-          <!-- Benchmark Card -->
-          <div class="benchmark-card">
-            <h4>Industry Benchmark</h4>
-            <div class="benchmark-main">
-              <span class="benchmark-percentile">${data.benchmark.percentile}%</span>
-              <span class="benchmark-label">better than other sites</span>
+            ${data.benchmark ? `
+            <div class="report-benchmark">
+              <div class="report-benchmark-value">${data.benchmark.percentile}%</div>
+              <div class="report-benchmark-label">better than ${data.benchmark.total_sites_analyzed} sites</div>
             </div>
-            <div class="benchmark-details">
-              Based on <strong>${data.benchmark.total_sites_analyzed.toLocaleString()}</strong> sites analyzed &bull; Average score: ${data.benchmark.average_score}/100
-            </div>
-          </div>
-          ` : ''}
-
-          <!-- UCP Section -->
-          <div class="result-section">
-            <div class="result-section-header">
-              <div class="result-section-icon ucp">&#128279;</div>
-              <div class="result-section-title">
-                <h4>UCP Profile</h4>
-                <p>/.well-known/ucp ${data.ucp_version ? '&bull; v' + data.ucp_version : ''}</p>
-              </div>
-              <span class="result-section-status ${ucpStatusClass}">${data.ucp?.found ? (ucpErrors === 0 ? '&#10003; Valid' : ucpErrors + ' Issues') : '&#10005; Not Found'}</span>
-            </div>
-            ${ucpIssues.length > 0 ? `
-              <div class="issues-list">
-                ${ucpIssues.slice(0, 5).map(i => `
-                  <div class="issue ${i.severity}">
-                    <strong>[${i.code}]</strong> ${i.message}
-                    ${i.hint ? '<br><small>' + i.hint + '</small>' : ''}
-                  </div>
-                `).join('')}
-                ${ucpIssues.length > 5 ? '<p style="margin-top: 8px; font-size: 12px; color: var(--color-medium);">...and ' + (ucpIssues.length - 5) + ' more</p>' : ''}
-              </div>
-            ` : (data.ucp?.found ? '' : '<p style="margin-top: 8px; font-size: 14px; color: var(--color-medium);">Create a UCP profile at <code>/.well-known/ucp</code> to enable AI shopping agents.</p>')}
-          </div>
-
-          <!-- Schema Section -->
-          <div class="result-section">
-            <div class="result-section-header">
-              <div class="result-section-icon schema">&#128202;</div>
-              <div class="result-section-title">
-                <h4>Schema.org Markup</h4>
-                <p>Jan 2026 Requirements</p>
-              </div>
-              <span class="result-section-status ${schemaStatusClass}">${schemaErrors === 0 ? (schemaWarnings === 0 ? '&#10003; Valid' : schemaWarnings + ' Warnings') : schemaErrors + ' Errors'}</span>
-            </div>
-            <div class="result-stats-row">
-              <div class="result-stat">
-                <div class="result-stat-value">${data.schema?.stats?.products || 0}</div>
-                <div class="result-stat-label">Products</div>
-              </div>
-              <div class="result-stat">
-                <div class="result-stat-value">${data.schema?.stats?.returnPolicies || 0}</div>
-                <div class="result-stat-label">Return Policies</div>
-              </div>
-              <div class="result-stat">
-                <div class="result-stat-value">${data.schema?.stats?.orgs || 0}</div>
-                <div class="result-stat-label">Organizations</div>
-              </div>
-            </div>
-            ${schemaIssues.length > 0 ? `
-              <div class="issues-list" style="margin-top: 12px;">
-                ${schemaIssues.slice(0, 4).map(i => `
-                  <div class="issue ${i.severity}">
-                    <strong>[${i.code}]</strong> ${i.message}
-                    ${i.hint ? '<br><small>' + i.hint + '</small>' : ''}
-                  </div>
-                `).join('')}
-                ${schemaIssues.length > 4 ? '<p style="margin-top: 8px; font-size: 12px; color: var(--color-medium);">...and ' + (schemaIssues.length - 4) + ' more</p>' : ''}
-              </div>
             ` : ''}
           </div>
 
-          <!-- Product Quality Section -->
-          ${data.product_quality && (data.product_quality.issues?.length > 0 || productCompleteness > 0) ? `
-          <div class="result-section">
-            <div class="result-section-header">
-              <div class="result-section-icon product">&#128230;</div>
-              <div class="result-section-title">
-                <h4>Product Data Quality</h4>
-                <p>Data completeness and accuracy</p>
-              </div>
-              <span class="result-section-status ${productCompleteness >= 80 ? 'pass' : productCompleteness >= 60 ? 'warn' : 'fail'}">${productCompleteness}% Complete</span>
+          <!-- Quick Stats -->
+          <div class="report-stats">
+            <div class="report-stat ${data.ucp?.found ? 'pass' : 'fail'}">
+              <div class="report-stat-icon">${data.ucp?.found ? '&#10003;' : '&#10005;'}</div>
+              <div class="report-stat-text">UCP Profile</div>
             </div>
-            ${data.product_quality.issues?.length > 0 ? `
-              <div class="issues-list">
-                ${data.product_quality.issues.slice(0, 4).map(i => `
-                  <div class="issue ${i.severity}">
-                    <strong>[${i.code}]</strong> ${i.message}
-                    ${i.hint ? '<br><small>' + i.hint + '</small>' : ''}
-                  </div>
-                `).join('')}
-                ${data.product_quality.issues.length > 4 ? '<p style="margin-top: 8px; font-size: 12px; color: var(--color-medium);">...and ' + (data.product_quality.issues.length - 4) + ' more issues</p>' : ''}
-              </div>
-            ` : ''}
+            <div class="report-stat ${(data.schema?.stats?.returnPolicies || 0) > 0 ? 'pass' : 'fail'}">
+              <div class="report-stat-icon">${(data.schema?.stats?.returnPolicies || 0) > 0 ? '&#10003;' : '&#10005;'}</div>
+              <div class="report-stat-text">Return Policy</div>
+            </div>
+            <div class="report-stat ${(data.schema?.stats?.products || 0) > 0 ? 'pass' : 'warn'}">
+              <div class="report-stat-icon">${data.schema?.stats?.products || 0}</div>
+              <div class="report-stat-text">Products</div>
+            </div>
+            <div class="report-stat ${productCompleteness >= 80 ? 'pass' : productCompleteness >= 50 ? 'warn' : 'fail'}">
+              <div class="report-stat-icon">${productCompleteness}%</div>
+              <div class="report-stat-text">Data Quality</div>
+            </div>
           </div>
-          ` : ''}
 
-          <!-- Shipping Section -->
-          ${data.shipping?.issues?.length > 0 ? `
-          <div class="result-section">
-            <div class="result-section-header">
-              <div class="result-section-icon shipping">&#128666;</div>
-              <div class="result-section-title">
-                <h4>Shipping Details</h4>
-                <p>OfferShippingDetails validation</p>
-              </div>
-              <span class="result-section-status warn">${data.shipping.issues.length} Issues</span>
-            </div>
-            <div class="issues-list">
-              ${data.shipping.issues.slice(0, 3).map(i => `
-                <div class="issue ${i.severity}">
-                  <strong>[${i.code}]</strong> ${i.message}
-                  ${i.hint ? '<br><small>' + i.hint + '</small>' : ''}
+          <!-- Issues Sections -->
+          <div id="report-issues">
+            ${ucpIssues.length > 0 || !data.ucp?.found ? `
+            <div class="report-section ${ucpIssues.length === 0 && data.ucp?.found ? 'collapsed' : ''}" data-section="ucp">
+              <div class="report-section-header">
+                <div class="report-section-status ${data.ucp?.found ? (ucpErrors === 0 ? 'pass' : 'fail') : 'fail'}">
+                  ${data.ucp?.found ? (ucpErrors === 0 ? '&#10003;' : ucpIssues.length) : '&#10005;'}
                 </div>
-              `).join('')}
-            </div>
-          </div>
-          ` : ''}
-
-          <!-- Recommendations Section -->
-          ${data.product_quality?.recommendations?.length > 0 ? `
-          <div class="result-section">
-            <div class="result-section-header">
-              <div class="result-section-icon compliance">&#128161;</div>
-              <div class="result-section-title">
-                <h4>Recommendations</h4>
-                <p>Priority improvements for better AI readiness</p>
-              </div>
-            </div>
-            <ul style="margin: 8px 0 0; padding-left: 20px; font-size: 14px;">
-              ${data.product_quality.recommendations.slice(0, 5).map(r => `
-                <li style="margin-bottom: 8px;">
-                  <span style="padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 6px; background: ${r.priority === 'high' ? '#fef2f2' : r.priority === 'medium' ? '#fefce8' : '#f0fdf4'}; color: ${r.priority === 'high' ? '#DC2626' : r.priority === 'medium' ? '#CA8A04' : '#16A34A'};">${r.priority.toUpperCase()}</span>
-                  ${r.message}
-                </li>
-              `).join('')}
-            </ul>
-          </div>
-          ` : ''}
-
-          <!-- How to Fix Section - Expandable Cards -->
-          ${data.lint_suggestions?.length > 0 ? `
-          <div class="result-section" style="background: linear-gradient(135deg, rgba(46,134,171,0.05), rgba(71,201,122,0.05));">
-            <div class="result-section-header" style="border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-bottom: 16px;">
-              <div class="result-section-icon" style="background: rgba(46,134,171,0.15);">&#128295;</div>
-              <div class="result-section-title">
-                <h4>How to Fix These Issues</h4>
-                <p>${data.lint_suggestions.length} actionable fixes - click to expand</p>
-              </div>
-            </div>
-            <div id="fixes-container">
-              ${data.lint_suggestions.slice(0, 10).map((s, idx) => `
-                <div class="fix-card ${s.severity}" data-fix-idx="${idx}">
-                  <div class="fix-card-header">
-                    <div class="fix-card-priority">
-                      <span class="fix-number">${idx + 1}</span>
-                    </div>
-                    <div class="fix-card-content">
-                      <div class="fix-card-title">${s.title}</div>
-                      <div class="fix-card-meta">
-                        <span class="fix-severity-tag ${s.severity}">${s.severity}</span>
-                        ${s.code ? '<span class="fix-code-tag">' + s.code + '</span>' : ''}
-                      </div>
-                    </div>
-                    <div class="fix-card-chevron">&#9662;</div>
-                  </div>
-                  <div class="fix-card-body">
-                    <div class="fix-card-impact">${s.impact}</div>
-                    <div class="fix-card-instruction">
-                      <strong>How to fix:</strong> ${s.fix}
-                    </div>
-                    ${s.code_snippet ? `
-                    <div class="fix-code-block">
-                      <div class="fix-code-header">
-                        <span>Code snippet</span>
-                        <button class="fix-copy-btn" data-copy-idx="${idx}">Copy</button>
-                      </div>
-                      <pre><code>${escapeHtml(s.code_snippet)}</code></pre>
-                    </div>
-                    ` : ''}
-                    <div class="fix-card-links">
-                      ${s.doc_link ? '<a href="' + s.doc_link + '" target="_blank" class="fix-link">&#128214; Docs</a>' : ''}
-                      ${s.generator_link ? '<a href="' + s.generator_link + '" class="fix-link">&#9889; Generator</a>' : ''}
-                      ${s.code?.includes('SCHEMA') ? '<a href="/guides" class="fix-link">&#128203; Guides</a>' : ''}
-                    </div>
-                  </div>
+                <div class="report-section-title">
+                  <strong>UCP Profile</strong>
+                  <span>${data.ucp?.found ? (ucpIssues.length === 0 ? 'Valid' : ucpIssues.length + ' issues to fix') : 'Not found - create /.well-known/ucp'}</span>
                 </div>
-              `).join('')}
-            </div>
-            ${data.lint_suggestions.length > 10 ? '<p style="margin-top: 16px; text-align: center; font-size: 13px; color: var(--color-medium);">+ ' + (data.lint_suggestions.length - 10) + ' more fixes available in the PDF report</p>' : ''}
-          </div>
-          ` : ''}
-
-          <!-- Action Cards: Badge & Report -->
-          <div class="action-cards">
-            ${score >= 50 ? `
-            <div class="action-card badge-card">
-              <h4><span>&#127942;</span> Share Your Score</h4>
-              <p>Add this badge to your website to show you're AI Commerce ready</p>
-              <div style="display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 16px;">
-                <img src="/api/badge?domain=${encodeURIComponent(domain)}&style=flat" alt="AI Commerce Badge" style="height: 20px;">
-                <img src="/api/badge?domain=${encodeURIComponent(domain)}&style=large" alt="AI Commerce Badge" style="height: 70px; border-radius: 8px;">
+                <div class="report-section-toggle">&#9662;</div>
               </div>
-              <button class="btn btn-secondary" style="padding: 10px 20px; font-size: 13px; width: 100%;" onclick="copyBadgeCode('${domain}')">Copy Badge Code</button>
+              <div class="report-section-body">
+                ${ucpIssues.length > 0 ? ucpIssues.map((issue, idx) => renderIssue(issue, 'ucp-' + idx)).join('') : `
+                  <div class="report-empty-state">
+                    <p>Create a UCP profile to enable AI shopping agents on your store.</p>
+                    <a href="#generate" onclick="switchTab('generate'); return false;" class="btn btn-secondary">Generate UCP Profile</a>
+                  </div>
+                `}
+              </div>
             </div>
             ` : ''}
 
-            <div class="action-card report-card">
-              <h4><span>&#128196;</span> Download Report</h4>
-              <p>Get a professional PDF report to share with your team or stakeholders</p>
-              <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
-                <button class="btn" style="padding: 12px 24px; width: 100%;" onclick="downloadPdfReport()">
-                  &#128229; Download PDF Report
-                </button>
-                <a href="/verify?domain=${encodeURIComponent(domain)}" target="_blank" class="btn btn-secondary" style="padding: 10px 20px; font-size: 13px; width: 100%;">
-                  &#128279; Shareable Link
-                </a>
+            ${schemaIssues.length > 0 || (data.schema?.stats?.products === 0) ? `
+            <div class="report-section" data-section="schema">
+              <div class="report-section-header">
+                <div class="report-section-status ${schemaErrors === 0 ? (schemaWarnings === 0 ? 'pass' : 'warn') : 'fail'}">
+                  ${schemaErrors === 0 ? (schemaWarnings === 0 ? '&#10003;' : schemaWarnings) : schemaIssues.length}
+                </div>
+                <div class="report-section-title">
+                  <strong>Schema.org Markup</strong>
+                  <span>${schemaIssues.length === 0 ? 'Valid' : schemaIssues.length + ' issues to fix'} &bull; Jan 2026 deadline</span>
+                </div>
+                <div class="report-section-toggle">&#9662;</div>
+              </div>
+              <div class="report-section-body">
+                <div class="report-schema-stats">
+                  <div><strong>${data.schema?.stats?.products || 0}</strong> Products</div>
+                  <div><strong>${data.schema?.stats?.returnPolicies || 0}</strong> Return Policies</div>
+                  <div><strong>${data.schema?.stats?.orgs || 0}</strong> Organizations</div>
+                </div>
+                ${schemaIssues.length > 0 ? schemaIssues.map((issue, idx) => renderIssue(issue, 'schema-' + idx)).join('') : ''}
               </div>
             </div>
+            ` : ''}
+
+            ${productIssues.length > 0 ? `
+            <div class="report-section collapsed" data-section="product">
+              <div class="report-section-header">
+                <div class="report-section-status ${productCompleteness >= 80 ? 'pass' : 'warn'}">
+                  ${productIssues.length}
+                </div>
+                <div class="report-section-title">
+                  <strong>Product Data</strong>
+                  <span>${productCompleteness}% complete &bull; ${productIssues.length} suggestions</span>
+                </div>
+                <div class="report-section-toggle">&#9662;</div>
+              </div>
+              <div class="report-section-body">
+                ${productIssues.map((issue, idx) => renderIssue(issue, 'product-' + idx)).join('')}
+              </div>
+            </div>
+            ` : ''}
+
+            ${shippingIssues.length > 0 ? `
+            <div class="report-section collapsed" data-section="shipping">
+              <div class="report-section-header">
+                <div class="report-section-status warn">
+                  ${shippingIssues.length}
+                </div>
+                <div class="report-section-title">
+                  <strong>Shipping Details</strong>
+                  <span>${shippingIssues.length} issues</span>
+                </div>
+                <div class="report-section-toggle">&#9662;</div>
+              </div>
+              <div class="report-section-body">
+                ${shippingIssues.map((issue, idx) => renderIssue(issue, 'shipping-' + idx)).join('')}
+              </div>
+            </div>
+            ` : ''}
           </div>
 
-          <p style="margin-top: 20px; font-size: 14px; text-align: center;" class="text-muted">
-            Found this useful? <a href="#pricing" class="link-brand">Support the project &#8594;</a>
-          </p>
+          <!-- Actions -->
+          <div class="report-actions">
+            <button class="btn" onclick="downloadPdfReport()">&#128196; Download PDF Report</button>
+            <a href="/verify?domain=${encodeURIComponent(domain)}" target="_blank" class="btn btn-secondary">&#128279; Share Results</a>
+            ${score >= 50 ? '<button class="btn btn-secondary" onclick="copyBadgeCode(\'' + domain + '\')">&#127942; Get Badge</button>' : ''}
+          </div>
         `;
 
         // Store validation data for report generation
@@ -1916,28 +2307,41 @@
         window.lastValidationData = data;
         window.lintSuggestions = data.lint_suggestions || [];
 
-        // Setup event delegation for fix cards (works with dynamic content)
-        const fixesContainer = document.getElementById('fixes-container');
-        if (fixesContainer) {
-          fixesContainer.addEventListener('click', function(e) {
-            // Handle fix card header click (expand/collapse)
-            const header = e.target.closest('.fix-card-header');
-            if (header) {
-              const card = header.closest('.fix-card');
-              if (card) {
-                card.classList.toggle('expanded');
+        // Setup event delegation for report sections and issues
+        const reportIssues = document.getElementById('report-issues');
+        if (reportIssues) {
+          reportIssues.addEventListener('click', function(e) {
+            // Handle report section header click (expand/collapse section)
+            const sectionHeader = e.target.closest('.report-section-header');
+            if (sectionHeader) {
+              const section = sectionHeader.closest('.report-section');
+              if (section) {
+                section.classList.toggle('collapsed');
+              }
+              return;
+            }
+
+            // Handle issue item header click (expand/collapse fix panel)
+            const issueHeader = e.target.closest('.issue-item-header');
+            if (issueHeader) {
+              const issueItem = issueHeader.closest('.issue-item');
+              if (issueItem) {
+                // Only toggle if this issue has a fix panel
+                const fixPanel = issueItem.querySelector('.issue-fix-panel');
+                if (fixPanel) {
+                  issueItem.classList.toggle('expanded');
+                }
               }
               return;
             }
 
             // Handle copy button click
-            const copyBtn = e.target.closest('.fix-copy-btn');
+            const copyBtn = e.target.closest('.issue-copy-btn');
             if (copyBtn) {
               e.stopPropagation();
-              const idx = parseInt(copyBtn.dataset.copyIdx);
-              const suggestion = window.lintSuggestions[idx];
-              if (suggestion && suggestion.code_snippet) {
-                navigator.clipboard.writeText(suggestion.code_snippet).then(() => {
+              const pre = copyBtn.closest('.issue-fix-code').querySelector('code');
+              if (pre) {
+                navigator.clipboard.writeText(pre.textContent).then(() => {
                   copyBtn.textContent = 'Copied!';
                   copyBtn.classList.add('copied');
                   setTimeout(() => {
@@ -1949,12 +2353,6 @@
               return;
             }
           });
-
-          // Auto-expand first critical issue
-          const firstCritical = fixesContainer.querySelector('.fix-card.critical');
-          if (firstCritical) {
-            firstCritical.classList.add('expanded');
-          }
         }
       } catch (err) {
         result.className = 'result show error';
