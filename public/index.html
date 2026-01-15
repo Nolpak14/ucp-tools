@@ -1736,6 +1736,7 @@
         <button class="tab active" data-tab="validate">Check Readiness</button>
         <button class="tab" data-tab="simulate">🤖 AI Agent Test</button>
         <button class="tab" data-tab="security">🔒 Security Scan</button>
+        <button class="tab" data-tab="compliance">📋 GDPR Generator</button>
         <button class="tab" data-tab="generate">Generate UCP</button>
         <button class="tab" data-tab="schema">Schema Snippets</button>
       </div>
@@ -1917,6 +1918,97 @@
 
         <div class="result" id="security-result"></div>
       </div>
+
+      <!-- GDPR Compliance Generator Tab -->
+      <div class="card hidden" id="compliance-panel">
+        <h3 style="margin-bottom: 8px;">📋 GDPR/Privacy Compliance Generator</h3>
+        <p style="margin-bottom: 20px; color: var(--color-medium); font-size: 14px;">
+          Generate privacy policy addendums and consent language for AI-powered shopping.
+          When purchases happen via AI agents, traditional cookie consent doesn't apply - you need specific disclosures.
+        </p>
+
+        <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 12px; margin-bottom: 20px; font-size: 13px;">
+          <strong>⚠️ Disclaimer:</strong> This generates templates for informational purposes only and does NOT constitute legal advice.
+          Please have a qualified legal professional review before use.
+        </div>
+
+        <form id="compliance-form">
+          <div class="form-group">
+            <label for="compliance-company">Company Name *</label>
+            <input type="text" id="compliance-company" placeholder="Your Company Name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="compliance-email">Privacy Contact Email</label>
+            <input type="email" id="compliance-email" placeholder="privacy@yourcompany.com">
+          </div>
+
+          <div class="form-group">
+            <label for="compliance-dpo">Data Protection Officer Email (optional)</label>
+            <input type="email" id="compliance-dpo" placeholder="dpo@yourcompany.com">
+          </div>
+
+          <div class="form-group">
+            <label>Compliance Regions *</label>
+            <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px;">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                <input type="checkbox" id="region-eu" checked> EU (GDPR)
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                <input type="checkbox" id="region-uk"> UK (UK GDPR)
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                <input type="checkbox" id="region-california"> California (CCPA/CPRA)
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                <input type="checkbox" id="region-global"> Global
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>AI Platforms You're Using *</label>
+            <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px;">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                <input type="checkbox" id="platform-openai" checked> ChatGPT (OpenAI)
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                <input type="checkbox" id="platform-google" checked> Google AI Mode
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                <input type="checkbox" id="platform-microsoft"> Microsoft Copilot
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="compliance-basis">Lawful Basis for Processing *</label>
+            <select id="compliance-basis" required>
+              <option value="contract" selected>Contract Performance (Recommended for orders)</option>
+              <option value="consent">Explicit Consent</option>
+              <option value="legitimate">Legitimate Interests</option>
+              <option value="legal">Legal Obligation</option>
+            </select>
+            <small class="text-muted" id="basis-description">Processing is necessary to fulfill customer orders</small>
+          </div>
+
+          <div class="form-group">
+            <label>Optional Sections</label>
+            <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px;">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                <input type="checkbox" id="include-marketing"> Marketing consent language
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                <input type="checkbox" id="include-retention"> Data retention policy
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn" id="compliance-btn">📄 Generate Compliance Documents</button>
+        </form>
+
+        <div class="result" id="compliance-result"></div>
+      </div>
     </div>
   </section>
 
@@ -2005,6 +2097,7 @@
       document.getElementById('validate-panel').classList.toggle('hidden', tabName !== 'validate');
       document.getElementById('simulate-panel').classList.toggle('hidden', tabName !== 'simulate');
       document.getElementById('security-panel').classList.toggle('hidden', tabName !== 'security');
+      document.getElementById('compliance-panel').classList.toggle('hidden', tabName !== 'compliance');
       document.getElementById('generate-panel').classList.toggle('hidden', tabName !== 'generate');
       document.getElementById('schema-panel').classList.toggle('hidden', tabName !== 'schema');
       // Scroll to hero section
@@ -3322,6 +3415,210 @@
       btn.disabled = false;
       btn.textContent = '🔍 Run Security Scan';
     });
+
+    // Lawful basis description updates
+    const basisDescriptions = {
+      'contract': 'Processing is necessary to fulfill customer orders',
+      'consent': 'Customer explicitly consents to data processing',
+      'legitimate': 'Processing serves legitimate business interests',
+      'legal': 'Processing is required by law',
+    };
+    document.getElementById('compliance-basis').addEventListener('change', (e) => {
+      document.getElementById('basis-description').textContent = basisDescriptions[e.target.value] || '';
+    });
+
+    // Compliance Generator form
+    document.getElementById('compliance-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('compliance-btn');
+      const result = document.getElementById('compliance-result');
+
+      // Gather form data
+      const companyName = document.getElementById('compliance-company').value.trim();
+      const companyEmail = document.getElementById('compliance-email').value.trim();
+      const dpoEmail = document.getElementById('compliance-dpo').value.trim();
+      const lawfulBasis = document.getElementById('compliance-basis').value;
+
+      // Gather regions
+      const regions = [];
+      if (document.getElementById('region-eu').checked) regions.push('eu');
+      if (document.getElementById('region-uk').checked) regions.push('uk');
+      if (document.getElementById('region-california').checked) regions.push('california');
+      if (document.getElementById('region-global').checked) regions.push('global');
+
+      // Gather platforms
+      const platforms = [];
+      if (document.getElementById('platform-openai').checked) platforms.push('openai');
+      if (document.getElementById('platform-google').checked) platforms.push('google');
+      if (document.getElementById('platform-microsoft').checked) platforms.push('microsoft');
+
+      // Options
+      const includeMarketingConsent = document.getElementById('include-marketing').checked;
+      const includeDataRetention = document.getElementById('include-retention').checked;
+
+      // Validate
+      if (!companyName) {
+        result.className = 'result show error';
+        result.innerHTML = '<p>Please enter your company name</p>';
+        return;
+      }
+      if (regions.length === 0) {
+        result.className = 'result show error';
+        result.innerHTML = '<p>Please select at least one compliance region</p>';
+        return;
+      }
+      if (platforms.length === 0) {
+        result.className = 'result show error';
+        result.innerHTML = '<p>Please select at least one AI platform</p>';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '🔄 Generating...';
+      result.className = 'result';
+      result.innerHTML = '';
+
+      try {
+        const res = await fetch('/api/generate-compliance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            companyName,
+            companyEmail: companyEmail || undefined,
+            dpoEmail: dpoEmail || undefined,
+            regions,
+            platforms,
+            lawfulBasis,
+            includeMarketingConsent,
+            includeDataRetention,
+            retentionPeriodYears: 7,
+          })
+        });
+        const data = await res.json();
+
+        if (data.error) {
+          throw new Error(data.message || data.error);
+        }
+
+        // Store for download
+        window.complianceData = data;
+
+        result.className = 'result show success';
+        result.innerHTML = `
+          <div style="margin-bottom: 20px;">
+            <h4 style="margin-bottom: 12px; color: var(--brand-teal);">✅ Compliance Documents Generated</h4>
+            <p style="font-size: 13px; color: var(--color-medium);">
+              Generated for: ${companyName} | Regions: ${regions.join(', ').toUpperCase()} | Basis: ${lawfulBasis}
+            </p>
+          </div>
+
+          <!-- Download Buttons -->
+          <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
+            <button class="btn" onclick="downloadComplianceHtml()">📥 Download HTML</button>
+            <button class="btn btn-secondary" onclick="downloadComplianceTxt()">📄 Download Text</button>
+            <button class="btn btn-secondary" onclick="copyComplianceSnippet('aiCommerceSection')">📋 Copy AI Commerce Section</button>
+          </div>
+
+          <!-- Preview Sections -->
+          <div style="background: var(--color-background); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+            <h5 style="margin-bottom: 12px; cursor: pointer;" onclick="toggleSection('preview-privacy')">
+              📄 Privacy Policy Addendum <span style="color: var(--color-light);">▼</span>
+            </h5>
+            <div id="preview-privacy" style="display: none;">
+              <pre style="font-size: 12px; white-space: pre-wrap; max-height: 300px; overflow-y: auto; background: white; padding: 12px; border-radius: 4px;">${escapeHtml(data.snippets.aiCommerceSection)}</pre>
+              <button class="btn btn-secondary" style="margin-top: 8px;" onclick="copyComplianceSnippet('aiCommerceSection')">Copy</button>
+            </div>
+          </div>
+
+          <div style="background: var(--color-background); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+            <h5 style="margin-bottom: 12px; cursor: pointer;" onclick="toggleSection('preview-processors')">
+              🔗 Data Processor Disclosures <span style="color: var(--color-light);">▼</span>
+            </h5>
+            <div id="preview-processors" style="display: none;">
+              <pre style="font-size: 12px; white-space: pre-wrap; max-height: 300px; overflow-y: auto; background: white; padding: 12px; border-radius: 4px;">${escapeHtml(data.snippets.processorDisclosures)}</pre>
+              <button class="btn btn-secondary" style="margin-top: 8px;" onclick="copyComplianceSnippet('processorDisclosures')">Copy</button>
+            </div>
+          </div>
+
+          <div style="background: var(--color-background); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+            <h5 style="margin-bottom: 12px; cursor: pointer;" onclick="toggleSection('preview-consent')">
+              ✍️ Consent Language <span style="color: var(--color-light);">▼</span>
+            </h5>
+            <div id="preview-consent" style="display: none;">
+              <pre style="font-size: 12px; white-space: pre-wrap; max-height: 300px; overflow-y: auto; background: white; padding: 12px; border-radius: 4px;">${escapeHtml(data.snippets.consentLanguage)}</pre>
+              <button class="btn btn-secondary" style="margin-top: 8px;" onclick="copyComplianceSnippet('consentLanguage')">Copy</button>
+            </div>
+          </div>
+
+          <div style="background: var(--color-background); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+            <h5 style="margin-bottom: 12px; cursor: pointer;" onclick="toggleSection('preview-rights')">
+              ⚖️ Data Subject Rights <span style="color: var(--color-light);">▼</span>
+            </h5>
+            <div id="preview-rights" style="display: none;">
+              <pre style="font-size: 12px; white-space: pre-wrap; max-height: 300px; overflow-y: auto; background: white; padding: 12px; border-radius: 4px;">${escapeHtml(data.snippets.dataSubjectRights)}</pre>
+              <button class="btn btn-secondary" style="margin-top: 8px;" onclick="copyComplianceSnippet('dataSubjectRights')">Copy</button>
+            </div>
+          </div>
+
+          <!-- Disclaimer -->
+          <div style="margin-top: 20px; padding: 16px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px;">
+            <h5 style="margin-bottom: 8px;">⚠️ Important</h5>
+            <ul style="margin: 0; padding-left: 20px; font-size: 13px;">
+              <li>This is a template - have it reviewed by a legal professional</li>
+              <li>Privacy laws vary by jurisdiction and change frequently</li>
+              <li>Your specific circumstances may require additional provisions</li>
+            </ul>
+          </div>
+        `;
+
+      } catch (err) {
+        result.className = 'result show error';
+        result.innerHTML = '<p>❌ Generation failed: ' + err.message + '</p>';
+      }
+
+      btn.disabled = false;
+      btn.textContent = '📄 Generate Compliance Documents';
+    });
+
+    // Toggle preview sections
+    function toggleSection(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+      }
+    }
+
+    // Download compliance HTML
+    function downloadComplianceHtml() {
+      if (!window.complianceData) return;
+      const blob = new Blob([window.complianceData.embedHtml], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ai-commerce-privacy-addendum.html';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Download compliance text
+    function downloadComplianceTxt() {
+      if (!window.complianceData) return;
+      const blob = new Blob([window.complianceData.plainText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ai-commerce-privacy-addendum.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Copy compliance snippet
+    function copyComplianceSnippet(key) {
+      if (!window.complianceData || !window.complianceData.snippets[key]) return;
+      navigator.clipboard.writeText(window.complianceData.snippets[key]).then(() => {
+        alert('Copied to clipboard!');
+      });
+    }
   </script>
 </body>
 
