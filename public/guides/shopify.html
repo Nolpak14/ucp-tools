@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J5JSHV7H1E"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-J5JSHV7H1E');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopify UCP Implementation Guide - AI Commerce Ready | UCP Tools</title>
+    <meta name="description"
+        content="Step-by-step guide to implementing UCP (Universal Commerce Protocol) on your Shopify store. Make your store AI-ready for ChatGPT, Google AI Mode, and AI shopping agents.">
+    <link rel="canonical" href="https://ucptools.dev/guides/shopify.html">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#96BF48">
+    <meta property="og:title" content="Shopify UCP Implementation Guide - AI Commerce Ready">
+    <meta property="og:description"
+        content="Make your Shopify store AI-ready with UCP. Step-by-step implementation guide.">
+    <meta property="og:image" content="/og-image.png">
+    <meta property="og:type" content="article">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --brand-blue: #2E86AB;
+            --brand-teal: #36B5A2;
+            --brand-green: #47C97A;
+            --brand-gradient: linear-gradient(135deg, #2E86AB 0%, #36B5A2 50%, #47C97A 100%);
+            --platform-color: #96BF48;
+            --platform-dark: #5E8E3E;
+            --color-dark: #1A2B3C;
+            --color-medium: #5A6978;
+            --color-light: #94A3B8;
+            --color-border: #E2E8F0;
+            --color-background: #F8FAFC;
+            --color-card: #FFFFFF;
+            --color-success: #47C97A;
+            --color-warning: #F59E0B;
+            --color-error: #EF4444;
+            --color-info: #2E86AB;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--color-background);
+            color: var(--color-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        a { color: var(--brand-blue); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* Header */
+        header {
+            background: var(--color-card);
+            border-bottom: 1px solid var(--color-border);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .logo:hover { text-decoration: none; }
+
+        .logo-icon { width: 40px; height: 40px; border-radius: 8px; }
+
+        .logo-text {
+            background: var(--brand-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-suffix { font-weight: 400; -webkit-text-fill-color: var(--color-medium); }
+
+        nav { display: flex; gap: 8px; }
+
+        nav a {
+            padding: 8px 16px;
+            color: var(--color-medium);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--brand-blue);
+            background: rgba(46, 134, 171, 0.08);
+            text-decoration: none;
+        }
+
+        nav a.active {
+            color: var(--brand-blue);
+            background: rgba(46, 134, 171, 0.12);
+        }
+
+        /* Hero */
+        .guide-hero {
+            background: linear-gradient(135deg, #5E8E3E 0%, #96BF48 100%);
+            color: white;
+            padding: 80px 0;
+        }
+
+        .guide-hero .container { max-width: 800px; }
+
+        .guide-hero h1 {
+            font-size: 2.75rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .guide-hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .guide-badges { display: flex; gap: 12px; flex-wrap: wrap; }
+
+        .guide-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Content Layout */
+        .guide-content {
+            display: grid;
+            grid-template-columns: 1fr 260px;
+            gap: 60px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        @media (max-width: 968px) {
+            .guide-content { grid-template-columns: 1fr; gap: 40px; }
+            .guide-sidebar { order: -1; }
+        }
+
+        @media (max-width: 600px) {
+            .guide-hero h1 { font-size: 2rem; }
+            .guide-hero p { font-size: 1.1rem; }
+            .header-inner { flex-direction: column; gap: 16px; }
+            nav { flex-wrap: wrap; justify-content: center; }
+        }
+
+        /* Main Content */
+        .guide-main section { margin-bottom: 48px; }
+
+        .guide-main h2 {
+            color: var(--color-dark);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .guide-main h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 32px 0 16px;
+            color: var(--color-dark);
+        }
+
+        .guide-main p {
+            margin-bottom: 16px;
+            color: var(--color-medium);
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .guide-main ul, .guide-main ol { margin-bottom: 20px; padding-left: 24px; }
+
+        .guide-main li {
+            margin-bottom: 10px;
+            color: var(--color-medium);
+            line-height: 1.6;
+        }
+
+        .guide-main li strong { color: var(--color-dark); }
+
+        /* Code */
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 24px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            border: 1px solid #333;
+        }
+
+        code { font-family: 'Fira Code', 'Monaco', 'Consolas', monospace; }
+
+        :not(pre)>code {
+            background: #EEF2F6;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: var(--platform-dark);
+            font-weight: 500;
+        }
+
+        /* Steps */
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--platform-color);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-right: 12px;
+        }
+
+        .step-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 32px 0 16px;
+            color: var(--color-dark);
+        }
+
+        /* Tip boxes */
+        .tip-box {
+            background: #EFF6FF;
+            border-left: 4px solid var(--brand-blue);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin: 24px 0;
+        }
+
+        .tip-box.warning {
+            background: #FEF3C7;
+            border-color: var(--color-warning);
+        }
+
+        .tip-box.success {
+            background: #DCFCE7;
+            border-color: var(--color-success);
+        }
+
+        .tip-box.platform {
+            background: #F0F7E6;
+            border-color: var(--platform-color);
+        }
+
+        .tip-box strong {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--color-dark);
+            font-size: 1rem;
+        }
+
+        .tip-box p, .tip-box { color: var(--color-medium); font-size: 0.95rem; }
+
+        /* CTA */
+        .cta-box {
+            background: var(--brand-gradient);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 32px 0;
+            box-shadow: 0 8px 32px rgba(46, 134, 171, 0.25);
+        }
+
+        .cta-box h3 { color: white; font-size: 1.5rem; margin-bottom: 12px; }
+
+        .cta-box p { color: rgba(255, 255, 255, 0.9); margin-bottom: 24px; font-size: 1.05rem; }
+
+        .cta-box .btn {
+            background: white;
+            color: var(--brand-blue);
+            padding: 14px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-block;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .cta-box .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--color-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+        }
+
+        th, td {
+            text-align: left;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        th { background: var(--color-background); font-weight: 600; color: var(--color-dark); }
+
+        tr:last-child td { border-bottom: none; }
+
+        td code { background: #EEF2F6; padding: 4px 8px; border-radius: 4px; }
+
+        /* Sidebar */
+        .guide-sidebar { position: sticky; top: 100px; align-self: start; }
+
+        .sidebar-toc {
+            background: var(--color-card);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .sidebar-toc h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-light);
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .sidebar-toc ul { list-style: none; padding: 0; margin: 0; }
+
+        .sidebar-toc li { margin-bottom: 0; }
+
+        .sidebar-toc a {
+            display: block;
+            padding: 10px 12px;
+            color: var(--color-medium);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .sidebar-toc a:hover {
+            color: var(--platform-color);
+            background: rgba(150, 191, 72, 0.08);
+            text-decoration: none;
+        }
+
+        /* Other guides */
+        .other-guides {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .other-guides h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-light);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .other-guides a {
+            display: block;
+            padding: 8px 12px;
+            color: var(--color-medium);
+            font-size: 0.85rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .other-guides a:hover {
+            color: var(--brand-blue);
+            background: rgba(46, 134, 171, 0.08);
+            text-decoration: none;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--color-dark);
+            color: white;
+            padding: 48px 0;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        footer p { margin: 0; opacity: 0.9; }
+        footer a { color: var(--brand-teal); }
+        footer a:hover { color: var(--brand-green); }
+        .footer-links { margin-top: 12px; opacity: 0.7; }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="/" class="logo">
+                <img src="/logo.jpeg" alt="UCP.tools logo" class="logo-icon">
+                <span class="logo-text">UCP<span class="logo-suffix">.tools</span></span>
+            </a>
+            <nav>
+                <a href="/">Validator</a>
+                <a href="/learn.html">Learn</a>
+                <a href="/directory.html">Directory</a>
+                <a href="/guides/shopify.html" class="active">Shopify</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="guide-hero">
+        <div class="container">
+            <h1>🛒 Shopify UCP Implementation</h1>
+            <p>Make your Shopify store AI-ready. Enable ChatGPT, Google AI Mode, and autonomous shopping agents to discover and transact with your products.</p>
+            <div class="guide-badges">
+                <span class="guide-badge">🤖 AI Agent Ready</span>
+                <span class="guide-badge">⚡ 15 min setup</span>
+                <span class="guide-badge">📱 No coding required</span>
+                <span class="guide-badge">🔒 Secure</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="guide-content">
+        <main class="guide-main">
+            <section id="overview">
+                <h2>Why Add UCP to Your Shopify Store?</h2>
+                <p>
+                    The Universal Commerce Protocol (UCP) is an open standard that allows AI agents to discover, browse, and purchase from your store. With AI shopping assistants like ChatGPT, Google AI Mode, and Microsoft Copilot becoming mainstream, UCP-enabled stores have a significant advantage.
+                </p>
+                <ul>
+                    <li><strong>AI Discovery:</strong> Your products appear in AI-powered shopping recommendations</li>
+                    <li><strong>Autonomous Checkout:</strong> AI agents can complete purchases on behalf of customers</li>
+                    <li><strong>Structured Data:</strong> Machine-readable product and policy information</li>
+                    <li><strong>Future-Proof:</strong> Ready for the AI commerce revolution</li>
+                </ul>
+
+                <div class="tip-box platform">
+                    <strong>🛍️ Shopify Advantage</strong>
+                    Shopify's flexible file hosting and theme customization make UCP implementation straightforward. You can add a UCP profile without any apps or coding.
+                </div>
+            </section>
+
+            <section id="prerequisites">
+                <h2>Prerequisites</h2>
+                <ul>
+                    <li>A Shopify store (any plan)</li>
+                    <li>Admin access to your store</li>
+                    <li>Your store's domain (e.g., <code>yourstore.myshopify.com</code> or custom domain)</li>
+                    <li>Basic understanding of your store's policies (returns, shipping, etc.)</li>
+                </ul>
+            </section>
+
+            <section id="implementation">
+                <h2>Step-by-Step Implementation</h2>
+
+                <div class="step-title"><span class="step-number">1</span>Generate Your UCP Profile</div>
+                <p>
+                    First, use the UCP Tools generator to create a UCP profile customized for your store. This will create a JSON file with your store's capabilities, policies, and product information.
+                </p>
+
+                <div class="cta-box">
+                    <h3>Generate Your UCP Profile</h3>
+                    <p>Enter your store details and we'll create a UCP-compliant profile for you.</p>
+                    <a href="/#generate" class="btn">Open Generator →</a>
+                </div>
+
+                <p>When generating, you'll need:</p>
+                <ul>
+                    <li>Your store name and description</li>
+                    <li>Store URL (your Shopify domain)</li>
+                    <li>Return policy URL (usually <code>/policies/refund-policy</code>)</li>
+                    <li>Shipping policy URL (usually <code>/policies/shipping-policy</code>)</li>
+                    <li>Contact email for customer support</li>
+                </ul>
+
+                <div class="step-title"><span class="step-number">2</span>Create the .well-known Folder</div>
+                <p>
+                    Shopify doesn't have a native way to serve files from <code>/.well-known/</code>, but you can use a workaround with theme files and a redirect.
+                </p>
+
+                <h3>Option A: Using Shopify Files (Recommended)</h3>
+                <ol>
+                    <li>Go to <strong>Settings → Files</strong> in your Shopify admin</li>
+                    <li>Click <strong>Upload files</strong></li>
+                    <li>Upload your <code>ucp.json</code> file (generated in Step 1)</li>
+                    <li>Copy the file URL (it will look like <code>https://cdn.shopify.com/s/files/...</code>)</li>
+                </ol>
+
+                <div class="step-title"><span class="step-number">3</span>Add the Redirect</div>
+                <p>
+                    Now create a redirect so AI agents can find your UCP profile at the standard location.
+                </p>
+                <ol>
+                    <li>Go to <strong>Online Store → Navigation</strong></li>
+                    <li>Scroll down to <strong>URL Redirects</strong></li>
+                    <li>Click <strong>Add URL redirect</strong></li>
+                    <li>Set the redirect:
+                        <ul>
+                            <li><strong>Redirect from:</strong> <code>/.well-known/ucp</code></li>
+                            <li><strong>Redirect to:</strong> Your CDN file URL from Step 2</li>
+                        </ul>
+                    </li>
+                    <li>Click <strong>Save redirect</strong></li>
+                </ol>
+
+                <div class="tip-box warning">
+                    <strong>⚠️ Important: CORS Headers</strong>
+                    Shopify's CDN automatically serves files with proper CORS headers, so AI agents from different origins can access your UCP profile.
+                </div>
+
+                <h3>Option B: Using Theme Liquid (Advanced)</h3>
+                <p>For more control, you can serve the UCP profile directly from your theme:</p>
+                <ol>
+                    <li>Go to <strong>Online Store → Themes → Edit code</strong></li>
+                    <li>Create a new template: <strong>Templates → Add a new template</strong></li>
+                    <li>Select <strong>page</strong> as the type and name it <code>ucp</code></li>
+                    <li>Replace the content with:</li>
+                </ol>
+
+<pre><span style="color:#808080">{%- layout none -%}</span>
+<span style="color:#808080">{%- comment -%}</span>
+  UCP Profile - Universal Commerce Protocol
+  Generated by UCP Tools
+<span style="color:#808080">{%- endcomment -%}</span>
+{
+  <span style="color:#9CDCFE">"profile_version"</span>: <span style="color:#CE9178">"1.0"</span>,
+  <span style="color:#9CDCFE">"merchant"</span>: {
+    <span style="color:#9CDCFE">"name"</span>: <span style="color:#CE9178">"{{ shop.name }}"</span>,
+    <span style="color:#9CDCFE">"url"</span>: <span style="color:#CE9178">"{{ shop.url }}"</span>,
+    <span style="color:#9CDCFE">"contact"</span>: {
+      <span style="color:#9CDCFE">"email"</span>: <span style="color:#CE9178">"{{ shop.email }}"</span>
+    }
+  },
+  <span style="color:#9CDCFE">"capabilities"</span>: [<span style="color:#CE9178">"browse"</span>, <span style="color:#CE9178">"search"</span>],
+  <span style="color:#9CDCFE">"policies"</span>: {
+    <span style="color:#9CDCFE">"returns_url"</span>: <span style="color:#CE9178">"{{ shop.url }}/policies/refund-policy"</span>,
+    <span style="color:#9CDCFE">"shipping_url"</span>: <span style="color:#CE9178">"{{ shop.url }}/policies/shipping-policy"</span>,
+    <span style="color:#9CDCFE">"privacy_url"</span>: <span style="color:#CE9178">"{{ shop.url }}/policies/privacy-policy"</span>
+  }
+}</pre>
+
+                <ol start="5">
+                    <li>Create a page with the handle <code>well-known-ucp</code></li>
+                    <li>Add the redirect from <code>/.well-known/ucp</code> to <code>/pages/well-known-ucp</code></li>
+                </ol>
+
+                <div class="step-title"><span class="step-number">4</span>Add Schema.org Markup</div>
+                <p>
+                    For maximum AI compatibility, add Schema.org markup to your product pages. Shopify themes often include this by default, but verify it's present.
+                </p>
+                <p>Go to <strong>Online Store → Themes → Edit code</strong> and check <code>product.liquid</code> or <code>main-product.liquid</code> for JSON-LD structured data.</p>
+
+                <div class="tip-box">
+                    <strong>💡 Pro Tip</strong>
+                    Use <a href="https://search.google.com/test/rich-results" target="_blank">Google's Rich Results Test</a> to verify your Schema.org markup is correct.
+                </div>
+
+                <div class="step-title"><span class="step-number">5</span>Validate Your Implementation</div>
+                <p>After setup, validate your UCP profile to ensure everything is working correctly.</p>
+
+                <div class="cta-box">
+                    <h3>Validate Your Shopify Store</h3>
+                    <p>Enter your store URL to check AI commerce readiness.</p>
+                    <a href="/" class="btn">Run Validation →</a>
+                </div>
+            </section>
+
+            <section id="common-issues">
+                <h2>Common Issues & Solutions</h2>
+
+                <table>
+                    <tr>
+                        <th>Issue</th>
+                        <th>Solution</th>
+                    </tr>
+                    <tr>
+                        <td>404 on <code>/.well-known/ucp</code></td>
+                        <td>Check that your redirect is active and the target file exists</td>
+                    </tr>
+                    <tr>
+                        <td>CORS errors</td>
+                        <td>Shopify CDN should handle this; try re-uploading the file</td>
+                    </tr>
+                    <tr>
+                        <td>Invalid JSON</td>
+                        <td>Re-generate your UCP profile using the generator tool</td>
+                    </tr>
+                    <tr>
+                        <td>Missing policies</td>
+                        <td>Ensure all policy pages exist and are published in Shopify</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section id="shopify-apps">
+                <h2>Shopify Apps for UCP</h2>
+                <p>While you can implement UCP manually, there are apps that simplify the process:</p>
+
+                <div class="tip-box platform">
+                    <strong>🔌 Coming Soon</strong>
+                    We're working with Shopify app developers to create dedicated UCP apps. Check back soon or <a href="mailto:hello@ucptools.dev">contact us</a> for updates.
+                </div>
+
+                <p>In the meantime, manual implementation is straightforward and gives you full control over your UCP profile.</p>
+            </section>
+
+            <section id="testing">
+                <h2>🤖 Test with AI Agents</h2>
+                <p>After implementation, test how AI shopping agents will interact with your store:</p>
+
+                <div class="cta-box">
+                    <h3>Run AI Agent Simulation</h3>
+                    <p>Test the full AI shopping experience on your Shopify store.</p>
+                    <a href="/#simulate" class="btn">Open Simulator →</a>
+                </div>
+            </section>
+
+            <section id="resources">
+                <h2>Resources</h2>
+                <ul>
+                    <li><a href="https://ucp.dev" target="_blank">Official UCP Specification</a></li>
+                    <li><a href="https://help.shopify.com/en/manual/online-store/themes/theme-structure/extend/files" target="_blank">Shopify Files Documentation</a></li>
+                    <li><a href="https://help.shopify.com/en/manual/online-store/menus-and-links/url-redirect" target="_blank">Shopify URL Redirects Guide</a></li>
+                    <li><a href="/learn.html">UCP Learning Center</a></li>
+                </ul>
+            </section>
+        </main>
+
+        <aside class="guide-sidebar">
+            <div class="sidebar-toc">
+                <h4>On This Page</h4>
+                <ul>
+                    <li><a href="#overview">Why Add UCP?</a></li>
+                    <li><a href="#prerequisites">Prerequisites</a></li>
+                    <li><a href="#implementation">Implementation Steps</a></li>
+                    <li><a href="#common-issues">Common Issues</a></li>
+                    <li><a href="#shopify-apps">Shopify Apps</a></li>
+                    <li><a href="#testing">Test with AI Agents</a></li>
+                    <li><a href="#resources">Resources</a></li>
+                </ul>
+            </div>
+
+            <div class="other-guides">
+                <h4>Other Platforms</h4>
+                <a href="/guides/woocommerce.html">WooCommerce</a>
+                <a href="/guides/magento.html">Magento</a>
+                <a href="/guides/wix.html">Wix</a>
+                <a href="/guides/bigcommerce.html">BigCommerce</a>
+                <a href="/guides/squarespace.html">Squarespace</a>
+            </div>
+        </aside>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>UCP Tools — Built for the AI Commerce era</p>
+            <p class="footer-links">
+                <a href="https://github.com/Nolpak14/ucp-tools" target="_blank">GitHub</a> ·
+                <a href="https://ucp.dev" target="_blank">UCP Spec</a> ·
+                <a href="/">Validator</a>
+            </p>
+        </div>
+    </footer>
+</body>
+
+</html>

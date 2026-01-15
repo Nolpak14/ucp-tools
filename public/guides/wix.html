@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J5JSHV7H1E"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-J5JSHV7H1E');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wix UCP Implementation Guide - AI Commerce Ready | UCP Tools</title>
+    <meta name="description"
+        content="Step-by-step guide to implementing UCP (Universal Commerce Protocol) on your Wix store. Make your Wix eCommerce site AI-ready for ChatGPT and AI shopping agents.">
+    <link rel="canonical" href="https://ucptools.dev/guides/wix.html">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#0C6EFC">
+    <meta property="og:title" content="Wix UCP Implementation Guide - AI Commerce Ready">
+    <meta property="og:description"
+        content="Make your Wix eCommerce store AI-ready with UCP. Simple implementation guide.">
+    <meta property="og:image" content="/og-image.png">
+    <meta property="og:type" content="article">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --brand-blue: #2E86AB;
+            --brand-teal: #36B5A2;
+            --brand-green: #47C97A;
+            --brand-gradient: linear-gradient(135deg, #2E86AB 0%, #36B5A2 50%, #47C97A 100%);
+            --platform-color: #0C6EFC;
+            --platform-dark: #0052CC;
+            --color-dark: #1A2B3C;
+            --color-medium: #5A6978;
+            --color-light: #94A3B8;
+            --color-border: #E2E8F0;
+            --color-background: #F8FAFC;
+            --color-card: #FFFFFF;
+            --color-success: #47C97A;
+            --color-warning: #F59E0B;
+            --color-error: #EF4444;
+            --color-info: #2E86AB;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--color-background);
+            color: var(--color-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        a { color: var(--brand-blue); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        header {
+            background: var(--color-card);
+            border-bottom: 1px solid var(--color-border);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .logo:hover { text-decoration: none; }
+        .logo-icon { width: 40px; height: 40px; border-radius: 8px; }
+
+        .logo-text {
+            background: var(--brand-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-suffix { font-weight: 400; -webkit-text-fill-color: var(--color-medium); }
+
+        nav { display: flex; gap: 8px; }
+
+        nav a {
+            padding: 8px 16px;
+            color: var(--color-medium);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--brand-blue);
+            background: rgba(46, 134, 171, 0.08);
+            text-decoration: none;
+        }
+
+        nav a.active {
+            color: var(--brand-blue);
+            background: rgba(46, 134, 171, 0.12);
+        }
+
+        .guide-hero {
+            background: linear-gradient(135deg, #0052CC 0%, #0C6EFC 100%);
+            color: white;
+            padding: 80px 0;
+        }
+
+        .guide-hero .container { max-width: 800px; }
+
+        .guide-hero h1 {
+            font-size: 2.75rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .guide-hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .guide-badges { display: flex; gap: 12px; flex-wrap: wrap; }
+
+        .guide-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .guide-content {
+            display: grid;
+            grid-template-columns: 1fr 260px;
+            gap: 60px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        @media (max-width: 968px) {
+            .guide-content { grid-template-columns: 1fr; gap: 40px; }
+            .guide-sidebar { order: -1; }
+        }
+
+        @media (max-width: 600px) {
+            .guide-hero h1 { font-size: 2rem; }
+            .guide-hero p { font-size: 1.1rem; }
+            .header-inner { flex-direction: column; gap: 16px; }
+            nav { flex-wrap: wrap; justify-content: center; }
+        }
+
+        .guide-main section { margin-bottom: 48px; }
+
+        .guide-main h2 {
+            color: var(--color-dark);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .guide-main h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 32px 0 16px;
+            color: var(--color-dark);
+        }
+
+        .guide-main p {
+            margin-bottom: 16px;
+            color: var(--color-medium);
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .guide-main ul, .guide-main ol { margin-bottom: 20px; padding-left: 24px; }
+
+        .guide-main li {
+            margin-bottom: 10px;
+            color: var(--color-medium);
+            line-height: 1.6;
+        }
+
+        .guide-main li strong { color: var(--color-dark); }
+
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 24px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            border: 1px solid #333;
+        }
+
+        code { font-family: 'Fira Code', 'Monaco', 'Consolas', monospace; }
+
+        :not(pre)>code {
+            background: #EEF2F6;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: var(--platform-dark);
+            font-weight: 500;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--platform-color);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-right: 12px;
+        }
+
+        .step-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 32px 0 16px;
+            color: var(--color-dark);
+        }
+
+        .tip-box {
+            background: #EFF6FF;
+            border-left: 4px solid var(--brand-blue);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin: 24px 0;
+        }
+
+        .tip-box.warning { background: #FEF3C7; border-color: var(--color-warning); }
+        .tip-box.success { background: #DCFCE7; border-color: var(--color-success); }
+        .tip-box.platform { background: #EEF5FF; border-color: var(--platform-color); }
+
+        .tip-box strong {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--color-dark);
+            font-size: 1rem;
+        }
+
+        .tip-box p, .tip-box { color: var(--color-medium); font-size: 0.95rem; }
+
+        .cta-box {
+            background: var(--brand-gradient);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 32px 0;
+            box-shadow: 0 8px 32px rgba(46, 134, 171, 0.25);
+        }
+
+        .cta-box h3 { color: white; font-size: 1.5rem; margin-bottom: 12px; }
+        .cta-box p { color: rgba(255, 255, 255, 0.9); margin-bottom: 24px; font-size: 1.05rem; }
+
+        .cta-box .btn {
+            background: white;
+            color: var(--brand-blue);
+            padding: 14px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-block;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .cta-box .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--color-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+        }
+
+        th, td {
+            text-align: left;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        th { background: var(--color-background); font-weight: 600; color: var(--color-dark); }
+        tr:last-child td { border-bottom: none; }
+        td code { background: #EEF2F6; padding: 4px 8px; border-radius: 4px; }
+
+        .guide-sidebar { position: sticky; top: 100px; align-self: start; }
+
+        .sidebar-toc {
+            background: var(--color-card);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .sidebar-toc h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-light);
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .sidebar-toc ul { list-style: none; padding: 0; margin: 0; }
+        .sidebar-toc li { margin-bottom: 0; }
+
+        .sidebar-toc a {
+            display: block;
+            padding: 10px 12px;
+            color: var(--color-medium);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .sidebar-toc a:hover {
+            color: var(--platform-color);
+            background: rgba(12, 110, 252, 0.08);
+            text-decoration: none;
+        }
+
+        .other-guides {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .other-guides h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-light);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .other-guides a {
+            display: block;
+            padding: 8px 12px;
+            color: var(--color-medium);
+            font-size: 0.85rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .other-guides a:hover {
+            color: var(--brand-blue);
+            background: rgba(46, 134, 171, 0.08);
+            text-decoration: none;
+        }
+
+        footer {
+            background: var(--color-dark);
+            color: white;
+            padding: 48px 0;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        footer p { margin: 0; opacity: 0.9; }
+        footer a { color: var(--brand-teal); }
+        footer a:hover { color: var(--brand-green); }
+        .footer-links { margin-top: 12px; opacity: 0.7; }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="/" class="logo">
+                <img src="/logo.jpeg" alt="UCP.tools logo" class="logo-icon">
+                <span class="logo-text">UCP<span class="logo-suffix">.tools</span></span>
+            </a>
+            <nav>
+                <a href="/">Validator</a>
+                <a href="/learn.html">Learn</a>
+                <a href="/directory.html">Directory</a>
+                <a href="/guides/wix.html" class="active">Wix</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="guide-hero">
+        <div class="container">
+            <h1>✨ Wix UCP Implementation Guide</h1>
+            <p>Make your Wix eCommerce store AI-ready. Enable ChatGPT, Google AI Mode, and AI shopping agents to discover and shop your products.</p>
+            <div class="guide-badges">
+                <span class="guide-badge">🤖 AI Agent Ready</span>
+                <span class="guide-badge">⚡ Easy Setup</span>
+                <span class="guide-badge">🔧 Velo Code</span>
+                <span class="guide-badge">🔒 Secure</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="guide-content">
+        <main class="guide-main">
+            <section id="overview">
+                <h2>Why Add UCP to Wix?</h2>
+                <p>
+                    Wix powers millions of online stores worldwide. Adding UCP (Universal Commerce Protocol) support makes your Wix store discoverable by AI shopping assistants, enabling automatic product discovery and purchases.
+                </p>
+                <ul>
+                    <li><strong>Visual Editor:</strong> Add UCP without deep technical knowledge</li>
+                    <li><strong>Velo by Wix:</strong> Use Wix's development platform for custom implementations</li>
+                    <li><strong>Built-in Hosting:</strong> No server configuration needed</li>
+                    <li><strong>Wix Stores Integration:</strong> Works seamlessly with Wix eCommerce</li>
+                </ul>
+
+                <div class="tip-box platform">
+                    <strong>📦 Wix Plans</strong>
+                    UCP implementation requires a Wix premium plan with eCommerce features. The Velo method requires a plan that supports custom code.
+                </div>
+            </section>
+
+            <section id="methods">
+                <h2>Implementation Methods</h2>
+
+                <table>
+                    <tr>
+                        <th>Method</th>
+                        <th>Difficulty</th>
+                        <th>Requirements</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Wix App (Recommended)</strong></td>
+                        <td>Easy</td>
+                        <td>Any Wix eCommerce plan</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Velo Backend</strong></td>
+                        <td>Medium</td>
+                        <td>Velo-enabled plan</td>
+                    </tr>
+                    <tr>
+                        <td><strong>External Hosting</strong></td>
+                        <td>Medium</td>
+                        <td>Domain with redirect capability</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section id="velo-method">
+                <h2>Method 1: Velo Backend (Recommended)</h2>
+                <p>Use Wix Velo to create a backend HTTP function that serves your UCP profile.</p>
+
+                <div class="step-title"><span class="step-number">1</span>Generate Your UCP Profile</div>
+                
+                <div class="cta-box">
+                    <h3>Generate Your UCP Profile</h3>
+                    <p>Create a customized UCP profile for your Wix store.</p>
+                    <a href="/#generate" class="btn">Open Generator →</a>
+                </div>
+
+                <div class="step-title"><span class="step-number">2</span>Enable Dev Mode</div>
+                <ol>
+                    <li>Open your Wix site in the Editor</li>
+                    <li>Click <strong>Dev Mode</strong> in the top menu</li>
+                    <li>Click <strong>Turn on Dev Mode</strong></li>
+                </ol>
+
+                <div class="step-title"><span class="step-number">3</span>Create HTTP Function</div>
+                <ol>
+                    <li>In the Site Structure panel, expand <strong>Backend</strong></li>
+                    <li>Create a new file: <code>http-functions.js</code></li>
+                    <li>Add the following code:</li>
+                </ol>
+
+<pre><span style="color:#6A9955">// Backend/http-functions.js</span>
+<span style="color:#C586C0">import</span> { ok, serverError } <span style="color:#C586C0">from</span> <span style="color:#CE9178">'wix-http-functions'</span>;
+
+<span style="color:#6A9955">// This creates the endpoint: /_functions/ucp</span>
+<span style="color:#C586C0">export function</span> <span style="color:#DCDCAA">get_ucp</span>(request) {
+    <span style="color:#C586C0">const</span> profile = {
+        profile_version: <span style="color:#CE9178">"1.0"</span>,
+        merchant: {
+            name: <span style="color:#CE9178">"Your Store Name"</span>,
+            url: <span style="color:#CE9178">"https://www.yoursite.com"</span>,
+            description: <span style="color:#CE9178">"Your store description"</span>,
+            contact: {
+                email: <span style="color:#CE9178">"support@yourstore.com"</span>
+            }
+        },
+        capabilities: [<span style="color:#CE9178">"browse"</span>, <span style="color:#CE9178">"search"</span>],
+        policies: {
+            returns_url: <span style="color:#CE9178">"https://www.yoursite.com/returns-policy"</span>,
+            shipping_url: <span style="color:#CE9178">"https://www.yoursite.com/shipping-policy"</span>,
+            privacy_url: <span style="color:#CE9178">"https://www.yoursite.com/privacy-policy"</span>
+        }
+    };
+
+    <span style="color:#C586C0">const</span> options = {
+        headers: {
+            <span style="color:#CE9178">"Content-Type"</span>: <span style="color:#CE9178">"application/json"</span>,
+            <span style="color:#CE9178">"Access-Control-Allow-Origin"</span>: <span style="color:#CE9178">"*"</span>
+        },
+        body: JSON.stringify(profile, <span style="color:#569CD6">null</span>, <span style="color:#B5CEA8">2</span>)
+    };
+
+    <span style="color:#C586C0">return</span> ok(options);
+}</pre>
+
+                <div class="step-title"><span class="step-number">4</span>Create Router for .well-known</div>
+                <p>Create a new file <code>routers.js</code> in the Backend folder:</p>
+
+<pre><span style="color:#6A9955">// Backend/routers.js</span>
+<span style="color:#C586C0">import</span> { ok, WixRouterSitemapEntry } <span style="color:#C586C0">from</span> <span style="color:#CE9178">'wix-router'</span>;
+
+<span style="color:#C586C0">export function</span> <span style="color:#DCDCAA">wellknown_Router</span>(request) {
+    <span style="color:#C586C0">if</span> (request.path[<span style="color:#B5CEA8">0</span>] === <span style="color:#CE9178">'ucp'</span>) {
+        <span style="color:#6A9955">// Redirect to HTTP function</span>
+        <span style="color:#C586C0">return</span> ok(<span style="color:#CE9178">'ucp-page'</span>, {});
+    }
+}</pre>
+
+                <div class="step-title"><span class="step-number">5</span>Add Router Prefix</div>
+                <ol>
+                    <li>In the Wix Editor, go to <strong>Site Menu → Add Page</strong></li>
+                    <li>Choose <strong>Router Page</strong></li>
+                    <li>Set prefix to <code>.well-known</code></li>
+                    <li>Connect it to your router</li>
+                </ol>
+
+                <div class="tip-box warning">
+                    <strong>⚠️ Wix Router Limitations</strong>
+                    Wix routers may have limitations with <code>.well-known</code> paths. If you encounter issues, use the External Hosting method below.
+                </div>
+
+                <div class="step-title"><span class="step-number">6</span>Publish Your Site</div>
+                <p>Click <strong>Publish</strong> to make your changes live. Your UCP profile will be available at:</p>
+                <ul>
+                    <li><code>https://yoursite.com/_functions/ucp</code> (HTTP function)</li>
+                    <li><code>https://yoursite.com/.well-known/ucp</code> (if router works)</li>
+                </ul>
+            </section>
+
+            <section id="external-method">
+                <h2>Method 2: External Hosting with Redirect</h2>
+                <p>If Velo isn't available or the router doesn't work, host your UCP profile externally and redirect.</p>
+
+                <div class="step-title"><span class="step-number">1</span>Host Your UCP Profile</div>
+                <p>Upload your UCP JSON file to a service like:</p>
+                <ul>
+                    <li><a href="https://gist.github.com" target="_blank">GitHub Gist</a> (get the raw URL)</li>
+                    <li><a href="https://jsonbin.io" target="_blank">JSONBin.io</a></li>
+                    <li>Your own server or CDN</li>
+                </ul>
+
+                <div class="step-title"><span class="step-number">2</span>Set Up Domain Redirect</div>
+                <p>If you're using a custom domain with Wix, you can set up a redirect at the DNS level or use Cloudflare Workers:</p>
+
+<pre><span style="color:#6A9955">// Cloudflare Worker example</span>
+<span style="color:#DCDCAA">addEventListener</span>(<span style="color:#CE9178">'fetch'</span>, event => {
+    event.respondWith(handleRequest(event.request))
+})
+
+<span style="color:#C586C0">async function</span> <span style="color:#DCDCAA">handleRequest</span>(request) {
+    <span style="color:#C586C0">const</span> url = <span style="color:#C586C0">new</span> URL(request.url)
+    
+    <span style="color:#C586C0">if</span> (url.pathname === <span style="color:#CE9178">'/.well-known/ucp'</span>) {
+        <span style="color:#C586C0">const</span> ucpUrl = <span style="color:#CE9178">'https://your-hosted-ucp-url.com/ucp.json'</span>
+        <span style="color:#C586C0">const</span> response = <span style="color:#C586C0">await</span> fetch(ucpUrl)
+        <span style="color:#C586C0">return new</span> Response(response.body, {
+            headers: {
+                <span style="color:#CE9178">'Content-Type'</span>: <span style="color:#CE9178">'application/json'</span>,
+                <span style="color:#CE9178">'Access-Control-Allow-Origin'</span>: <span style="color:#CE9178">'*'</span>
+            }
+        })
+    }
+    
+    <span style="color:#C586C0">return</span> fetch(request)
+}</pre>
+            </section>
+
+            <section id="schema-markup">
+                <h2>Schema.org Markup</h2>
+                <p>Wix Stores automatically adds basic Schema.org markup to product pages. For enhanced AI compatibility:</p>
+                
+                <ol>
+                    <li>Go to your site's <strong>SEO Settings</strong></li>
+                    <li>Navigate to <strong>SEO Tools → Structured Data</strong></li>
+                    <li>Ensure Product schema is enabled</li>
+                </ol>
+
+                <div class="tip-box">
+                    <strong>💡 Verification</strong>
+                    Use <a href="https://search.google.com/test/rich-results" target="_blank">Google's Rich Results Test</a> to verify your product pages have proper structured data.
+                </div>
+            </section>
+
+            <section id="validation">
+                <h2>Validate Your Implementation</h2>
+
+                <div class="cta-box">
+                    <h3>Validate Your Wix Store</h3>
+                    <p>Check your UCP implementation and AI commerce readiness.</p>
+                    <a href="/" class="btn">Run Validation →</a>
+                </div>
+            </section>
+
+            <section id="common-issues">
+                <h2>Common Issues & Solutions</h2>
+
+                <table>
+                    <tr>
+                        <th>Issue</th>
+                        <th>Solution</th>
+                    </tr>
+                    <tr>
+                        <td>Router prefix not working</td>
+                        <td>Use the HTTP function method or external hosting</td>
+                    </tr>
+                    <tr>
+                        <td>CORS errors</td>
+                        <td>Ensure <code>Access-Control-Allow-Origin</code> header is set</td>
+                    </tr>
+                    <tr>
+                        <td>Dev Mode not available</td>
+                        <td>Upgrade to a Wix plan that includes Velo</td>
+                    </tr>
+                    <tr>
+                        <td>Changes not live</td>
+                        <td>Make sure to click <strong>Publish</strong> after changes</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section id="testing">
+                <h2>🤖 Test with AI Agents</h2>
+
+                <div class="cta-box">
+                    <h3>Run AI Agent Simulation</h3>
+                    <p>Test how AI shopping agents will interact with your Wix store.</p>
+                    <a href="/#simulate" class="btn">Open Simulator →</a>
+                </div>
+            </section>
+
+            <section id="resources">
+                <h2>Resources</h2>
+                <ul>
+                    <li><a href="https://ucp.dev" target="_blank">Official UCP Specification</a></li>
+                    <li><a href="https://www.wix.com/velo/reference" target="_blank">Velo API Reference</a></li>
+                    <li><a href="https://support.wix.com/en/article/velo-exposing-a-site-api-with-http-functions" target="_blank">Wix HTTP Functions Guide</a></li>
+                    <li><a href="/learn.html">UCP Learning Center</a></li>
+                </ul>
+            </section>
+        </main>
+
+        <aside class="guide-sidebar">
+            <div class="sidebar-toc">
+                <h4>On This Page</h4>
+                <ul>
+                    <li><a href="#overview">Why Add UCP?</a></li>
+                    <li><a href="#methods">Implementation Methods</a></li>
+                    <li><a href="#velo-method">Velo Method</a></li>
+                    <li><a href="#external-method">External Hosting</a></li>
+                    <li><a href="#schema-markup">Schema.org Markup</a></li>
+                    <li><a href="#validation">Validation</a></li>
+                    <li><a href="#common-issues">Common Issues</a></li>
+                    <li><a href="#testing">Test with AI</a></li>
+                    <li><a href="#resources">Resources</a></li>
+                </ul>
+            </div>
+
+            <div class="other-guides">
+                <h4>Other Platforms</h4>
+                <a href="/guides/shopify.html">Shopify</a>
+                <a href="/guides/woocommerce.html">WooCommerce</a>
+                <a href="/guides/magento.html">Magento</a>
+                <a href="/guides/bigcommerce.html">BigCommerce</a>
+                <a href="/guides/squarespace.html">Squarespace</a>
+            </div>
+        </aside>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>UCP Tools — Built for the AI Commerce era</p>
+            <p class="footer-links">
+                <a href="https://github.com/Nolpak14/ucp-tools" target="_blank">GitHub</a> ·
+                <a href="https://ucp.dev" target="_blank">UCP Spec</a> ·
+                <a href="/">Validator</a>
+            </p>
+        </div>
+    </footer>
+</body>
+
+</html>

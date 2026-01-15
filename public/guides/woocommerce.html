@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J5JSHV7H1E"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-J5JSHV7H1E');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WooCommerce UCP Implementation Guide - AI Commerce Ready | UCP Tools</title>
+    <meta name="description"
+        content="Step-by-step guide to implementing UCP (Universal Commerce Protocol) on your WooCommerce store. Make your WordPress store AI-ready for ChatGPT and AI shopping agents.">
+    <link rel="canonical" href="https://ucptools.dev/guides/woocommerce.html">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#9B5C8F">
+    <meta property="og:title" content="WooCommerce UCP Implementation Guide - AI Commerce Ready">
+    <meta property="og:description"
+        content="Make your WooCommerce store AI-ready with UCP. Complete WordPress implementation guide.">
+    <meta property="og:image" content="/og-image.png">
+    <meta property="og:type" content="article">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --brand-blue: #2E86AB;
+            --brand-teal: #36B5A2;
+            --brand-green: #47C97A;
+            --brand-gradient: linear-gradient(135deg, #2E86AB 0%, #36B5A2 50%, #47C97A 100%);
+            --platform-color: #9B5C8F;
+            --platform-dark: #7F4275;
+            --color-dark: #1A2B3C;
+            --color-medium: #5A6978;
+            --color-light: #94A3B8;
+            --color-border: #E2E8F0;
+            --color-background: #F8FAFC;
+            --color-card: #FFFFFF;
+            --color-success: #47C97A;
+            --color-warning: #F59E0B;
+            --color-error: #EF4444;
+            --color-info: #2E86AB;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--color-background);
+            color: var(--color-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        a { color: var(--brand-blue); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        header {
+            background: var(--color-card);
+            border-bottom: 1px solid var(--color-border);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .logo:hover { text-decoration: none; }
+        .logo-icon { width: 40px; height: 40px; border-radius: 8px; }
+
+        .logo-text {
+            background: var(--brand-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-suffix { font-weight: 400; -webkit-text-fill-color: var(--color-medium); }
+
+        nav { display: flex; gap: 8px; }
+
+        nav a {
+            padding: 8px 16px;
+            color: var(--color-medium);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--brand-blue);
+            background: rgba(46, 134, 171, 0.08);
+            text-decoration: none;
+        }
+
+        nav a.active {
+            color: var(--brand-blue);
+            background: rgba(46, 134, 171, 0.12);
+        }
+
+        .guide-hero {
+            background: linear-gradient(135deg, #7F4275 0%, #9B5C8F 100%);
+            color: white;
+            padding: 80px 0;
+        }
+
+        .guide-hero .container { max-width: 800px; }
+
+        .guide-hero h1 {
+            font-size: 2.75rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .guide-hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .guide-badges { display: flex; gap: 12px; flex-wrap: wrap; }
+
+        .guide-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .guide-content {
+            display: grid;
+            grid-template-columns: 1fr 260px;
+            gap: 60px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        @media (max-width: 968px) {
+            .guide-content { grid-template-columns: 1fr; gap: 40px; }
+            .guide-sidebar { order: -1; }
+        }
+
+        @media (max-width: 600px) {
+            .guide-hero h1 { font-size: 2rem; }
+            .guide-hero p { font-size: 1.1rem; }
+            .header-inner { flex-direction: column; gap: 16px; }
+            nav { flex-wrap: wrap; justify-content: center; }
+        }
+
+        .guide-main section { margin-bottom: 48px; }
+
+        .guide-main h2 {
+            color: var(--color-dark);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .guide-main h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 32px 0 16px;
+            color: var(--color-dark);
+        }
+
+        .guide-main p {
+            margin-bottom: 16px;
+            color: var(--color-medium);
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .guide-main ul, .guide-main ol { margin-bottom: 20px; padding-left: 24px; }
+
+        .guide-main li {
+            margin-bottom: 10px;
+            color: var(--color-medium);
+            line-height: 1.6;
+        }
+
+        .guide-main li strong { color: var(--color-dark); }
+
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 24px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            border: 1px solid #333;
+        }
+
+        code { font-family: 'Fira Code', 'Monaco', 'Consolas', monospace; }
+
+        :not(pre)>code {
+            background: #EEF2F6;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: var(--platform-dark);
+            font-weight: 500;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--platform-color);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-right: 12px;
+        }
+
+        .step-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 32px 0 16px;
+            color: var(--color-dark);
+        }
+
+        .tip-box {
+            background: #EFF6FF;
+            border-left: 4px solid var(--brand-blue);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin: 24px 0;
+        }
+
+        .tip-box.warning { background: #FEF3C7; border-color: var(--color-warning); }
+        .tip-box.success { background: #DCFCE7; border-color: var(--color-success); }
+        .tip-box.platform { background: #F5EEF4; border-color: var(--platform-color); }
+
+        .tip-box strong {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--color-dark);
+            font-size: 1rem;
+        }
+
+        .tip-box p, .tip-box { color: var(--color-medium); font-size: 0.95rem; }
+
+        .cta-box {
+            background: var(--brand-gradient);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 32px 0;
+            box-shadow: 0 8px 32px rgba(46, 134, 171, 0.25);
+        }
+
+        .cta-box h3 { color: white; font-size: 1.5rem; margin-bottom: 12px; }
+        .cta-box p { color: rgba(255, 255, 255, 0.9); margin-bottom: 24px; font-size: 1.05rem; }
+
+        .cta-box .btn {
+            background: white;
+            color: var(--brand-blue);
+            padding: 14px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-block;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .cta-box .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--color-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+        }
+
+        th, td {
+            text-align: left;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        th { background: var(--color-background); font-weight: 600; color: var(--color-dark); }
+        tr:last-child td { border-bottom: none; }
+        td code { background: #EEF2F6; padding: 4px 8px; border-radius: 4px; }
+
+        .guide-sidebar { position: sticky; top: 100px; align-self: start; }
+
+        .sidebar-toc {
+            background: var(--color-card);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .sidebar-toc h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-light);
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .sidebar-toc ul { list-style: none; padding: 0; margin: 0; }
+        .sidebar-toc li { margin-bottom: 0; }
+
+        .sidebar-toc a {
+            display: block;
+            padding: 10px 12px;
+            color: var(--color-medium);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .sidebar-toc a:hover {
+            color: var(--platform-color);
+            background: rgba(155, 92, 143, 0.08);
+            text-decoration: none;
+        }
+
+        .other-guides {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .other-guides h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-light);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .other-guides a {
+            display: block;
+            padding: 8px 12px;
+            color: var(--color-medium);
+            font-size: 0.85rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .other-guides a:hover {
+            color: var(--brand-blue);
+            background: rgba(46, 134, 171, 0.08);
+            text-decoration: none;
+        }
+
+        footer {
+            background: var(--color-dark);
+            color: white;
+            padding: 48px 0;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        footer p { margin: 0; opacity: 0.9; }
+        footer a { color: var(--brand-teal); }
+        footer a:hover { color: var(--brand-green); }
+        .footer-links { margin-top: 12px; opacity: 0.7; }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="/" class="logo">
+                <img src="/logo.jpeg" alt="UCP.tools logo" class="logo-icon">
+                <span class="logo-text">UCP<span class="logo-suffix">.tools</span></span>
+            </a>
+            <nav>
+                <a href="/">Validator</a>
+                <a href="/learn.html">Learn</a>
+                <a href="/directory.html">Directory</a>
+                <a href="/guides/woocommerce.html" class="active">WooCommerce</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="guide-hero">
+        <div class="container">
+            <h1>🛒 WooCommerce UCP Implementation</h1>
+            <p>Make your WordPress + WooCommerce store AI-ready. Enable ChatGPT, Google AI Mode, and autonomous shopping agents to transact with your products.</p>
+            <div class="guide-badges">
+                <span class="guide-badge">🤖 AI Agent Ready</span>
+                <span class="guide-badge">📦 Plugin Available</span>
+                <span class="guide-badge">🔧 Developer Friendly</span>
+                <span class="guide-badge">🔒 Secure</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="guide-content">
+        <main class="guide-main">
+            <section id="overview">
+                <h2>Why Add UCP to WooCommerce?</h2>
+                <p>
+                    WooCommerce powers over 5 million online stores. Adding UCP (Universal Commerce Protocol) support makes your store discoverable by AI agents, enabling automatic product discovery and purchases through ChatGPT, Google AI Mode, and other AI assistants.
+                </p>
+                <ul>
+                    <li><strong>WordPress Flexibility:</strong> Full control over implementation via themes or plugins</li>
+                    <li><strong>REST API Ready:</strong> WooCommerce's REST API makes UCP integration natural</li>
+                    <li><strong>Schema.org Support:</strong> Many WooCommerce themes already include structured data</li>
+                    <li><strong>Plugin Ecosystem:</strong> Dedicated UCP plugins available</li>
+                </ul>
+
+                <div class="tip-box platform">
+                    <strong>🔌 WooUCP Plugin</strong>
+                    The easiest way to add UCP support is with the <a href="https://github.com/search?q=wooucp" target="_blank">WooUCP plugin</a>, which automatically generates your UCP profile from your WooCommerce settings.
+                </div>
+            </section>
+
+            <section id="methods">
+                <h2>Implementation Methods</h2>
+                <p>Choose the method that best fits your needs:</p>
+
+                <table>
+                    <tr>
+                        <th>Method</th>
+                        <th>Difficulty</th>
+                        <th>Best For</th>
+                    </tr>
+                    <tr>
+                        <td><strong>WooUCP Plugin</strong></td>
+                        <td>Easy</td>
+                        <td>Quick setup, non-developers</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Manual (functions.php)</strong></td>
+                        <td>Medium</td>
+                        <td>Full control, developers</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Custom Plugin</strong></td>
+                        <td>Advanced</td>
+                        <td>Enterprise, custom requirements</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section id="plugin-method">
+                <h2>Method 1: Using a Plugin (Recommended)</h2>
+
+                <div class="step-title"><span class="step-number">1</span>Install WooUCP Plugin</div>
+                <ol>
+                    <li>Go to <strong>Plugins → Add New</strong> in your WordPress admin</li>
+                    <li>Search for "WooUCP" or "UCP Commerce"</li>
+                    <li>Click <strong>Install Now</strong>, then <strong>Activate</strong></li>
+                </ol>
+
+                <div class="tip-box">
+                    <strong>💡 Alternative</strong>
+                    If the plugin isn't in the repository yet, you can download it from GitHub and upload via <strong>Plugins → Add New → Upload Plugin</strong>.
+                </div>
+
+                <div class="step-title"><span class="step-number">2</span>Configure the Plugin</div>
+                <ol>
+                    <li>Go to <strong>WooCommerce → Settings → UCP</strong></li>
+                    <li>Enter your store details (most will be auto-filled from WooCommerce)</li>
+                    <li>Review capabilities to expose (browse, search, checkout)</li>
+                    <li>Click <strong>Save Changes</strong></li>
+                </ol>
+
+                <div class="step-title"><span class="step-number">3</span>Verify Installation</div>
+                <p>Visit <code>https://yourstore.com/.well-known/ucp</code> to see your generated UCP profile.</p>
+            </section>
+
+            <section id="manual-method">
+                <h2>Method 2: Manual Implementation</h2>
+                <p>For full control, implement UCP manually using WordPress functions.</p>
+
+                <div class="step-title"><span class="step-number">1</span>Generate Your UCP Profile</div>
+                <div class="cta-box">
+                    <h3>Generate Your UCP Profile</h3>
+                    <p>Create a customized UCP profile for your WooCommerce store.</p>
+                    <a href="/#generate" class="btn">Open Generator →</a>
+                </div>
+
+                <div class="step-title"><span class="step-number">2</span>Add Rewrite Rule</div>
+                <p>Add this code to your theme's <code>functions.php</code> or a custom plugin:</p>
+
+<pre><span style="color:#6A9955">// Add rewrite rule for /.well-known/ucp</span>
+<span style="color:#C586C0">function</span> <span style="color:#DCDCAA">ucp_add_rewrite_rules</span>() {
+    add_rewrite_rule(
+        <span style="color:#CE9178">'^\.well-known/ucp/?$'</span>,
+        <span style="color:#CE9178">'index.php?ucp_profile=1'</span>,
+        <span style="color:#CE9178">'top'</span>
+    );
+}
+<span style="color:#DCDCAA">add_action</span>(<span style="color:#CE9178">'init'</span>, <span style="color:#CE9178">'ucp_add_rewrite_rules'</span>);
+
+<span style="color:#6A9955">// Register query var</span>
+<span style="color:#C586C0">function</span> <span style="color:#DCDCAA">ucp_query_vars</span>($vars) {
+    $vars[] = <span style="color:#CE9178">'ucp_profile'</span>;
+    <span style="color:#C586C0">return</span> $vars;
+}
+<span style="color:#DCDCAA">add_filter</span>(<span style="color:#CE9178">'query_vars'</span>, <span style="color:#CE9178">'ucp_query_vars'</span>);</pre>
+
+                <div class="step-title"><span class="step-number">3</span>Create the Response Handler</div>
+<pre><span style="color:#6A9955">// Handle UCP profile request</span>
+<span style="color:#C586C0">function</span> <span style="color:#DCDCAA">ucp_template_redirect</span>() {
+    <span style="color:#C586C0">if</span> (get_query_var(<span style="color:#CE9178">'ucp_profile'</span>)) {
+        header(<span style="color:#CE9178">'Content-Type: application/json'</span>);
+        header(<span style="color:#CE9178">'Access-Control-Allow-Origin: *'</span>);
+        
+        $profile = [
+            <span style="color:#CE9178">'profile_version'</span> => <span style="color:#CE9178">'1.0'</span>,
+            <span style="color:#CE9178">'merchant'</span> => [
+                <span style="color:#CE9178">'name'</span> => get_bloginfo(<span style="color:#CE9178">'name'</span>),
+                <span style="color:#CE9178">'url'</span> => home_url(),
+                <span style="color:#CE9178">'description'</span> => get_bloginfo(<span style="color:#CE9178">'description'</span>),
+                <span style="color:#CE9178">'contact'</span> => [
+                    <span style="color:#CE9178">'email'</span> => get_option(<span style="color:#CE9178">'woocommerce_email_from_address'</span>)
+                ]
+            ],
+            <span style="color:#CE9178">'capabilities'</span> => [<span style="color:#CE9178">'browse'</span>, <span style="color:#CE9178">'search'</span>],
+            <span style="color:#CE9178">'policies'</span> => [
+                <span style="color:#CE9178">'returns_url'</span> => get_privacy_policy_url(), <span style="color:#6A9955">// Update as needed</span>
+                <span style="color:#CE9178">'shipping_url'</span> => home_url(<span style="color:#CE9178">'/shipping-policy/'</span>),
+                <span style="color:#CE9178">'privacy_url'</span> => get_privacy_policy_url()
+            ],
+            <span style="color:#CE9178">'service_bindings'</span> => [
+                [
+                    <span style="color:#CE9178">'type'</span> => <span style="color:#CE9178">'REST'</span>,
+                    <span style="color:#CE9178">'base_url'</span> => home_url(<span style="color:#CE9178">'/wp-json/wc/v3'</span>)
+                ]
+            ]
+        ];
+        
+        echo json_encode($profile, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        exit;
+    }
+}
+<span style="color:#DCDCAA">add_action</span>(<span style="color:#CE9178">'template_redirect'</span>, <span style="color:#CE9178">'ucp_template_redirect'</span>);</pre>
+
+                <div class="step-title"><span class="step-number">4</span>Flush Rewrite Rules</div>
+                <p>After adding the code, flush rewrite rules:</p>
+                <ol>
+                    <li>Go to <strong>Settings → Permalinks</strong></li>
+                    <li>Click <strong>Save Changes</strong> (no changes needed, just save)</li>
+                </ol>
+
+                <div class="tip-box warning">
+                    <strong>⚠️ Important</strong>
+                    Always flush rewrite rules after adding new rewrite rules. Failing to do so will result in 404 errors.
+                </div>
+            </section>
+
+            <section id="schema-markup">
+                <h2>Schema.org Markup</h2>
+                <p>
+                    For maximum AI compatibility, ensure your products have proper Schema.org markup. Many WooCommerce themes include this by default.
+                </p>
+
+                <h3>Recommended Plugins</h3>
+                <ul>
+                    <li><strong>Yoast SEO:</strong> Includes WooCommerce schema support</li>
+                    <li><strong>Rank Math:</strong> Advanced schema options for products</li>
+                    <li><strong>Schema Pro:</strong> Dedicated schema plugin</li>
+                </ul>
+
+                <p>Verify your schema with:</p>
+                <ul>
+                    <li><a href="https://search.google.com/test/rich-results" target="_blank">Google Rich Results Test</a></li>
+                    <li><a href="https://validator.schema.org/" target="_blank">Schema.org Validator</a></li>
+                </ul>
+            </section>
+
+            <section id="validation">
+                <h2>Validate Your Implementation</h2>
+
+                <div class="cta-box">
+                    <h3>Validate Your WooCommerce Store</h3>
+                    <p>Check your UCP implementation and AI commerce readiness.</p>
+                    <a href="/" class="btn">Run Validation →</a>
+                </div>
+            </section>
+
+            <section id="common-issues">
+                <h2>Common Issues & Solutions</h2>
+
+                <table>
+                    <tr>
+                        <th>Issue</th>
+                        <th>Solution</th>
+                    </tr>
+                    <tr>
+                        <td>404 on <code>/.well-known/ucp</code></td>
+                        <td>Flush permalinks: Settings → Permalinks → Save</td>
+                    </tr>
+                    <tr>
+                        <td>CORS errors</td>
+                        <td>Add <code>Access-Control-Allow-Origin: *</code> header</td>
+                    </tr>
+                    <tr>
+                        <td>Wrong content type</td>
+                        <td>Ensure <code>Content-Type: application/json</code> header</td>
+                    </tr>
+                    <tr>
+                        <td>Caching issues</td>
+                        <td>Exclude <code>/.well-known/ucp</code> from caching plugins</td>
+                    </tr>
+                </table>
+
+                <div class="tip-box">
+                    <strong>💡 Caching Tip</strong>
+                    If using WP Super Cache, W3 Total Cache, or similar, add <code>/.well-known/ucp</code> to the exclusion list.
+                </div>
+            </section>
+
+            <section id="testing">
+                <h2>🤖 Test with AI Agents</h2>
+
+                <div class="cta-box">
+                    <h3>Run AI Agent Simulation</h3>
+                    <p>Test how AI shopping agents will interact with your WooCommerce store.</p>
+                    <a href="/#simulate" class="btn">Open Simulator →</a>
+                </div>
+            </section>
+
+            <section id="resources">
+                <h2>Resources</h2>
+                <ul>
+                    <li><a href="https://ucp.dev" target="_blank">Official UCP Specification</a></li>
+                    <li><a href="https://woocommerce.github.io/woocommerce-rest-api-docs/" target="_blank">WooCommerce REST API Docs</a></li>
+                    <li><a href="https://developer.wordpress.org/apis/routes/rewrite/" target="_blank">WordPress Rewrite API</a></li>
+                    <li><a href="/learn.html">UCP Learning Center</a></li>
+                </ul>
+            </section>
+        </main>
+
+        <aside class="guide-sidebar">
+            <div class="sidebar-toc">
+                <h4>On This Page</h4>
+                <ul>
+                    <li><a href="#overview">Why Add UCP?</a></li>
+                    <li><a href="#methods">Implementation Methods</a></li>
+                    <li><a href="#plugin-method">Plugin Method</a></li>
+                    <li><a href="#manual-method">Manual Method</a></li>
+                    <li><a href="#schema-markup">Schema.org Markup</a></li>
+                    <li><a href="#validation">Validation</a></li>
+                    <li><a href="#common-issues">Common Issues</a></li>
+                    <li><a href="#testing">Test with AI</a></li>
+                    <li><a href="#resources">Resources</a></li>
+                </ul>
+            </div>
+
+            <div class="other-guides">
+                <h4>Other Platforms</h4>
+                <a href="/guides/shopify.html">Shopify</a>
+                <a href="/guides/magento.html">Magento</a>
+                <a href="/guides/wix.html">Wix</a>
+                <a href="/guides/bigcommerce.html">BigCommerce</a>
+                <a href="/guides/squarespace.html">Squarespace</a>
+            </div>
+        </aside>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>UCP Tools — Built for the AI Commerce era</p>
+            <p class="footer-links">
+                <a href="https://github.com/Nolpak14/ucp-tools" target="_blank">GitHub</a> ·
+                <a href="https://ucp.dev" target="_blank">UCP Spec</a> ·
+                <a href="/">Validator</a>
+            </p>
+        </div>
+    </footer>
+</body>
+
+</html>
