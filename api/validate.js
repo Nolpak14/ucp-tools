@@ -103,23 +103,37 @@ const OFFER_FIELDS = {
 };
 
 async function fetchProfile(domain) {
-  const url = `https://${domain}/.well-known/ucp`;
-  try {
-    const res = await fetch(url, {
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'UCP-Validator/1.0 (https://ucptools.dev)'
-      },
-      signal: AbortSignal.timeout(15000),
-    });
-    if (!res.ok) {
-      return { profile: null, error: `HTTP ${res.status}: ${res.statusText}` };
+  // Try both /.well-known/ucp and /.well-known/ucp.json
+  const urls = [
+    `https://${domain}/.well-known/ucp`,
+    `https://${domain}/.well-known/ucp.json`,
+  ];
+
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'UCP-Validator/1.0 (https://ucptools.dev)'
+        },
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (!res.ok) continue;
+
+      const text = await res.text();
+      // Check if response looks like JSON (not HTML)
+      if (text.trim().startsWith('<')) continue;
+
+      const profile = JSON.parse(text);
+      return { profile, profileUrl: url };
+    } catch (e) {
+      // Try next URL
+      continue;
     }
-    const profile = await res.json();
-    return { profile };
-  } catch (e) {
-    return { profile: null, error: e.message || 'Failed to fetch profile' };
   }
+
+  return { profile: null, error: 'No UCP profile found at /.well-known/ucp or /.well-known/ucp.json' };
 }
 
 async function fetchHomepage(domain) {
@@ -716,7 +730,6 @@ export default async function handler(req, res) {
   }
 
   const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/\/$/, '').split('/')[0];
-  const profileUrl = `https://${cleanDomain}/.well-known/ucp`;
 
   // Fetch UCP profile and homepage in parallel
   const [ucpResult, homepageResult] = await Promise.all([
@@ -724,7 +737,7 @@ export default async function handler(req, res) {
     fetchHomepage(cleanDomain)
   ]);
 
-  const { profile, error: ucpError } = ucpResult;
+  const { profile, profileUrl, error: ucpError } = ucpResult;
   const { html, error: htmlError } = homepageResult;
 
   // Validate UCP profile
@@ -794,7 +807,7 @@ export default async function handler(req, res) {
   return res.status(200).json({
     ok: ucpErrors === 0 && hasUcp,
     domain: cleanDomain,
-    profile_url: profileUrl,
+    profile_url: profileUrl || `https://${cleanDomain}/.well-known/ucp`,
     ucp_version: ucpVersion,
 
     // AI Readiness

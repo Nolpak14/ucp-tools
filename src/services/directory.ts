@@ -72,25 +72,51 @@ interface UcpProfile {
 }
 
 /**
- * Validate a domain's UCP profile
+ * Fetch UCP profile from a URL, return null if not valid JSON
  */
-export async function validateDomain(domain: string): Promise<ValidationResult> {
-  const url = `https://${domain}/.well-known/ucp`;
-
+async function tryFetchProfile(url: string): Promise<UcpProfile | null> {
   try {
     const res = await fetch(url, {
       headers: {
         Accept: 'application/json',
         'User-Agent': 'UCP-Directory/1.0 (https://ucptools.dev)',
       },
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(10000),
     });
 
-    if (!res.ok) {
-      return { valid: false, error: `HTTP ${res.status}` };
-    }
+    if (!res.ok) return null;
 
-    const profile = (await res.json()) as UcpProfile;
+    const text = await res.text();
+    // Check if response looks like JSON (not HTML)
+    if (text.trim().startsWith('<')) return null;
+
+    return JSON.parse(text) as UcpProfile;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Validate a domain's UCP profile
+ */
+export async function validateDomain(domain: string): Promise<ValidationResult> {
+  // Try both /.well-known/ucp and /.well-known/ucp.json
+  const urls = [
+    `https://${domain}/.well-known/ucp`,
+    `https://${domain}/.well-known/ucp.json`,
+  ];
+
+  let profile: UcpProfile | null = null;
+
+  for (const url of urls) {
+    profile = await tryFetchProfile(url);
+    if (profile) break;
+  }
+
+  try {
+    if (!profile) {
+      return { valid: false, error: 'No UCP profile found at /.well-known/ucp or /.well-known/ucp.json' };
+    }
 
     // Basic validation
     if (!profile?.ucp?.version || !profile?.ucp?.services) {

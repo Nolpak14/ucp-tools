@@ -85,13 +85,13 @@ describe('Directory Service', () => {
       const result = await directoryService.validateDomain('example.com');
 
       expect(result.valid).toBe(false);
-      expect(result.error).toContain('404');
+      expect(result.error).toContain('No UCP profile found');
     });
 
     it('should return invalid for malformed UCP profile', async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({ invalid: 'structure' }),
+        text: () => Promise.resolve(JSON.stringify({ invalid: 'structure' })),
       });
 
       const result = await directoryService.validateDomain('example.com');
@@ -119,7 +119,7 @@ describe('Directory Service', () => {
 
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(validProfile),
+        text: () => Promise.resolve(JSON.stringify(validProfile)),
       });
 
       const result = await directoryService.validateDomain('example.com');
@@ -149,7 +149,7 @@ describe('Directory Service', () => {
 
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(fullProfile),
+        text: () => Promise.resolve(JSON.stringify(fullProfile)),
       });
 
       const result = await directoryService.validateDomain('example.com');
@@ -178,7 +178,7 @@ describe('Directory Service', () => {
 
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(multiTransportProfile),
+        text: () => Promise.resolve(JSON.stringify(multiTransportProfile)),
       });
 
       const result = await directoryService.validateDomain('example.com');
@@ -215,9 +215,9 @@ describe('Directory Service', () => {
     it('should clean domain properly', async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({
+        text: () => Promise.resolve(JSON.stringify({
           ucp: { version: '2024-01-01', services: {}, capabilities: [] },
-        }),
+        })),
       });
 
       // The function should strip protocol and trailing slash
@@ -260,7 +260,7 @@ describe('Grade Calculation', () => {
 
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(profile),
+        text: () => Promise.resolve(JSON.stringify(profile)),
       });
 
       const result = await directoryService.validateDomain('test.com');
