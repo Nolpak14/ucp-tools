@@ -42,3 +42,6 @@ coverage/
 
 # Private documentation
 docs-private/
+
+# Claude local settings (may contain secrets)
+.claude/settings.local.json
