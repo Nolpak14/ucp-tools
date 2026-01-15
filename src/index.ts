@@ -41,3 +41,17 @@ export {
 
 // Hosting
 export { generateHostingArtifacts } from './hosting/index.js';
+
+// Security Scanner
+export {
+  scanEndpointSecurity,
+  SecurityCheckIds,
+} from './security/index.js';
+export type {
+  SecurityCheck,
+  SecurityScanResult,
+  SecurityScanOptions,
+  SecuritySeverity,
+  SecurityCheckStatus,
+  SecurityCheckId,
+} from './security/index.js';
