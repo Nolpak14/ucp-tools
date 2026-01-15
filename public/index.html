@@ -12,6 +12,8 @@
   </script>
   <!-- Ahrefs Analytics -->
   <script src="https://analytics.ahrefs.com/analytics.js" data-key="w/KDij6w81HzA8oXaw60JA" async></script>
+  <!-- jsPDF for PDF report generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UCP Tools - AI Commerce Readiness Checker & UCP Validator</title>
@@ -1482,13 +1484,29 @@
           </div>
           ` : ''}
 
+          <!-- Download Report Section -->
+          <div style="margin-top: 24px; padding: 20px; background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(236,72,153,0.1)); border-radius: 8px; border: 1px solid var(--color-border);">
+            <h4 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 20px;">📄</span> Download Report
+            </h4>
+            <p style="font-size: 13px; color: var(--color-medium); margin-bottom: 16px;">
+              Get a professional PDF report to share with your team or stakeholders:
+            </p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <button class="btn" style="padding: 10px 20px;" onclick="downloadPdfReport()">
+                📥 Download PDF Report
+              </button>
+            </div>
+          </div>
+
           <p style="margin-top: 16px; font-size: 14px;" class="text-muted">
             Found this useful? <a href="#pricing" class="link-brand">Support the project \u2192</a>
           </p>
         `;
 
-        // Store domain for badge copy
+        // Store validation data for report generation
         window.lastValidatedDomain = domain;
+        window.lastValidationData = data;
       } catch (err) {
         result.className = 'result show error';
         result.innerHTML = `<p>Error: ${err.message}</p>`;
@@ -1502,6 +1520,214 @@
       const code = '<a href="https://ucptools.dev/verify?domain=' + encodeURIComponent(domain) + '"><img src="https://ucptools.dev/api/badge?domain=' + encodeURIComponent(domain) + '" alt="AI Commerce Ready"></a>';
       navigator.clipboard.writeText(code);
       alert('Badge code copied to clipboard!');
+    }
+
+    // PDF Report Generation (Issue #7)
+    function downloadPdfReport() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const data = window.lastValidationData;
+      const domain = window.lastValidatedDomain;
+
+      if (!data || !domain) {
+        alert('No validation data available. Please run a validation first.');
+        return;
+      }
+
+      const score = data.ai_readiness?.score ?? 0;
+      const grade = data.ai_readiness?.grade ?? 'F';
+      const readinessLabel = data.ai_readiness?.label ?? 'Not Ready';
+
+      // Colors
+      const brandBlue = [46, 134, 171];
+      const brandTeal = [54, 181, 162];
+      const gradeColors = {
+        'A': [22, 163, 74],
+        'B': [37, 99, 235],
+        'C': [202, 138, 4],
+        'D': [234, 88, 12],
+        'F': [220, 38, 38]
+      };
+      const gradeColor = gradeColors[grade] || gradeColors['F'];
+
+      let y = 20;
+
+      // Header with gradient-like effect
+      doc.setFillColor(...brandBlue);
+      doc.rect(0, 0, 210, 45, 'F');
+      doc.setFillColor(...brandTeal);
+      doc.rect(140, 0, 70, 45, 'F');
+
+      // Logo text
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.text('UCP.tools', 20, 28);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text('AI Commerce Readiness Report', 20, 36);
+
+      // Date
+      doc.setFontSize(9);
+      doc.text(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), 160, 28);
+
+      y = 60;
+
+      // Domain
+      doc.setTextColor(30, 41, 59);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Domain:', 20, y);
+      doc.setFont('helvetica', 'bold');
+      doc.text(domain, 50, y);
+
+      y += 15;
+
+      // Score Box
+      doc.setFillColor(...gradeColor);
+      doc.roundedRect(20, y, 50, 35, 3, 3, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(32);
+      doc.setFont('helvetica', 'bold');
+      doc.text(grade, 35, y + 22);
+      doc.setFontSize(12);
+      doc.text(score + '/100', 48, y + 30);
+
+      // Readiness label
+      doc.setTextColor(30, 41, 59);
+      doc.setFontSize(16);
+      doc.text(readinessLabel, 80, y + 15);
+      doc.setFontSize(10);
+      doc.setTextColor(100, 116, 139);
+      doc.text('AI Commerce Readiness Level', 80, y + 24);
+
+      // Benchmark comparison
+      if (data.benchmark) {
+        doc.setFontSize(10);
+        doc.text(`Better than ${data.benchmark.percentile}% of ${data.benchmark.total_sites_analyzed.toLocaleString()} sites analyzed`, 80, y + 32);
+      }
+
+      y += 50;
+
+      // Section: UCP Profile
+      doc.setFillColor(240, 249, 255);
+      doc.roundedRect(20, y, 170, 30, 2, 2, 'F');
+      doc.setTextColor(...brandBlue);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('UCP Profile (/.well-known/ucp)', 25, y + 8);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(30, 41, 59);
+      const ucpStatus = data.ucp?.found ? '✓ Profile found' : '✗ No profile found';
+      doc.text(ucpStatus, 25, y + 18);
+      const ucpIssues = data.ucp?.issues || [];
+      const ucpErrors = ucpIssues.filter(i => i.severity === 'error').length;
+      const ucpWarnings = ucpIssues.filter(i => i.severity === 'warn').length;
+      doc.text(`${ucpErrors} error(s), ${ucpWarnings} warning(s)`, 25, y + 26);
+
+      y += 38;
+
+      // Section: Schema.org
+      doc.setFillColor(240, 253, 244);
+      doc.roundedRect(20, y, 170, 30, 2, 2, 'F');
+      doc.setTextColor(...brandTeal);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Schema.org (Jan 2026 Requirements)', 25, y + 8);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(30, 41, 59);
+      const schemaStats = data.schema?.stats || {};
+      doc.text(`Products: ${schemaStats.products || 0}, Return Policies: ${schemaStats.returnPolicies || 0}`, 25, y + 18);
+      const schemaIssues = data.schema?.issues || [];
+      const schemaErrors = schemaIssues.filter(i => i.severity === 'error').length;
+      const schemaWarnings = schemaIssues.filter(i => i.severity === 'warn').length;
+      doc.text(`${schemaErrors} error(s), ${schemaWarnings} warning(s)`, 25, y + 26);
+
+      y += 38;
+
+      // Section: Product Quality
+      if (data.product_quality) {
+        doc.setFillColor(255, 251, 235);
+        doc.roundedRect(20, y, 170, 22, 2, 2, 'F');
+        doc.setTextColor(217, 119, 6);
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Product Data Quality', 25, y + 8);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(30, 41, 59);
+        doc.text(`Completeness: ${data.product_quality.completeness || 0}%`, 25, y + 18);
+        y += 30;
+      }
+
+      // Issues Summary
+      y += 5;
+      doc.setTextColor(30, 41, 59);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Key Issues Found', 20, y);
+      y += 8;
+
+      const allIssues = [...(data.ucp?.issues || []), ...(data.schema?.issues || [])].slice(0, 8);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+
+      allIssues.forEach((issue, idx) => {
+        if (y > 260) return; // Don't overflow page
+        const severityColors = { error: [220, 38, 38], warn: [202, 138, 4] };
+        const color = severityColors[issue.severity] || [100, 116, 139];
+        doc.setTextColor(...color);
+        const prefix = issue.severity === 'error' ? '● ERROR: ' : '○ WARN: ';
+        doc.text(prefix, 22, y);
+        doc.setTextColor(30, 41, 59);
+        const msgText = issue.message.length > 70 ? issue.message.substring(0, 70) + '...' : issue.message;
+        doc.text(msgText, 45, y);
+        y += 6;
+      });
+
+      y += 10;
+
+      // Recommendations (Lint Suggestions)
+      if (data.lint_suggestions && data.lint_suggestions.length > 0 && y < 240) {
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Top Recommendations', 20, y);
+        y += 8;
+
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+
+        data.lint_suggestions.slice(0, 5).forEach((suggestion, idx) => {
+          if (y > 270) return;
+          const severityColors = { critical: [220, 38, 38], warning: [202, 138, 4], info: [37, 99, 235] };
+          const color = severityColors[suggestion.severity] || [100, 116, 139];
+          doc.setTextColor(...color);
+          doc.text(`${idx + 1}. [${suggestion.severity.toUpperCase()}]`, 22, y);
+          doc.setTextColor(30, 41, 59);
+          doc.text(suggestion.title, 55, y);
+          y += 6;
+        });
+      }
+
+      // Footer
+      doc.setFillColor(248, 250, 252);
+      doc.rect(0, 277, 210, 20, 'F');
+      doc.setTextColor(100, 116, 139);
+      doc.setFontSize(8);
+      doc.text('Generated by UCP.tools - ucptools.dev', 20, 287);
+      doc.text('AI Commerce Readiness Checker', 20, 292);
+      doc.setTextColor(...brandBlue);
+      doc.text('Validate your store: ucptools.dev', 140, 287);
+
+      // Download
+      doc.save(`ucp-report-${domain.replace(/\./g, '-')}.pdf`);
+
+      // Track download
+      if (typeof gtag === 'function') {
+        gtag('event', 'download_report', { domain: domain, score: score, grade: grade });
+      }
     }
 
     // Lint Suggestions functions (Issue #9)
