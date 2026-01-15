@@ -1,0 +1,25 @@
+{
+  "ucp": {
+    "version": "1.0",
+    "services": {
+      "checkout": "/api/ucp/checkout",
+      "orders": "/api/ucp/orders",
+      "products": "/api/ucp/products"
+    },
+    "capabilities": [
+      "dev.ucp.shopping.checkout",
+      "dev.ucp.shopping.catalog",
+      "dev.ucp.shopping.fulfillment"
+    ],
+    "merchant": {
+      "name": "Test Merchant",
+      "description": "A non-compliant but working UCP profile",
+      "website": "https://example.com"
+    },
+    "sandbox": true
+  },
+  "payment": {
+    "sandbox_mode": true,
+    "accepted_tokens": ["sandbox_*", "test"]
+  }
+}

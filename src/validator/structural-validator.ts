@@ -412,35 +412,25 @@ function validateCapability(capability: unknown, index: number): ValidationIssue
 
 /**
  * Validate signing_keys structure
+ * Accepts signing_keys as a direct array of JWKs (official UCP format)
  */
 function validateSigningKeys(signingKeys: unknown): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
   const path = '$.signing_keys';
 
-  if (typeof signingKeys !== 'object' || signingKeys === null) {
+  // signing_keys should be an array of JWKs
+  if (!Array.isArray(signingKeys)) {
     issues.push({
       severity: 'error',
       code: ValidationErrorCodes.INVALID_SIGNING_KEY,
       path,
-      message: 'signing_keys must be an object',
+      message: 'signing_keys must be an array of JWK objects',
     });
     return issues;
   }
 
-  const keys = signingKeys as Record<string, unknown>;
-
-  if (!Array.isArray(keys.keys)) {
-    issues.push({
-      severity: 'error',
-      code: ValidationErrorCodes.INVALID_SIGNING_KEY,
-      path: `${path}.keys`,
-      message: 'signing_keys.keys must be an array',
-    });
-    return issues;
-  }
-
-  for (let i = 0; i < keys.keys.length; i++) {
-    issues.push(...validateJwk(keys.keys[i], `${path}.keys[${i}]`));
+  for (let i = 0; i < signingKeys.length; i++) {
+    issues.push(...validateJwk(signingKeys[i], `${path}[${i}]`));
   }
 
   return issues;

@@ -1,0 +1,75 @@
+{
+  "ucp": {
+    "version": "2026-01-11",
+    "services": {
+      "dev.ucp.shopping": {
+        "version": "2026-01-11",
+        "spec": "https://ucp.dev/specs/shopping",
+        "rest": {
+          "schema": "https://ucp.dev/services/shopping/openapi.json",
+          "endpoint": "https://example.com/api"
+        }
+      }
+    },
+    "capabilities": [
+      {
+        "name": "dev.ucp.shopping.checkout",
+        "version": "2026-01-11",
+        "spec": "https://ucp.dev/specs/shopping/checkout",
+        "schema": "https://ucp.dev/schemas/shopping/checkout.json"
+      },
+      {
+        "name": "dev.ucp.shopping.order",
+        "version": "2026-01-11",
+        "spec": "https://ucp.dev/specs/shopping/order",
+        "schema": "https://ucp.dev/schemas/shopping/order.json",
+        "extends": "dev.ucp.shopping.checkout"
+      },
+      {
+        "name": "dev.ucp.shopping.fulfillment",
+        "version": "2026-01-11",
+        "spec": "https://ucp.dev/specs/shopping/fulfillment",
+        "schema": "https://ucp.dev/schemas/shopping/fulfillment.json",
+        "extends": "dev.ucp.shopping.order"
+      },
+      {
+        "name": "dev.ucp.shopping.discount",
+        "version": "2026-01-11",
+        "spec": "https://ucp.dev/specs/shopping/discount",
+        "schema": "https://ucp.dev/schemas/shopping/discount.json",
+        "extends": "dev.ucp.shopping.checkout"
+      },
+      {
+        "name": "dev.ucp.shopping.buyer_consent",
+        "version": "2026-01-11",
+        "spec": "https://ucp.dev/specs/shopping/buyer_consent",
+        "schema": "https://ucp.dev/schemas/shopping/buyer_consent.json",
+        "extends": "dev.ucp.shopping.checkout"
+      }
+    ]
+  },
+  "signing_keys": [
+    {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "test-x-coordinate",
+      "y": "test-y-coordinate",
+      "kid": "key-2026-01"
+    }
+  ],
+  "payment": {
+    "handlers": [
+      {
+        "id": "mock_payment",
+        "name": "com.example.mock_payment",
+        "version": "2026-01-11",
+        "spec": "https://example.com/payment/spec",
+        "config_schema": "https://example.com/payment/config.json",
+        "instrument_schemas": ["https://example.com/payment/instrument.json"],
+        "config": {
+          "mode": "sandbox"
+        }
+      }
+    ]
+  }
+}
