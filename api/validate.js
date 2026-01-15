@@ -653,6 +653,415 @@ function validateProfile(profile) {
   return issues;
 }
 
+/**
+ * Generate actionable lint suggestions with code snippets, severity, and doc links
+ */
+function generateLintSuggestions(ucpIssues, schemaIssues, hasUcp, profile, schemaStats) {
+  const suggestions = [];
+
+  // Issue code to suggestion mapping
+  const suggestionMap = {
+    // Critical - Blocks AI agent functionality
+    'UCP_FETCH_FAILED': {
+      severity: 'critical',
+      title: 'Create a UCP Profile',
+      impact: 'AI shopping agents cannot discover your store without a UCP profile',
+      fix: 'Create a file at /.well-known/ucp with your store configuration',
+      codeSnippet: `{
+  "ucp": {
+    "version": "2026-05-01",
+    "services": {
+      "dev.ucp.shopping": {
+        "version": "1.0.0",
+        "spec": "https://ucp.dev/specs/shopping/1.0",
+        "rest": {
+          "schema": "https://yourstore.com/api/openapi.json",
+          "endpoint": "https://yourstore.com/api/v1"
+        }
+      }
+    },
+    "capabilities": [
+      {
+        "name": "dev.ucp.shopping.catalog",
+        "version": "1.0.0",
+        "spec": "https://ucp.dev/caps/catalog/1.0",
+        "schema": "https://ucp.dev/caps/catalog/1.0/schema.json"
+      }
+    ]
+  }
+}`,
+      docLink: 'https://ucp.dev/docs/getting-started',
+      generatorLink: '/generate',
+    },
+    'UCP_MISSING_ROOT': {
+      severity: 'critical',
+      title: 'Add "ucp" Root Object',
+      impact: 'Profile cannot be parsed without the required root structure',
+      fix: 'Wrap your configuration in a "ucp" object',
+      codeSnippet: `{
+  "ucp": {
+    "version": "2026-05-01",
+    "services": { ... },
+    "capabilities": [ ... ]
+  }
+}`,
+      docLink: 'https://ucp.dev/docs/profile-structure',
+    },
+    'UCP_MISSING_VERSION': {
+      severity: 'critical',
+      title: 'Add UCP Version',
+      impact: 'Agents cannot determine compatibility without a version',
+      fix: 'Add a version field in YYYY-MM-DD format',
+      codeSnippet: `"version": "2026-05-01"`,
+      docLink: 'https://ucp.dev/docs/versioning',
+    },
+    'UCP_INVALID_VERSION': {
+      severity: 'critical',
+      title: 'Fix Version Format',
+      impact: 'Invalid version format will cause parsing errors',
+      fix: 'Use YYYY-MM-DD format (e.g., 2026-05-01)',
+      codeSnippet: `"version": "2026-05-01"`,
+      docLink: 'https://ucp.dev/docs/versioning',
+    },
+    'UCP_MISSING_SERVICES': {
+      severity: 'critical',
+      title: 'Add Services Configuration',
+      impact: 'No services means AI agents have nothing to interact with',
+      fix: 'Add at least one service (shopping service recommended)',
+      codeSnippet: `"services": {
+  "dev.ucp.shopping": {
+    "version": "1.0.0",
+    "spec": "https://ucp.dev/specs/shopping/1.0",
+    "rest": {
+      "schema": "https://yourstore.com/api/openapi.json",
+      "endpoint": "https://yourstore.com/api/v1"
+    }
+  }
+}`,
+      docLink: 'https://ucp.dev/docs/services',
+    },
+    'UCP_MISSING_CAPABILITIES': {
+      severity: 'critical',
+      title: 'Add Capabilities Array',
+      impact: 'Without capabilities, agents cannot perform any actions',
+      fix: 'Add at least catalog capability for product discovery',
+      codeSnippet: `"capabilities": [
+  {
+    "name": "dev.ucp.shopping.catalog",
+    "version": "1.0.0",
+    "spec": "https://ucp.dev/caps/catalog/1.0",
+    "schema": "https://ucp.dev/caps/catalog/1.0/schema.json"
+  }
+]`,
+      docLink: 'https://ucp.dev/docs/capabilities',
+    },
+    'UCP_MISSING_KEYS': {
+      severity: 'critical',
+      title: 'Add Signing Keys for Order Capability',
+      impact: 'Order transactions cannot be verified without signing keys',
+      fix: 'Generate Ed25519 keypair and add public key to profile',
+      codeSnippet: `"signing_keys": [
+  {
+    "id": "key-1",
+    "type": "Ed25519",
+    "public_key": "YOUR_BASE64_PUBLIC_KEY",
+    "created_at": "2026-01-01T00:00:00Z"
+  }
+]`,
+      docLink: 'https://ucp.dev/docs/signing-keys',
+    },
+    'UCP_ENDPOINT_NOT_HTTPS': {
+      severity: 'critical',
+      title: 'Use HTTPS for Endpoints',
+      impact: 'HTTP endpoints are insecure and rejected by AI agents',
+      fix: 'Change endpoint URLs to use https://',
+      codeSnippet: `"endpoint": "https://yourstore.com/api/v1"`,
+      docLink: 'https://ucp.dev/docs/security',
+    },
+    'UCP_NS_MISMATCH': {
+      severity: 'critical',
+      title: 'Fix Namespace Origin',
+      impact: 'Spec/schema URLs must match the capability namespace',
+      fix: 'dev.ucp.* capabilities must use ucp.dev URLs',
+      codeSnippet: `{
+  "name": "dev.ucp.shopping.catalog",
+  "spec": "https://ucp.dev/caps/catalog/1.0",
+  "schema": "https://ucp.dev/caps/catalog/1.0/schema.json"
+}`,
+      docLink: 'https://ucp.dev/docs/namespaces',
+    },
+
+    // Schema critical errors
+    'SCHEMA_NO_RETURN_POLICY': {
+      severity: 'critical',
+      title: 'Add MerchantReturnPolicy Schema',
+      impact: 'Required for AI commerce eligibility (Jan 2026 deadline)',
+      fix: 'Add MerchantReturnPolicy to your product offers',
+      codeSnippet: `{
+  "@type": "Product",
+  "offers": {
+    "@type": "Offer",
+    "hasMerchantReturnPolicy": {
+      "@type": "MerchantReturnPolicy",
+      "applicableCountry": "US",
+      "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+      "merchantReturnDays": 30,
+      "returnFees": "https://schema.org/FreeReturn"
+    }
+  }
+}`,
+      docLink: 'https://schema.org/MerchantReturnPolicy',
+      generatorLink: '/generate?tab=schema',
+    },
+    'SCHEMA_NO_SHIPPING': {
+      severity: 'critical',
+      title: 'Add OfferShippingDetails Schema',
+      impact: 'Required for AI commerce eligibility (Jan 2026 deadline)',
+      fix: 'Add shippingDetails to your product offers',
+      codeSnippet: `{
+  "@type": "Product",
+  "offers": {
+    "@type": "Offer",
+    "shippingDetails": {
+      "@type": "OfferShippingDetails",
+      "shippingRate": {
+        "@type": "MonetaryAmount",
+        "value": "5.99",
+        "currency": "USD"
+      },
+      "deliveryTime": {
+        "@type": "ShippingDeliveryTime",
+        "handlingTime": {
+          "@type": "QuantitativeValue",
+          "minValue": 1,
+          "maxValue": 2,
+          "unitCode": "d"
+        },
+        "transitTime": {
+          "@type": "QuantitativeValue",
+          "minValue": 3,
+          "maxValue": 5,
+          "unitCode": "d"
+        }
+      },
+      "shippingDestination": {
+        "@type": "DefinedRegion",
+        "addressCountry": "US"
+      }
+    }
+  }
+}`,
+      docLink: 'https://schema.org/OfferShippingDetails',
+      generatorLink: '/generate?tab=schema',
+    },
+
+    // Warnings - Reduces AI readiness score
+    'UCP_NO_TRANSPORT': {
+      severity: 'warning',
+      title: 'Add Transport Binding',
+      impact: 'Service has no way for agents to communicate with it',
+      fix: 'Add REST, MCP, or A2A transport binding',
+      codeSnippet: `"rest": {
+  "schema": "https://yourstore.com/api/openapi.json",
+  "endpoint": "https://yourstore.com/api/v1"
+}`,
+      docLink: 'https://ucp.dev/docs/transports',
+    },
+    'UCP_TRAILING_SLASH': {
+      severity: 'warning',
+      title: 'Remove Trailing Slash from Endpoint',
+      impact: 'May cause URL concatenation issues',
+      fix: 'Remove the trailing / from endpoint URLs',
+      docLink: 'https://ucp.dev/docs/endpoints',
+    },
+    'UCP_ORPHAN_EXT': {
+      severity: 'warning',
+      title: 'Fix Orphaned Extension',
+      impact: 'Capability extends a parent that does not exist',
+      fix: 'Add the parent capability or remove the extends field',
+      docLink: 'https://ucp.dev/docs/extensions',
+    },
+    'SCHEMA_NO_ORG': {
+      severity: 'warning',
+      title: 'Add Organization Schema',
+      impact: 'AI agents may not recognize your business identity',
+      fix: 'Add Organization or WebSite schema to your pages',
+      codeSnippet: `{
+  "@type": "Organization",
+  "name": "Your Store Name",
+  "url": "https://yourstore.com",
+  "logo": "https://yourstore.com/logo.png",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer service",
+    "email": "support@yourstore.com"
+  }
+}`,
+      docLink: 'https://schema.org/Organization',
+    },
+    'ORG_NO_NAME': {
+      severity: 'warning',
+      title: 'Add Organization Name',
+      impact: 'Organization schema is incomplete without a name',
+      fix: 'Add name property to Organization schema',
+      codeSnippet: `"name": "Your Store Name"`,
+      docLink: 'https://schema.org/Organization',
+    },
+    'SCHEMA_RETURN_NO_COUNTRY': {
+      severity: 'warning',
+      title: 'Add Country to Return Policy',
+      impact: 'Return policy scope is unclear without country',
+      fix: 'Add ISO 3166-1 alpha-2 country code',
+      codeSnippet: `"applicableCountry": "US"`,
+      docLink: 'https://schema.org/MerchantReturnPolicy',
+    },
+    'SCHEMA_RETURN_NO_CATEGORY': {
+      severity: 'warning',
+      title: 'Add Return Policy Category',
+      impact: 'Policy type unclear to AI agents',
+      fix: 'Specify the return window type',
+      codeSnippet: `"returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow"`,
+      docLink: 'https://schema.org/MerchantReturnPolicy',
+    },
+
+    // Product quality issues
+    'PRODUCT_MISSING_NAME': {
+      severity: 'critical',
+      title: 'Add Product Name',
+      impact: 'Products cannot be identified without names',
+      fix: 'Add name property to Product schema',
+      codeSnippet: `"name": "Product Name"`,
+      docLink: 'https://schema.org/Product',
+    },
+    'PRODUCT_MISSING_OFFERS': {
+      severity: 'critical',
+      title: 'Add Product Offers',
+      impact: 'No pricing = no purchases',
+      fix: 'Add offers with price and currency',
+      codeSnippet: `"offers": {
+  "@type": "Offer",
+  "price": "29.99",
+  "priceCurrency": "USD",
+  "availability": "https://schema.org/InStock"
+}`,
+      docLink: 'https://schema.org/Offer',
+    },
+    'PRODUCT_NO_DESCRIPTION': {
+      severity: 'warning',
+      title: 'Add Product Description',
+      impact: 'AI agents may hallucinate product details',
+      fix: 'Add detailed description (150-300 chars recommended)',
+      codeSnippet: `"description": "Detailed product description that helps AI agents understand what this product is and its key features."`,
+      docLink: 'https://schema.org/Product',
+    },
+    'PRODUCT_SHORT_DESCRIPTION': {
+      severity: 'warning',
+      title: 'Expand Product Description',
+      impact: 'Short descriptions may cause AI hallucinations',
+      fix: 'Aim for 150-300 characters with key details',
+      docLink: 'https://schema.org/Product',
+    },
+    'PRODUCT_NO_IMAGE': {
+      severity: 'warning',
+      title: 'Add Product Image',
+      impact: 'Visual context helps AI product matching',
+      fix: 'Add high-quality product image URL',
+      codeSnippet: `"image": "https://yourstore.com/images/product.jpg"`,
+      docLink: 'https://schema.org/Product',
+    },
+  };
+
+  // Process all issues
+  const allIssues = [...ucpIssues, ...schemaIssues];
+  const processedCodes = new Set();
+
+  allIssues.forEach(issue => {
+    // Handle dynamic codes
+    let mappedCode = issue.code;
+    if (issue.code?.startsWith('PRODUCT_MISSING_')) {
+      const field = issue.code.replace('PRODUCT_MISSING_', '');
+      if (field === 'NAME' || field === 'OFFERS') {
+        mappedCode = issue.code;
+      }
+    }
+
+    const template = suggestionMap[mappedCode];
+    if (template && !processedCodes.has(mappedCode)) {
+      processedCodes.add(mappedCode);
+      suggestions.push({
+        severity: template.severity,
+        title: template.title,
+        code: issue.code,
+        path: issue.path,
+        impact: template.impact,
+        fix: template.fix,
+        codeSnippet: template.codeSnippet,
+        docLink: template.docLink,
+        generatorLink: template.generatorLink,
+      });
+    }
+  });
+
+  // Add contextual suggestions based on missing features
+  if (!hasUcp) {
+    // Already covered by UCP_FETCH_FAILED
+  } else {
+    // Check for missing recommended capabilities
+    const capabilities = profile?.ucp?.capabilities?.map(c => c.name) || [];
+
+    if (!capabilities.includes('dev.ucp.shopping.checkout') && capabilities.length > 0) {
+      suggestions.push({
+        severity: 'info',
+        title: 'Consider Adding Checkout Capability',
+        code: 'SUGGESTION_ADD_CHECKOUT',
+        impact: 'Enables AI agents to complete purchases on your site',
+        fix: 'Add checkout capability to support full purchase flow',
+        codeSnippet: `{
+  "name": "dev.ucp.shopping.checkout",
+  "version": "1.0.0",
+  "spec": "https://ucp.dev/caps/checkout/1.0",
+  "schema": "https://ucp.dev/caps/checkout/1.0/schema.json"
+}`,
+        docLink: 'https://ucp.dev/docs/capabilities#checkout',
+        generatorLink: '/generate',
+      });
+    }
+  }
+
+  // Schema recommendations
+  if (schemaStats.products === 0 && hasUcp) {
+    suggestions.push({
+      severity: 'info',
+      title: 'Add Product Schema for Better AI Discovery',
+      code: 'SUGGESTION_ADD_PRODUCTS',
+      impact: 'Product schemas help AI agents understand your catalog',
+      fix: 'Add JSON-LD Product schema to product pages',
+      codeSnippet: `<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Product Name",
+  "description": "Product description...",
+  "image": "https://yourstore.com/product.jpg",
+  "offers": {
+    "@type": "Offer",
+    "price": "29.99",
+    "priceCurrency": "USD"
+  }
+}
+</script>`,
+      docLink: 'https://schema.org/Product',
+      generatorLink: '/generate?tab=schema',
+    });
+  }
+
+  // Sort by severity
+  const severityOrder = { critical: 0, warning: 1, info: 2 };
+  suggestions.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+
+  return suggestions;
+}
+
 function calculateReadinessScore(ucpIssues, schemaIssues, hasUcp, productCompleteness) {
   // Base score
   let score = 100;
@@ -791,6 +1200,9 @@ export default async function handler(req, res) {
   // Record to benchmark and get percentile (non-blocking)
   const benchmark = await recordAndGetBenchmark(readinessScore);
 
+  // Generate actionable lint suggestions
+  const lintSuggestions = generateLintSuggestions(ucpIssues, schemaIssues, hasUcp, profile, schemaStats);
+
   // Separate UCP score (for backwards compatibility)
   const ucpErrors = ucpIssues.filter(i => i.severity === 'error').length;
   const ucpScore = hasUcp ? Math.max(0, 100 - ucpErrors * 20 - ucpIssues.filter(i => i.severity === 'warn').length * 5) : 0;
@@ -893,6 +1305,19 @@ export default async function handler(req, res) {
       message: i.message,
       hint: i.hint,
       category: i.category,
+    })),
+
+    // Lint Suggestions (NEW - Issue #9)
+    lint_suggestions: lintSuggestions.map(s => ({
+      severity: s.severity,
+      title: s.title,
+      code: s.code,
+      path: s.path,
+      impact: s.impact,
+      fix: s.fix,
+      code_snippet: s.codeSnippet,
+      doc_link: s.docLink,
+      generator_link: s.generatorLink,
     })),
   });
 }
