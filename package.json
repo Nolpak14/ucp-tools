@@ -14,7 +14,11 @@
     "test": "vitest",
     "lint": "eslint src --ext .ts",
     "validate": "tsx src/cli/index.ts",
-    "generate": "tsx src/cli/generate.ts"
+    "generate": "tsx src/cli/generate.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "keywords": [
     "ucp",
@@ -25,10 +29,12 @@
   "author": "UCP.tools",
   "license": "MIT",
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "chalk": "^5.3.0",
     "commander": "^12.1.0",
+    "drizzle-orm": "^0.45.1",
     "express": "^4.21.0",
     "jose": "^5.9.6",
     "nanoid": "^5.0.7",
@@ -41,6 +47,9 @@
     "@types/express": "^5.0.0",
     "@types/node": "^22.9.0",
     "@types/pg": "^8.11.10",
+    "@vercel/node": "^5.5.20",
+    "dotenv": "^17.2.3",
+    "drizzle-kit": "^0.31.8",
     "png-to-ico": "^3.0.1",
     "sharp": "^0.34.5",
     "tsx": "^4.19.2",
