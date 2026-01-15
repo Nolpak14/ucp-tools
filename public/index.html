@@ -1798,20 +1798,24 @@
           <!-- Lint Suggestions Section (Issue #9) -->
           ${data.lint_suggestions?.length > 0 ? `
           <div class="lint-suggestions" style="margin-bottom: 24px;">
-            <h4 style="margin-bottom: 16px; color: var(--color-dark); display: flex; align-items: center; gap: 8px;">
-              <span style="font-size: 20px;">🔧</span> How to Fix
-              <span style="font-size: 12px; font-weight: 500; color: var(--color-medium);">(${data.lint_suggestions.length} suggestion${data.lint_suggestions.length > 1 ? 's' : ''})</span>
+            <h4 style="margin-bottom: 8px; color: var(--color-dark); display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 20px;">&#128295;</span> How to Fix
+              <span style="font-size: 12px; font-weight: 500; color: var(--color-medium);">(${data.lint_suggestions.length} fix${data.lint_suggestions.length > 1 ? 'es' : ''} for issues above)</span>
             </h4>
+            <p style="font-size: 13px; color: var(--color-medium); margin-bottom: 16px;">Click each fix to see detailed instructions and code snippets.</p>
             <div class="lint-suggestions-list">
               ${data.lint_suggestions.slice(0, 8).map((s, idx) => `
                 <div class="lint-suggestion ${s.severity}" id="lint-${idx}">
                   <div class="lint-suggestion-header" onclick="toggleLintSuggestion(${idx})">
                     <div class="lint-suggestion-title">
-                      <h4>${s.title}</h4>
-                      <p>${s.impact}</p>
+                      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <h4 style="margin: 0;">${s.title}</h4>
+                        ${s.code ? '<span style="font-size: 10px; padding: 2px 8px; background: var(--color-background); border-radius: 4px; color: var(--color-medium); font-family: monospace;">Fixes: ' + s.code + '</span>' : ''}
+                      </div>
+                      <p style="margin-top: 4px;">${s.impact}</p>
                     </div>
                     <span class="lint-severity-badge ${s.severity}">${s.severity}</span>
-                    <span class="expand-icon">▼</span>
+                    <span class="expand-icon">&#9660;</span>
                   </div>
                   <div class="lint-suggestion-body">
                     <p><strong>How to fix:</strong> ${s.fix}</p>
@@ -1822,14 +1826,14 @@
                     </div>
                     ` : ''}
                     <div class="lint-links">
-                      ${s.doc_link ? `<a href="${s.doc_link}" target="_blank" class="lint-link">📖 Documentation</a>` : ''}
-                      ${s.generator_link ? `<a href="${s.generator_link}" class="lint-link">⚡ Generate</a>` : ''}
-                      ${s.code?.includes('SCHEMA') ? `<a href="/guides" class="lint-link">📋 Platform Guides</a>` : ''}
+                      ${s.doc_link ? '<a href="' + s.doc_link + '" target="_blank" class="lint-link">&#128214; Documentation</a>' : ''}
+                      ${s.generator_link ? '<a href="' + s.generator_link + '" class="lint-link">&#9889; Generate</a>' : ''}
+                      ${s.code?.includes('SCHEMA') ? '<a href="/guides" class="lint-link">&#128203; Platform Guides</a>' : ''}
                     </div>
                   </div>
                 </div>
               `).join('')}
-              ${data.lint_suggestions.length > 8 ? `<p style="margin-top: 12px; font-size: 13px; color: var(--color-medium);">...and ${data.lint_suggestions.length - 8} more suggestions</p>` : ''}
+              ${data.lint_suggestions.length > 8 ? '<p style="margin-top: 12px; font-size: 13px; color: var(--color-medium);">...and ' + (data.lint_suggestions.length - 8) + ' more fixes</p>' : ''}
             </div>
           </div>
           ` : ''}
@@ -2104,27 +2108,52 @@
 
       y += statusHeight + 15;
 
-      // ============ ISSUES TABLE ============
-      const allIssues = [...(data.ucp?.issues || []), ...(data.schema?.issues || [])];
+      // ============ ISSUES & FIXES (Combined View) ============
+      const allIssues = [...(data.ucp?.issues || []), ...(data.schema?.issues || []), ...(data.product_quality?.issues || [])];
+      const suggestions = data.lint_suggestions || [];
+
+      // Create a mapping of issue codes to their fixes
+      const issueCodeToFix = {};
+      suggestions.forEach(s => {
+        if (s.code) {
+          // Map the suggestion code back to issue codes it addresses
+          const relatedCodes = [];
+          if (s.code.includes('VERSION')) relatedCodes.push('UCP_INVALID_VERSION');
+          if (s.code.includes('RETURN') || s.code === 'SCHEMA_NO_RETURN') relatedCodes.push('SCHEMA_NO_RETURN');
+          if (s.code.includes('SHIPPING') || s.code === 'SCHEMA_NO_SHIPPING') relatedCodes.push('SCHEMA_NO_SHIPPING');
+          if (s.code.includes('TRANSPORT') || s.code === 'UCP_NO_TRANSPORT') relatedCodes.push('UCP_NO_TRANSPORT');
+          if (s.code.includes('SERVICE') || s.code === 'UCP_INVALID_SERVICE') relatedCodes.push('UCP_INVALID_SERVICE');
+          if (s.code.includes('CAP') || s.code === 'UCP_INVALID_CAP') relatedCodes.push('UCP_INVALID_CAP');
+          if (s.code.includes('PRODUCT') || s.code === 'SCHEMA_NO_PRODUCT') relatedCodes.push('SCHEMA_NO_PRODUCT');
+          if (s.code.includes('CHECKOUT')) relatedCodes.push('UCP_NO_CHECKOUT');
+          relatedCodes.forEach(rc => { issueCodeToFix[rc] = s; });
+          // Also direct mapping
+          issueCodeToFix[s.code] = s;
+        }
+      });
 
       if (allIssues.length > 0) {
-        addText('Issues Found', margin, y, { size: 14, style: 'bold', color: colors.dark });
+        addText(`Issues Found (${allIssues.length} total)`, margin, y, { size: 14, style: 'bold', color: colors.dark });
         y += 8;
 
-        const tableData = allIssues.slice(0, 12).map(issue => {
+        // Show ALL issues in a compact table format
+        const tableData = allIssues.map(issue => {
           const severity = issue.severity === 'error' ? 'ERROR' : 'WARNING';
-          const message = issue.message.length > 55 ? issue.message.substring(0, 55) + '...' : issue.message;
-          return [severity, issue.code || '-', message];
+          const message = issue.message.length > 50 ? issue.message.substring(0, 50) + '...' : issue.message;
+          // Find related fix
+          const fix = issueCodeToFix[issue.code];
+          const fixRef = fix ? fix.title.substring(0, 25) + (fix.title.length > 25 ? '...' : '') : '-';
+          return [severity, issue.code || '-', message, fixRef];
         });
 
         doc.autoTable({
           startY: y,
-          head: [['Severity', 'Code', 'Description']],
+          head: [['Severity', 'Code', 'Issue', 'Fix']],
           body: tableData,
           margin: { left: margin, right: margin },
           styles: {
-            fontSize: 8,
-            cellPadding: 3,
+            fontSize: 7,
+            cellPadding: 2,
             lineColor: colors.border,
             lineWidth: 0.1
           },
@@ -2132,59 +2161,77 @@
             fillColor: colors.dark,
             textColor: colors.white,
             fontStyle: 'bold',
-            fontSize: 8
+            fontSize: 7
           },
           columnStyles: {
-            0: { cellWidth: 22, fontStyle: 'bold' },
-            1: { cellWidth: 35, fontSize: 7 },
-            2: { cellWidth: 'auto' }
+            0: { cellWidth: 18, fontStyle: 'bold' },
+            1: { cellWidth: 32, fontSize: 6 },
+            2: { cellWidth: 'auto' },
+            3: { cellWidth: 35, fontSize: 6, textColor: colors.brandBlue }
           },
           alternateRowStyles: { fillColor: colors.background },
-          didParseCell: function (data) {
-            if (data.section === 'body' && data.column.index === 0) {
-              if (data.cell.raw === 'ERROR') {
-                data.cell.styles.textColor = colors.error;
+          didParseCell: function (cellData) {
+            if (cellData.section === 'body' && cellData.column.index === 0) {
+              if (cellData.cell.raw === 'ERROR') {
+                cellData.cell.styles.textColor = colors.error;
               } else {
-                data.cell.styles.textColor = colors.warning;
+                cellData.cell.styles.textColor = colors.warning;
               }
+            }
+            // Highlight fix column
+            if (cellData.section === 'body' && cellData.column.index === 3 && cellData.cell.raw !== '-') {
+              cellData.cell.styles.textColor = colors.brandBlue;
+              cellData.cell.styles.fontStyle = 'bold';
             }
           }
         });
 
-        y = doc.lastAutoTable.finalY + 10;
-
-        if (allIssues.length > 12) {
-          addText(`+ ${allIssues.length - 12} more issues not shown`, margin, y, { size: 8, color: colors.medium });
-          y += 8;
-        }
+        y = doc.lastAutoTable.finalY + 12;
       }
 
-      // ============ RECOMMENDATIONS ============
-      const suggestions = data.lint_suggestions || [];
+      // ============ HOW TO FIX (Detailed Actions) ============
+      if (suggestions.length > 0 && y < pageHeight - 60) {
+        addText('How to Fix', margin, y, { size: 14, style: 'bold', color: colors.dark });
+        y += 3;
+        addText('Each fix addresses one or more issues listed above', margin, y + 5, { size: 8, color: colors.medium });
+        y += 12;
 
-      if (suggestions.length > 0 && y < 220) {
-        y += 5;
-        addText('Recommended Actions', margin, y, { size: 14, style: 'bold', color: colors.dark });
-        y += 8;
-
-        const prioritySuggestions = suggestions.slice(0, 6);
-
-        prioritySuggestions.forEach((suggestion, idx) => {
-          if (y > 255) return;
+        const maxSuggestions = Math.min(suggestions.length, y < 200 ? 8 : 5);
+        suggestions.slice(0, maxSuggestions).forEach((suggestion, idx) => {
+          if (y > pageHeight - 35) return;
 
           const severityColor = suggestion.severity === 'critical' ? colors.error :
             suggestion.severity === 'warning' ? colors.warning : colors.info;
 
-          // Priority badge
-          drawRoundedRect(margin, y, 18, 7, 2, severityColor);
-          addText(`${idx + 1}`, margin + 9, y + 5.5, { size: 8, style: 'bold', color: colors.white, align: 'center' });
+          // Priority badge with number
+          drawRoundedRect(margin, y, 16, 6, 2, severityColor);
+          addText(`${idx + 1}`, margin + 8, y + 4.5, { size: 7, style: 'bold', color: colors.white, align: 'center' });
 
-          // Title and impact
-          addText(suggestion.title, margin + 22, y + 5, { size: 10, style: 'bold', color: colors.dark });
-          y += 9;
-          addText(suggestion.impact, margin + 22, y, { size: 8, color: colors.medium, maxWidth: contentWidth - 25 });
-          y += 10;
+          // Issue code badge (shows which issue this fixes)
+          const codeText = suggestion.code ? suggestion.code : '';
+          if (codeText) {
+            const codeWidth = Math.min(codeText.length * 1.8 + 6, 40);
+            drawRoundedRect(margin + 18, y, codeWidth, 6, 2, colors.background);
+            addText(codeText, margin + 18 + codeWidth/2, y + 4.5, { size: 6, color: colors.medium, align: 'center' });
+          }
+
+          // Title
+          addText(suggestion.title, margin + (codeText ? 62 : 22), y + 4.5, { size: 9, style: 'bold', color: colors.dark });
+          y += 8;
+
+          // Impact/description
+          const impactText = suggestion.impact || suggestion.fix || '';
+          if (impactText) {
+            addText(impactText.substring(0, 90) + (impactText.length > 90 ? '...' : ''), margin + 18, y, { size: 7, color: colors.medium, maxWidth: contentWidth - 20 });
+            y += 7;
+          }
+          y += 2;
         });
+
+        if (suggestions.length > maxSuggestions) {
+          addText(`+ ${suggestions.length - maxSuggestions} more fixes - see full report at ucptools.dev`, margin, y, { size: 7, color: colors.medium });
+          y += 8;
+        }
       }
 
       // ============ FOOTER ============
