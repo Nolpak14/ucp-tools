@@ -137,39 +137,48 @@
       -webkit-text-fill-color: var(--color-medium);
     }
 
-    nav a {
-      margin-left: 24px;
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    nav > a {
+      padding: 8px 12px;
       color: var(--color-medium);
       text-decoration: none;
       transition: color 0.2s;
+      border-radius: 6px;
     }
 
-    nav a:hover {
+    nav > a:hover {
       color: var(--brand-blue);
+      background: rgba(46, 134, 171, 0.08);
     }
 
     /* Dropdown Menu */
     .dropdown {
       position: relative;
       display: inline-block;
-      margin-left: 24px;
     }
 
     .dropdown-toggle {
       color: var(--color-medium);
       text-decoration: none;
       cursor: pointer;
-      transition: color 0.2s;
+      transition: all 0.2s;
       background: none;
       border: none;
       font-size: inherit;
       font-family: inherit;
-      padding: 0;
+      padding: 8px 12px;
+      border-radius: 6px;
     }
 
     .dropdown-toggle:hover,
     .dropdown:hover .dropdown-toggle {
       color: var(--brand-blue);
+      background: rgba(46, 134, 171, 0.08);
     }
 
     .dropdown-toggle::after {
@@ -823,10 +832,13 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
+        gap: 4px;
       }
 
-      nav a {
-        margin: 8px 12px;
+      nav > a,
+      .dropdown-toggle {
+        padding: 6px 10px;
+        font-size: 14px;
       }
     }
   </style>
@@ -841,12 +853,16 @@
       </a>
       <div class="header-nav">
         <nav>
-          <a href="#validate" onclick="switchTab('validate'); return false;">Validate</a>
-          <a href="#simulate" onclick="switchTab('simulate'); return false;">🤖 AI Test</a>
-          <a href="#generate" onclick="switchTab('generate'); return false;">Generate</a>
-          <a href="#schema" onclick="switchTab('schema'); return false;">Schema</a>
+          <div class="dropdown">
+            <span class="dropdown-toggle">Tools</span>
+            <div class="dropdown-menu">
+              <a href="#validate" onclick="switchTab('validate'); closeDropdowns(); return false;">🔍 Validator</a>
+              <a href="#simulate" onclick="switchTab('simulate'); closeDropdowns(); return false;">🤖 AI Simulator</a>
+              <a href="#generate" onclick="switchTab('generate'); closeDropdowns(); return false;">📝 Generator</a>
+              <a href="#schema" onclick="switchTab('schema'); closeDropdowns(); return false;">📊 Schema Builder</a>
+            </div>
+          </div>
           <a href="/learn">Learn</a>
-          <a href="/directory">Directory</a>
           <div class="dropdown">
             <span class="dropdown-toggle">Guides</span>
             <div class="dropdown-menu">
@@ -860,8 +876,8 @@
               <a href="/guides/squarespace">◼️ Squarespace</a>
             </div>
           </div>
-          <a href="#pricing">Pricing</a>
-          <a href="https://ucp.dev/specification/overview/" target="_blank">Docs</a>
+          <a href="/directory">Directory</a>
+          <a href="https://ucp.dev/specification/overview/" target="_blank">Docs ↗</a>
         </nav>
       </div>
       <a href="https://www.producthunt.com/products/ucp-tools?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-ucp-tools"
@@ -1511,6 +1527,11 @@
           }, 2000);
         });
       }
+    }
+
+    // Close dropdowns helper
+    function closeDropdowns() {
+      // Dropdowns auto-close via CSS :hover, but this helps on touch devices
     }
 
     // Store lint suggestions data globally for copy functionality
