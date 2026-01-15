@@ -14,6 +14,7 @@
   <script src="https://analytics.ahrefs.com/analytics.js" data-key="w/KDij6w81HzA8oXaw60JA" async></script>
   <!-- jsPDF for PDF report generation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UCP Tools - AI Commerce Readiness Checker & UCP Validator</title>
@@ -1525,7 +1526,7 @@
     // PDF Report Generation (Issue #7)
     function downloadPdfReport() {
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
+      const doc = new jsPDF('p', 'mm', 'a4');
       const data = window.lastValidationData;
       const domain = window.lastValidatedDomain;
 
@@ -1534,195 +1535,289 @@
         return;
       }
 
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 20;
+      const contentWidth = pageWidth - (margin * 2);
+
       const score = data.ai_readiness?.score ?? 0;
       const grade = data.ai_readiness?.grade ?? 'F';
       const readinessLabel = data.ai_readiness?.label ?? 'Not Ready';
 
-      // Colors
-      const brandBlue = [46, 134, 171];
-      const brandTeal = [54, 181, 162];
-      const gradeColors = {
-        'A': [22, 163, 74],
-        'B': [37, 99, 235],
-        'C': [202, 138, 4],
-        'D': [234, 88, 12],
-        'F': [220, 38, 38]
+      // Brand Colors
+      const colors = {
+        brandBlue: [46, 134, 171],
+        brandTeal: [54, 181, 162],
+        brandGreen: [71, 201, 122],
+        dark: [26, 43, 60],
+        medium: [90, 105, 120],
+        light: [148, 163, 184],
+        border: [226, 232, 240],
+        background: [248, 250, 252],
+        white: [255, 255, 255],
+        gradeA: [22, 163, 74],
+        gradeB: [37, 99, 235],
+        gradeC: [202, 138, 4],
+        gradeD: [234, 88, 12],
+        gradeF: [220, 38, 38],
+        error: [220, 38, 38],
+        warning: [202, 138, 4],
+        success: [22, 163, 74],
+        info: [37, 99, 235]
       };
-      const gradeColor = gradeColors[grade] || gradeColors['F'];
 
-      let y = 20;
+      const gradeColorMap = { A: colors.gradeA, B: colors.gradeB, C: colors.gradeC, D: colors.gradeD, F: colors.gradeF };
+      const gradeColor = gradeColorMap[grade] || colors.gradeF;
 
-      // Header with gradient-like effect
-      doc.setFillColor(...brandBlue);
-      doc.rect(0, 0, 210, 45, 'F');
-      doc.setFillColor(...brandTeal);
-      doc.rect(140, 0, 70, 45, 'F');
+      // Helper functions
+      const setColor = (color, type = 'text') => {
+        if (type === 'text') doc.setTextColor(...color);
+        else if (type === 'fill') doc.setFillColor(...color);
+        else if (type === 'draw') doc.setDrawColor(...color);
+      };
 
-      // Logo text
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(24);
-      doc.setFont('helvetica', 'bold');
-      doc.text('UCP.tools', 20, 28);
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      doc.text('AI Commerce Readiness Report', 20, 36);
+      const drawRoundedRect = (x, y, w, h, r, fillColor, strokeColor = null) => {
+        setColor(fillColor, 'fill');
+        doc.roundedRect(x, y, w, h, r, r, strokeColor ? 'FD' : 'F');
+        if (strokeColor) {
+          setColor(strokeColor, 'draw');
+          doc.roundedRect(x, y, w, h, r, r, 'S');
+        }
+      };
 
-      // Date
-      doc.setFontSize(9);
-      doc.text(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), 160, 28);
+      const addText = (text, x, y, options = {}) => {
+        const { size = 10, style = 'normal', color = colors.dark, align = 'left', maxWidth = null } = options;
+        doc.setFontSize(size);
+        doc.setFont('helvetica', style);
+        setColor(color);
+        if (maxWidth) {
+          doc.text(text, x, y, { maxWidth, align });
+        } else {
+          doc.text(text, x, y, { align });
+        }
+      };
 
-      y = 60;
+      let y = 0;
 
-      // Domain
-      doc.setTextColor(30, 41, 59);
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Domain:', 20, y);
-      doc.setFont('helvetica', 'bold');
-      doc.text(domain, 50, y);
-
-      y += 15;
-
-      // Score Box
-      doc.setFillColor(...gradeColor);
-      doc.roundedRect(20, y, 50, 35, 3, 3, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(32);
-      doc.setFont('helvetica', 'bold');
-      doc.text(grade, 35, y + 22);
-      doc.setFontSize(12);
-      doc.text(score + '/100', 48, y + 30);
-
-      // Readiness label
-      doc.setTextColor(30, 41, 59);
-      doc.setFontSize(16);
-      doc.text(readinessLabel, 80, y + 15);
-      doc.setFontSize(10);
-      doc.setTextColor(100, 116, 139);
-      doc.text('AI Commerce Readiness Level', 80, y + 24);
-
-      // Benchmark comparison
-      if (data.benchmark) {
-        doc.setFontSize(10);
-        doc.text(`Better than ${data.benchmark.percentile}% of ${data.benchmark.total_sites_analyzed.toLocaleString()} sites analyzed`, 80, y + 32);
+      // ============ HEADER ============
+      // Gradient header background
+      const headerHeight = 55;
+      // Draw gradient effect with multiple rectangles
+      for (let i = 0; i < headerHeight; i++) {
+        const ratio = i / headerHeight;
+        const r = Math.round(colors.brandBlue[0] + (colors.brandTeal[0] - colors.brandBlue[0]) * ratio);
+        const g = Math.round(colors.brandBlue[1] + (colors.brandTeal[1] - colors.brandBlue[1]) * ratio);
+        const b = Math.round(colors.brandBlue[2] + (colors.brandTeal[2] - colors.brandBlue[2]) * ratio);
+        doc.setFillColor(r, g, b);
+        doc.rect(0, i, pageWidth, 1, 'F');
       }
 
-      y += 50;
+      // Logo and title
+      addText('UCP.tools', margin, 22, { size: 28, style: 'bold', color: colors.white });
+      addText('AI Commerce Readiness Report', margin, 32, { size: 12, color: [255, 255, 255, 200] });
 
-      // Section: UCP Profile
-      doc.setFillColor(240, 249, 255);
-      doc.roundedRect(20, y, 170, 30, 2, 2, 'F');
-      doc.setTextColor(...brandBlue);
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text('UCP Profile (/.well-known/ucp)', 25, y + 8);
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      doc.setTextColor(30, 41, 59);
-      const ucpStatus = data.ucp?.found ? '✓ Profile found' : '✗ No profile found';
-      doc.text(ucpStatus, 25, y + 18);
+      // Report date and ID
+      const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      const timeStr = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      addText(dateStr, pageWidth - margin, 22, { size: 10, color: colors.white, align: 'right' });
+      addText(timeStr, pageWidth - margin, 30, { size: 9, color: [255, 255, 255, 180], align: 'right' });
+
+      // Domain badge in header
+      const domainText = domain.length > 35 ? domain.substring(0, 35) + '...' : domain;
+      addText(domainText, margin, 46, { size: 14, style: 'bold', color: colors.white });
+
+      y = headerHeight + 15;
+
+      // ============ EXECUTIVE SUMMARY CARD ============
+      const summaryCardHeight = 65;
+      drawRoundedRect(margin, y, contentWidth, summaryCardHeight, 4, colors.white);
+      doc.setDrawColor(...colors.border);
+      doc.setLineWidth(0.5);
+      doc.roundedRect(margin, y, contentWidth, summaryCardHeight, 4, 4, 'S');
+
+      // Grade circle
+      const gradeCircleX = margin + 30;
+      const gradeCircleY = y + summaryCardHeight / 2;
+      const gradeCircleR = 22;
+      
+      // Draw grade circle with color
+      setColor(gradeColor, 'fill');
+      doc.circle(gradeCircleX, gradeCircleY, gradeCircleR, 'F');
+      
+      // Grade letter
+      addText(grade, gradeCircleX, gradeCircleY + 8, { size: 36, style: 'bold', color: colors.white, align: 'center' });
+
+      // Score and label
+      const scoreX = margin + 70;
+      addText(`${score}/100`, scoreX, y + 20, { size: 32, style: 'bold', color: colors.dark });
+      addText(readinessLabel, scoreX, y + 32, { size: 14, style: 'bold', color: gradeColor });
+      addText('AI Commerce Readiness Score', scoreX, y + 42, { size: 10, color: colors.medium });
+
+      // Benchmark info on the right
+      if (data.benchmark) {
+        const benchX = pageWidth - margin - 55;
+        drawRoundedRect(benchX - 5, y + 10, 60, 45, 3, colors.background);
+        addText('BENCHMARK', benchX + 25, y + 22, { size: 8, style: 'bold', color: colors.medium, align: 'center' });
+        addText(`Top ${100 - data.benchmark.percentile}%`, benchX + 25, y + 35, { size: 16, style: 'bold', color: colors.brandBlue, align: 'center' });
+        addText(`of ${data.benchmark.total_sites_analyzed.toLocaleString()} sites`, benchX + 25, y + 45, { size: 8, color: colors.medium, align: 'center' });
+      }
+
+      y += summaryCardHeight + 12;
+
+      // ============ STATUS OVERVIEW (3 columns) ============
+      const colWidth = (contentWidth - 10) / 3;
+      const statusHeight = 50;
+
+      // UCP Status
+      const ucpFound = data.ucp?.found ?? false;
       const ucpIssues = data.ucp?.issues || [];
       const ucpErrors = ucpIssues.filter(i => i.severity === 'error').length;
       const ucpWarnings = ucpIssues.filter(i => i.severity === 'warn').length;
-      doc.text(`${ucpErrors} error(s), ${ucpWarnings} warning(s)`, 25, y + 26);
+      
+      drawRoundedRect(margin, y, colWidth, statusHeight, 3, ucpFound ? [240, 253, 244] : [254, 242, 242]);
+      addText('UCP Profile', margin + 8, y + 12, { size: 9, style: 'bold', color: colors.medium });
+      addText(ucpFound ? '✓ Found' : '✗ Not Found', margin + 8, y + 24, { 
+        size: 14, style: 'bold', color: ucpFound ? colors.success : colors.error 
+      });
+      addText(`${ucpErrors} errors · ${ucpWarnings} warnings`, margin + 8, y + 36, { size: 8, color: colors.medium });
+      if (data.ucp?.version) {
+        addText(`v${data.ucp.version}`, margin + colWidth - 8, y + 12, { size: 8, color: colors.medium, align: 'right' });
+      }
 
-      y += 38;
-
-      // Section: Schema.org
-      doc.setFillColor(240, 253, 244);
-      doc.roundedRect(20, y, 170, 30, 2, 2, 'F');
-      doc.setTextColor(...brandTeal);
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Schema.org (Jan 2026 Requirements)', 25, y + 8);
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      doc.setTextColor(30, 41, 59);
+      // Schema Status
+      const schemaX = margin + colWidth + 5;
       const schemaStats = data.schema?.stats || {};
-      doc.text(`Products: ${schemaStats.products || 0}, Return Policies: ${schemaStats.returnPolicies || 0}`, 25, y + 18);
+      const hasSchema = schemaStats.products > 0 || schemaStats.returnPolicies > 0;
       const schemaIssues = data.schema?.issues || [];
       const schemaErrors = schemaIssues.filter(i => i.severity === 'error').length;
       const schemaWarnings = schemaIssues.filter(i => i.severity === 'warn').length;
-      doc.text(`${schemaErrors} error(s), ${schemaWarnings} warning(s)`, 25, y + 26);
+      
+      drawRoundedRect(schemaX, y, colWidth, statusHeight, 3, hasSchema ? [240, 249, 255] : [254, 242, 242]);
+      addText('Schema.org', schemaX + 8, y + 12, { size: 9, style: 'bold', color: colors.medium });
+      addText(`${schemaStats.products || 0} Products`, schemaX + 8, y + 24, { size: 14, style: 'bold', color: colors.brandBlue });
+      addText(`${schemaStats.returnPolicies || 0} ReturnPolicies · ${schemaErrors} errors`, schemaX + 8, y + 36, { size: 8, color: colors.medium });
 
-      y += 38;
-
-      // Section: Product Quality
-      if (data.product_quality) {
-        doc.setFillColor(255, 251, 235);
-        doc.roundedRect(20, y, 170, 22, 2, 2, 'F');
-        doc.setTextColor(217, 119, 6);
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Product Data Quality', 25, y + 8);
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(10);
-        doc.setTextColor(30, 41, 59);
-        doc.text(`Completeness: ${data.product_quality.completeness || 0}%`, 25, y + 18);
-        y += 30;
-      }
-
-      // Issues Summary
-      y += 5;
-      doc.setTextColor(30, 41, 59);
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Key Issues Found', 20, y);
-      y += 8;
-
-      const allIssues = [...(data.ucp?.issues || []), ...(data.schema?.issues || [])].slice(0, 8);
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
-
-      allIssues.forEach((issue, idx) => {
-        if (y > 260) return; // Don't overflow page
-        const severityColors = { error: [220, 38, 38], warn: [202, 138, 4] };
-        const color = severityColors[issue.severity] || [100, 116, 139];
-        doc.setTextColor(...color);
-        const prefix = issue.severity === 'error' ? '● ERROR: ' : '○ WARN: ';
-        doc.text(prefix, 22, y);
-        doc.setTextColor(30, 41, 59);
-        const msgText = issue.message.length > 70 ? issue.message.substring(0, 70) + '...' : issue.message;
-        doc.text(msgText, 45, y);
-        y += 6;
+      // Compliance Status
+      const compX = margin + (colWidth * 2) + 10;
+      const isCompliant = schemaStats.returnPolicies > 0 && ucpFound;
+      drawRoundedRect(compX, y, colWidth, statusHeight, 3, isCompliant ? [240, 253, 244] : [255, 251, 235]);
+      addText('Jan 2026 Deadline', compX + 8, y + 12, { size: 9, style: 'bold', color: colors.medium });
+      addText(isCompliant ? '✓ Ready' : '⚠ Action Required', compX + 8, y + 24, { 
+        size: 12, style: 'bold', color: isCompliant ? colors.success : colors.warning 
       });
+      const missingItems = [];
+      if (!ucpFound) missingItems.push('UCP');
+      if (schemaStats.returnPolicies === 0) missingItems.push('ReturnPolicy');
+      if (schemaErrors > 0 && schemaIssues.some(i => i.code === 'SCHEMA_NO_SHIPPING')) missingItems.push('Shipping');
+      addText(isCompliant ? 'All requirements met' : `Missing: ${missingItems.join(', ')}`, compX + 8, y + 36, { size: 8, color: colors.medium });
 
-      y += 10;
+      y += statusHeight + 15;
 
-      // Recommendations (Lint Suggestions)
-      if (data.lint_suggestions && data.lint_suggestions.length > 0 && y < 240) {
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Top Recommendations', 20, y);
+      // ============ ISSUES TABLE ============
+      const allIssues = [...(data.ucp?.issues || []), ...(data.schema?.issues || [])];
+      
+      if (allIssues.length > 0) {
+        addText('Issues Found', margin, y, { size: 14, style: 'bold', color: colors.dark });
         y += 8;
 
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'normal');
+        const tableData = allIssues.slice(0, 12).map(issue => {
+          const severity = issue.severity === 'error' ? 'ERROR' : 'WARNING';
+          const message = issue.message.length > 55 ? issue.message.substring(0, 55) + '...' : issue.message;
+          return [severity, issue.code || '-', message];
+        });
 
-        data.lint_suggestions.slice(0, 5).forEach((suggestion, idx) => {
-          if (y > 270) return;
-          const severityColors = { critical: [220, 38, 38], warning: [202, 138, 4], info: [37, 99, 235] };
-          const color = severityColors[suggestion.severity] || [100, 116, 139];
-          doc.setTextColor(...color);
-          doc.text(`${idx + 1}. [${suggestion.severity.toUpperCase()}]`, 22, y);
-          doc.setTextColor(30, 41, 59);
-          doc.text(suggestion.title, 55, y);
-          y += 6;
+        doc.autoTable({
+          startY: y,
+          head: [['Severity', 'Code', 'Description']],
+          body: tableData,
+          margin: { left: margin, right: margin },
+          styles: {
+            fontSize: 8,
+            cellPadding: 3,
+            lineColor: colors.border,
+            lineWidth: 0.1
+          },
+          headStyles: {
+            fillColor: colors.dark,
+            textColor: colors.white,
+            fontStyle: 'bold',
+            fontSize: 8
+          },
+          columnStyles: {
+            0: { cellWidth: 22, fontStyle: 'bold' },
+            1: { cellWidth: 35, fontSize: 7 },
+            2: { cellWidth: 'auto' }
+          },
+          alternateRowStyles: { fillColor: colors.background },
+          didParseCell: function(data) {
+            if (data.section === 'body' && data.column.index === 0) {
+              if (data.cell.raw === 'ERROR') {
+                data.cell.styles.textColor = colors.error;
+              } else {
+                data.cell.styles.textColor = colors.warning;
+              }
+            }
+          }
+        });
+
+        y = doc.lastAutoTable.finalY + 10;
+
+        if (allIssues.length > 12) {
+          addText(`+ ${allIssues.length - 12} more issues not shown`, margin, y, { size: 8, color: colors.medium });
+          y += 8;
+        }
+      }
+
+      // ============ RECOMMENDATIONS ============
+      const suggestions = data.lint_suggestions || [];
+      
+      if (suggestions.length > 0 && y < 220) {
+        y += 5;
+        addText('Recommended Actions', margin, y, { size: 14, style: 'bold', color: colors.dark });
+        y += 8;
+
+        const prioritySuggestions = suggestions.slice(0, 6);
+        
+        prioritySuggestions.forEach((suggestion, idx) => {
+          if (y > 255) return;
+          
+          const severityColor = suggestion.severity === 'critical' ? colors.error : 
+                               suggestion.severity === 'warning' ? colors.warning : colors.info;
+          
+          // Priority badge
+          drawRoundedRect(margin, y, 18, 7, 2, severityColor);
+          addText(`${idx + 1}`, margin + 9, y + 5.5, { size: 8, style: 'bold', color: colors.white, align: 'center' });
+          
+          // Title and impact
+          addText(suggestion.title, margin + 22, y + 5, { size: 10, style: 'bold', color: colors.dark });
+          y += 9;
+          addText(suggestion.impact, margin + 22, y, { size: 8, color: colors.medium, maxWidth: contentWidth - 25 });
+          y += 10;
         });
       }
 
-      // Footer
-      doc.setFillColor(248, 250, 252);
-      doc.rect(0, 277, 210, 20, 'F');
-      doc.setTextColor(100, 116, 139);
-      doc.setFontSize(8);
-      doc.text('Generated by UCP.tools - ucptools.dev', 20, 287);
-      doc.text('AI Commerce Readiness Checker', 20, 292);
-      doc.setTextColor(...brandBlue);
-      doc.text('Validate your store: ucptools.dev', 140, 287);
+      // ============ FOOTER ============
+      const footerY = pageHeight - 20;
+      
+      // Footer line
+      doc.setDrawColor(...colors.border);
+      doc.setLineWidth(0.5);
+      doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
+
+      // Footer content
+      addText('Generated by UCP.tools', margin, footerY, { size: 8, color: colors.medium });
+      addText('ucptools.dev', margin, footerY + 5, { size: 8, style: 'bold', color: colors.brandBlue });
+      
+      // QR code substitute - call to action
+      drawRoundedRect(pageWidth - margin - 55, footerY - 8, 55, 18, 2, colors.background);
+      addText('Validate your store:', pageWidth - margin - 52, footerY - 1, { size: 7, color: colors.medium });
+      addText('ucptools.dev', pageWidth - margin - 52, footerY + 6, { size: 9, style: 'bold', color: colors.brandBlue });
+
+      // Page number
+      addText('Page 1 of 1', pageWidth / 2, footerY + 5, { size: 8, color: colors.light, align: 'center' });
 
       // Download
-      doc.save(`ucp-report-${domain.replace(/\./g, '-')}.pdf`);
+      doc.save(`ucp-report-${domain.replace(/[^a-zA-Z0-9]/g, '-')}.pdf`);
 
       // Track download
       if (typeof gtag === 'function') {
