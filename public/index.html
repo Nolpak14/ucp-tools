@@ -100,6 +100,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 24px;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      justify-content: center;
     }
 
     .logo {
@@ -141,8 +149,9 @@
     }
 
     .ph-badge {
-      display: inline-block;
-      margin: 20px 0 24px 0;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
       transition: transform 0.2s ease, opacity 0.2s ease;
     }
 
@@ -152,7 +161,7 @@
     }
 
     .ph-badge img {
-      height: 54px;
+      height: 40px;
       width: auto;
     }
 
@@ -526,6 +535,22 @@
     }
 
     /* Responsive */
+    @media (max-width: 900px) {
+      .header-inner {
+        flex-wrap: wrap;
+      }
+
+      .header-nav {
+        order: 3;
+        width: 100%;
+        margin-top: 12px;
+      }
+
+      .ph-badge {
+        order: 2;
+      }
+    }
+
     @media (max-width: 600px) {
       .hero h1 {
         font-size: 28px;
@@ -538,6 +563,15 @@
       .header-inner {
         flex-direction: column;
         gap: 16px;
+      }
+
+      .header-nav {
+        order: 2;
+        margin-top: 0;
+      }
+
+      .ph-badge {
+        order: 3;
       }
 
       nav {
@@ -560,16 +594,21 @@
         <img src="/logo.jpeg" alt="UCP.tools logo" class="logo-icon">
         <span class="logo-text">UCP<span class="logo-suffix">.tools</span></span>
       </a>
-      <nav>
-        <a href="#validate" onclick="switchTab('validate'); return false;">Validate</a>
-        <a href="#simulate" onclick="switchTab('simulate'); return false;">🤖 AI Test</a>
-        <a href="#generate" onclick="switchTab('generate'); return false;">Generate</a>
-        <a href="#schema" onclick="switchTab('schema'); return false;">Schema</a>
-        <a href="/directory.html">Directory</a>
-        <a href="/guides/fastucp.html">FastUCP</a>
-        <a href="#pricing">Pricing</a>
-        <a href="https://ucp.dev/specification/overview/" target="_blank">Docs</a>
-      </nav>
+      <div class="header-nav">
+        <nav>
+          <a href="#validate" onclick="switchTab('validate'); return false;">Validate</a>
+          <a href="#simulate" onclick="switchTab('simulate'); return false;">🤖 AI Test</a>
+          <a href="#generate" onclick="switchTab('generate'); return false;">Generate</a>
+          <a href="#schema" onclick="switchTab('schema'); return false;">Schema</a>
+          <a href="/directory.html">Directory</a>
+          <a href="/guides/fastucp.html">FastUCP</a>
+          <a href="#pricing">Pricing</a>
+          <a href="https://ucp.dev/specification/overview/" target="_blank">Docs</a>
+        </nav>
+      </div>
+      <a href="https://www.producthunt.com/products/ucp-tools?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-ucp-tools" target="_blank" rel="noopener noreferrer" class="ph-badge">
+        <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1063017&amp;theme=light&amp;t=1768475714634" alt="Featured on Product Hunt" />
+      </a>
     </div>
   </header>
 
@@ -578,10 +617,6 @@
       <h1>AI Commerce <span class="gradient-text">Readiness</span></h1>
       <p>Check if your store is ready for ChatGPT, Google AI Mode, and Copilot checkout. Validates UCP profile +
         Schema.org requirements.</p>
-
-      <a href="https://www.producthunt.com/products/ucp-tools?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-ucp-tools" target="_blank" rel="noopener noreferrer" class="ph-badge">
-        <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1063017&amp;theme=light&amp;t=1768475714634" alt="UCP Tools - Featured on Product Hunt" />
-      </a>
 
       <div class="tabs">
         <button class="tab active" data-tab="validate">Check Readiness</button>
