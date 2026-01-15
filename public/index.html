@@ -403,6 +403,7 @@
       </a>
       <nav>
         <a href="#validate" onclick="switchTab('validate'); return false;">Validate</a>
+        <a href="#simulate" onclick="switchTab('simulate'); return false;">🤖 AI Test</a>
         <a href="#generate" onclick="switchTab('generate'); return false;">Generate</a>
         <a href="#schema" onclick="switchTab('schema'); return false;">Schema</a>
         <a href="/directory.html">Directory</a>
@@ -419,6 +420,7 @@
 
       <div class="tabs">
         <button class="tab active" data-tab="validate">Check Readiness</button>
+        <button class="tab" data-tab="simulate">🤖 AI Agent Test</button>
         <button class="tab" data-tab="generate">Generate UCP</button>
         <button class="tab" data-tab="schema">Schema Snippets</button>
       </div>
@@ -557,6 +559,25 @@
 
         <div class="result" id="schema-result"></div>
       </div>
+
+      <!-- AI Agent Simulation Tab -->
+      <div class="card hidden" id="simulate-panel">
+        <h3 style="margin-bottom: 8px;">🤖 AI Agent Simulation Test</h3>
+        <p style="margin-bottom: 20px; color: var(--color-medium); font-size: 14px;">
+          Test how AI shopping agents (ChatGPT, Google AI, Copilot) would actually interact with your UCP implementation. 
+          Goes beyond spec compliance to prove real-world functionality.
+        </p>
+        <form id="simulate-form">
+          <div class="form-group">
+            <label for="simulate-domain">Your Domain</label>
+            <input type="text" id="simulate-domain" placeholder="yourstore.com" required>
+            <small class="text-muted">We'll simulate an AI agent discovering and interacting with your UCP profile</small>
+          </div>
+          <button type="submit" class="btn" id="simulate-btn">🚀 Run AI Agent Simulation</button>
+        </form>
+
+        <div class="result" id="simulate-result"></div>
+      </div>
     </div>
   </section>
 
@@ -635,6 +656,7 @@
       });
       // Show/hide panels
       document.getElementById('validate-panel').classList.toggle('hidden', tabName !== 'validate');
+      document.getElementById('simulate-panel').classList.toggle('hidden', tabName !== 'simulate');
       document.getElementById('generate-panel').classList.toggle('hidden', tabName !== 'generate');
       document.getElementById('schema-panel').classList.toggle('hidden', tabName !== 'schema');
       // Scroll to hero section
@@ -1026,6 +1048,180 @@
     function showInstructions() {
       alert('Setup instructions:\n\n1. Upload ucp.json to your server\n2. Configure your web server to serve it at /.well-known/ucp\n3. Set Content-Type: application/json\n4. Add CORS headers: Access-Control-Allow-Origin: *\n\nSee our documentation for platform-specific guides.');
     }
+
+    // AI Agent Simulation form
+    document.getElementById('simulate-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('simulate-btn');
+      const result = document.getElementById('simulate-result');
+      const domain = document.getElementById('simulate-domain').value.replace(/^https?:\/\//, '').replace(/\/$/, '');
+
+      btn.disabled = true;
+      btn.textContent = '🔄 Running Simulation...';
+      result.className = 'result';
+      result.innerHTML = '';
+
+      try {
+        const res = await fetch('/api/simulate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ domain })
+        });
+        const data = await res.json();
+
+        if (data.error) {
+          throw new Error(data.message || data.error);
+        }
+
+        const score = data.score || 0;
+        const grade = data.grade || 'F';
+        
+        // Grade colors
+        const gradeColors = {
+          'A': { bg: '#dcfce7', border: '#86efac', text: '#16A34A' },
+          'B': { bg: '#dbeafe', border: '#93c5fd', text: '#2563EB' },
+          'C': { bg: '#fef9c3', border: '#fde047', text: '#CA8A04' },
+          'D': { bg: '#fed7aa', border: '#fdba74', text: '#EA580C' },
+          'F': { bg: '#fee2e2', border: '#fca5a5', text: '#DC2626' },
+        };
+        const colors = gradeColors[grade] || gradeColors['F'];
+
+        result.className = 'result show';
+        result.style.background = colors.bg;
+        result.style.border = '1px solid ' + colors.border;
+
+        // Build step results HTML
+        const renderSteps = (steps) => {
+          if (!steps || steps.length === 0) return '';
+          return steps.map(s => {
+            const icons = { passed: '✅', failed: '❌', warning: '⚠️', skipped: '⏭️' };
+            const icon = icons[s.status] || '•';
+            const bgColors = { passed: 'rgba(22,163,74,0.1)', failed: 'rgba(220,38,38,0.1)', warning: 'rgba(202,138,4,0.1)', skipped: 'rgba(100,116,139,0.1)' };
+            return `<div style="padding: 8px 12px; margin: 4px 0; border-radius: 6px; background: ${bgColors[s.status] || 'transparent'}; font-size: 13px;">
+              <span style="margin-right: 8px;">${icon}</span>
+              <strong>${s.step}</strong>: ${s.message}
+              ${s.details ? `<br><small style="color: #666; margin-left: 28px;">${s.details}</small>` : ''}
+            </div>`;
+          }).join('');
+        };
+
+        result.innerHTML = `
+          <!-- Score Header -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <span class="score-badge ${grade}">${grade} ${score}/100</span>
+              <span style="margin-left: 12px; font-weight: 600; color: ${colors.text};">AI Agent ${data.ok ? 'Ready' : 'Not Ready'}</span>
+            </div>
+            <span style="font-size: 13px; color: #666;">Completed in ${data.duration_ms}ms</span>
+          </div>
+
+          <!-- Summary Stats -->
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+            <div style="text-align: center; padding: 12px; background: rgba(22,163,74,0.1); border-radius: 8px;">
+              <div style="font-size: 24px; font-weight: 700; color: #16A34A;">${data.summary?.passed || 0}</div>
+              <div style="font-size: 12px; color: #666;">Passed</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: rgba(220,38,38,0.1); border-radius: 8px;">
+              <div style="font-size: 24px; font-weight: 700; color: #DC2626;">${data.summary?.failed || 0}</div>
+              <div style="font-size: 12px; color: #666;">Failed</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: rgba(202,138,4,0.1); border-radius: 8px;">
+              <div style="font-size: 24px; font-weight: 700; color: #CA8A04;">${data.summary?.warnings || 0}</div>
+              <div style="font-size: 12px; color: #666;">Warnings</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: rgba(100,116,139,0.1); border-radius: 8px;">
+              <div style="font-size: 24px; font-weight: 700; color: #64748B;">${data.summary?.skipped || 0}</div>
+              <div style="font-size: 12px; color: #666;">Skipped</div>
+            </div>
+          </div>
+
+          <!-- Discovery Flow -->
+          <div style="margin-bottom: 16px; padding: 16px; background: rgba(46,134,171,0.1); border-radius: 8px;">
+            <h4 style="margin-bottom: 12px; color: #2E86AB; display: flex; align-items: center; gap: 8px;">
+              <span>🔍 Discovery Flow</span>
+              ${data.discovery?.success ? '<span style="font-size: 12px; padding: 2px 8px; background: #dcfce7; color: #16A34A; border-radius: 12px;">Success</span>' : '<span style="font-size: 12px; padding: 2px 8px; background: #fee2e2; color: #DC2626; border-radius: 12px;">Failed</span>'}
+            </h4>
+            ${data.discovery?.profile_url ? `<p style="margin-bottom: 8px; font-size: 13px;">Profile: <code>${data.discovery.profile_url}</code></p>` : ''}
+            ${data.discovery?.services?.length > 0 ? `<p style="margin-bottom: 8px; font-size: 13px;">Services: ${data.discovery.services.join(', ')}</p>` : ''}
+            ${data.discovery?.capabilities?.length > 0 ? `<p style="margin-bottom: 8px; font-size: 13px;">Capabilities: ${data.discovery.capabilities.join(', ')}</p>` : ''}
+            ${data.discovery?.transports?.length > 0 ? `<p style="margin-bottom: 8px; font-size: 13px;">Transports: ${data.discovery.transports.join(', ')}</p>` : ''}
+            <details style="margin-top: 8px;">
+              <summary style="cursor: pointer; font-size: 13px; color: #2E86AB;">View step details</summary>
+              <div style="margin-top: 8px;">${renderSteps(data.discovery?.steps)}</div>
+            </details>
+          </div>
+
+          <!-- REST API Test -->
+          ${data.rest_api ? `
+          <div style="margin-bottom: 16px; padding: 16px; background: rgba(99,102,241,0.1); border-radius: 8px;">
+            <h4 style="margin-bottom: 12px; color: #6366F1; display: flex; align-items: center; gap: 8px;">
+              <span>🌐 REST API Test</span>
+              ${data.rest_api.success ? '<span style="font-size: 12px; padding: 2px 8px; background: #dcfce7; color: #16A34A; border-radius: 12px;">Success</span>' : '<span style="font-size: 12px; padding: 2px 8px; background: #fee2e2; color: #DC2626; border-radius: 12px;">Issues Found</span>'}
+            </h4>
+            <p style="font-size: 13px;">Schema: ${data.rest_api.schema_loaded ? '✅ Loaded' : '❌ Not loaded'} | Endpoint: ${data.rest_api.endpoint_accessible ? '✅ Accessible' : '❌ Not accessible'}</p>
+            <details style="margin-top: 8px;">
+              <summary style="cursor: pointer; font-size: 13px; color: #6366F1;">View step details</summary>
+              <div style="margin-top: 8px;">${renderSteps(data.rest_api?.steps)}</div>
+            </details>
+          </div>
+          ` : ''}
+
+          <!-- Checkout Flow -->
+          ${data.checkout ? `
+          <div style="margin-bottom: 16px; padding: 16px; background: rgba(71,201,122,0.1); border-radius: 8px;">
+            <h4 style="margin-bottom: 12px; color: #36B5A2; display: flex; align-items: center; gap: 8px;">
+              <span>🛒 Checkout Flow</span>
+              ${data.checkout.success ? '<span style="font-size: 12px; padding: 2px 8px; background: #dcfce7; color: #16A34A; border-radius: 12px;">Ready</span>' : '<span style="font-size: 12px; padding: 2px 8px; background: #fef9c3; color: #CA8A04; border-radius: 12px;">Incomplete</span>'}
+            </h4>
+            <div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; margin-bottom: 8px;">
+              <span>${data.checkout.can_create_checkout ? '✅' : '❌'} Checkout</span>
+              <span>${data.checkout.order_flow_supported ? '✅' : '⚪'} Order Tracking</span>
+              <span>${data.checkout.fulfillment_supported ? '✅' : '⚪'} Fulfillment</span>
+            </div>
+            <details style="margin-top: 8px;">
+              <summary style="cursor: pointer; font-size: 13px; color: #36B5A2;">View step details</summary>
+              <div style="margin-top: 8px;">${renderSteps(data.checkout?.steps)}</div>
+            </details>
+          </div>
+          ` : ''}
+
+          <!-- Payment Readiness -->
+          ${data.payment ? `
+          <div style="margin-bottom: 16px; padding: 16px; background: rgba(245,158,11,0.1); border-radius: 8px;">
+            <h4 style="margin-bottom: 12px; color: #D97706; display: flex; align-items: center; gap: 8px;">
+              <span>💳 Payment Readiness</span>
+              ${data.payment.success ? '<span style="font-size: 12px; padding: 2px 8px; background: #dcfce7; color: #16A34A; border-radius: 12px;">Configured</span>' : '<span style="font-size: 12px; padding: 2px 8px; background: #fef9c3; color: #CA8A04; border-radius: 12px;">Needs Config</span>'}
+            </h4>
+            <div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; margin-bottom: 8px;">
+              <span>${data.payment.handlers_found > 0 ? '✅' : '❌'} Payment Handlers (${data.payment.handlers_found})</span>
+              <span>${data.payment.signing_key_valid ? '✅' : '⚪'} Webhook Signing Keys</span>
+            </div>
+            <details style="margin-top: 8px;">
+              <summary style="cursor: pointer; font-size: 13px; color: #D97706;">View step details</summary>
+              <div style="margin-top: 8px;">${renderSteps(data.payment?.steps)}</div>
+            </details>
+          </div>
+          ` : ''}
+
+          <!-- Recommendations -->
+          ${data.recommendations && data.recommendations.length > 0 ? `
+          <div style="padding: 16px; background: linear-gradient(135deg, rgba(46,134,171,0.1), rgba(71,201,122,0.1)); border-radius: 8px;">
+            <h4 style="margin-bottom: 12px; color: var(--color-dark);">💡 Recommendations</h4>
+            <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: var(--color-dark);">
+              ${data.recommendations.map(r => `<li style="margin-bottom: 8px;">${r}</li>`).join('')}
+            </ul>
+          </div>
+          ` : ''}
+        `;
+
+      } catch (err) {
+        result.className = 'result show error';
+        result.innerHTML = `<p>❌ Simulation failed: ${err.message}</p><p style="font-size: 13px; margin-top: 8px;">Make sure the domain has a valid UCP profile at /.well-known/ucp</p>`;
+      }
+
+      btn.disabled = false;
+      btn.textContent = '🚀 Run AI Agent Simulation';
+    });
   </script>
 </body>
 </html>
