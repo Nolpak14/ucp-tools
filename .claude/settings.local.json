@@ -1,7 +1,45 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(gh repo view:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(gh issue create --title \"UCP Merchant Directory - Public registry of UCP-enabled sites\" --body \"$\\(cat <<''EOF''\n## Description\nCreate a public directory/registry of UCP-enabled merchant sites. **No one else has this** - first-mover opportunity.\n\n## Value\n- Unique resource in the UCP ecosystem\n- Drives traffic as the go-to place to discover UCP merchants\n- Builds community and network effects\n- SEO for \"UCP merchants\", \"UCP enabled stores\"\n\n## Features\n- [ ] Database to store validated UCP merchants\n- [ ] Public directory page with search/filter\n- [ ] Auto-add sites that pass validation \\(opt-in\\)\n- [ ] Categories \\(e-commerce platform, industry, region\\)\n- [ ] Badge for listed merchants \\(\"Listed on UCPtools Directory\"\\)\n- [ ] API endpoint to query directory\n\n## Technical Considerations\n- Storage: Vercel KV, Supabase, or similar\n- Moderation: prevent spam/fake entries\n- Privacy: only list with merchant consent\n\n## Effort\nMedium\n\n## Priority\nHigh - First-mover advantage\nEOF\n\\)\" --label \"enhancement,first-mover,priority:high\")",
+      "Bash(gh issue create:*)",
+      "Bash(gh release:*)",
+      "Bash(git checkout:*)",
+      "Bash(npx -y @neondatabase/mcp-server-neon --help)",
+      "WebFetch(domain:neon.tech)",
+      "WebFetch(domain:neon.com)",
+      "Bash(npx neonctl@latest init)",
+      "Bash(test:*)",
+      "Bash(claude mcp add:*)",
+      "Bash(export DATABASE_URL='postgresql://neondb_owner:npg_O90bpkQdEjIr@ep-silent-credit-ag4uek8p-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require')",
+      "Bash(node scripts/setup-benchmark-db.js:*)",
+      "Bash(node --check:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr create:*)",
+      "Bash(vercel env add:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(git pull:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh issue view:*)",
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm run db:generate:*)",
+      "Bash(npm run db:push:*)",
+      "Bash(source:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm test:*)",
+      "WebSearch",
+      "WebFetch(domain:ucp.dev)",
+      "WebFetch(domain:puddingheroes.com)",
+      "Bash(curl:*)",
+      "Bash(npx tsx:*)",
+      "Bash(node:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:api.github.com)"
     ]
   }
 }

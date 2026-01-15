@@ -28,5 +28,16 @@ export {
   clearSchemaCache,
 } from './validator/index.js';
 
+// Simulator
+export {
+  simulateAgentInteraction,
+  simulateDiscoveryFlow,
+  inspectCapabilities,
+  inspectServices,
+  simulateRestApi,
+  simulateCheckoutFlow,
+  simulatePaymentReadiness,
+} from './simulator/index.js';
+
 // Hosting
 export { generateHostingArtifacts } from './hosting/index.js';
