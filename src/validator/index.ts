@@ -13,11 +13,21 @@ import type {
 import { validateStructure } from './structural-validator.js';
 import { validateRules } from './rules-validator.js';
 import { validateNetwork, validateRemoteProfile, clearSchemaCache } from './network-validator.js';
+import { safeValidateWithSdk, getSdkVersion, isSdkCompliant } from './sdk-validator.js';
 import type { NetworkValidationOptions } from './network-validator.js';
 
 export { validateStructure } from './structural-validator.js';
 export { validateRules } from './rules-validator.js';
 export { validateNetwork, validateRemoteProfile, clearSchemaCache } from './network-validator.js';
+export {
+  safeValidateWithSdk,
+  validateWithSdk,
+  getSdkVersion,
+  isSdkCompliant,
+  validateServiceWithSdk,
+  validateCapabilityWithSdk,
+  validateSigningKeysWithSdk,
+} from './sdk-validator.js';
 
 /**
  * Validate a UCP profile (local JSON)
@@ -118,6 +128,9 @@ function buildReport(
     }
   }
 
+  // Run SDK validation for compliance check
+  const sdkCompliant = profile ? isSdkCompliant(profile) : false;
+
   return {
     ok: !hasErrors,
     profile_url: profileUrl,
@@ -125,6 +138,11 @@ function buildReport(
     issues,
     validated_at: new Date().toISOString(),
     validation_mode: mode,
+    sdk_validation: {
+      validated: true,
+      sdk_version: getSdkVersion(),
+      compliant: sdkCompliant,
+    },
   };
 }
 

@@ -15,4 +15,8 @@ export default defineConfig({
     testTimeout: 30000,
     hookTimeout: 30000,
   },
+  // Use CommonJS mode for @ucp-js/sdk due to ESM extensionless import bug
+  ssr: {
+    noExternal: ['@ucp-js/sdk'],
+  },
 });

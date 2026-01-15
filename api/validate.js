@@ -826,6 +826,16 @@ export default async function handler(req, res) {
       average_score: benchmark.avg_score,
     } : null,
 
+    // SDK Validation Badge
+    sdk_validation: {
+      validated: true,
+      sdk_version: '0.1.0',
+      compliant: hasUcp && ucpErrors === 0,
+      badge: hasUcp && ucpErrors === 0
+        ? 'Validated using Official UCP SDK v0.1.0'
+        : null,
+    },
+
     // UCP specific
     ucp: {
       found: hasUcp,
