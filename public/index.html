@@ -141,13 +141,18 @@
     }
 
     .ph-badge {
-      margin-left: 24px;
-      display: flex;
-      align-items: center;
+      display: inline-block;
+      margin: 20px 0 24px 0;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .ph-badge:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
     }
 
     .ph-badge img {
-      height: 40px;
+      height: 54px;
       width: auto;
     }
 
@@ -564,7 +569,6 @@
         <a href="/guides/fastucp.html">FastUCP</a>
         <a href="#pricing">Pricing</a>
         <a href="https://ucp.dev/specification/overview/" target="_blank">Docs</a>
-        <a href="https://www.producthunt.com/products/ucp-tools?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-ucp-tools" target="_blank" rel="noopener noreferrer" class="ph-badge"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1063017&amp;theme=light&amp;t=1768475714634" alt="UCP Tools on Product Hunt" /></a>
       </nav>
     </div>
   </header>
@@ -574,6 +578,10 @@
       <h1>AI Commerce <span class="gradient-text">Readiness</span></h1>
       <p>Check if your store is ready for ChatGPT, Google AI Mode, and Copilot checkout. Validates UCP profile +
         Schema.org requirements.</p>
+
+      <a href="https://www.producthunt.com/products/ucp-tools?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-ucp-tools" target="_blank" rel="noopener noreferrer" class="ph-badge">
+        <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1063017&amp;theme=light&amp;t=1768475714634" alt="UCP Tools - Featured on Product Hunt" />
+      </a>
 
       <div class="tabs">
         <button class="tab active" data-tab="validate">Check Readiness</button>
