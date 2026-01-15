@@ -137,39 +137,48 @@
       -webkit-text-fill-color: var(--color-medium);
     }
 
-    nav a {
-      margin-left: 24px;
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    nav > a {
+      padding: 8px 12px;
       color: var(--color-medium);
       text-decoration: none;
       transition: color 0.2s;
+      border-radius: 6px;
     }
 
-    nav a:hover {
+    nav > a:hover {
       color: var(--brand-blue);
+      background: rgba(46, 134, 171, 0.08);
     }
 
     /* Dropdown Menu */
     .dropdown {
       position: relative;
       display: inline-block;
-      margin-left: 24px;
     }
 
     .dropdown-toggle {
       color: var(--color-medium);
       text-decoration: none;
       cursor: pointer;
-      transition: color 0.2s;
+      transition: all 0.2s;
       background: none;
       border: none;
       font-size: inherit;
       font-family: inherit;
-      padding: 0;
+      padding: 8px 12px;
+      border-radius: 6px;
     }
 
     .dropdown-toggle:hover,
     .dropdown:hover .dropdown-toggle {
       color: var(--brand-blue);
+      background: rgba(46, 134, 171, 0.08);
     }
 
     .dropdown-toggle::after {
@@ -468,6 +477,181 @@
       border-radius: 4px;
     }
 
+    /* Lint Suggestions */
+    .lint-suggestions {
+      margin-top: 24px;
+    }
+
+    .lint-suggestion {
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .lint-suggestion-header {
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .lint-suggestion-header:hover {
+      background: var(--color-background);
+    }
+
+    .lint-suggestion.critical .lint-suggestion-header {
+      border-left: 4px solid var(--color-error);
+    }
+
+    .lint-suggestion.warning .lint-suggestion-header {
+      border-left: 4px solid var(--color-warning);
+    }
+
+    .lint-suggestion.info .lint-suggestion-header {
+      border-left: 4px solid var(--color-info);
+    }
+
+    .lint-suggestion-title {
+      flex: 1;
+    }
+
+    .lint-suggestion-title h4 {
+      margin: 0 0 4px 0;
+      font-size: 15px;
+      color: var(--color-dark);
+    }
+
+    .lint-suggestion-title p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--color-medium);
+    }
+
+    .lint-severity-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .lint-severity-badge.critical {
+      background: #fef2f2;
+      color: #DC2626;
+    }
+
+    .lint-severity-badge.warning {
+      background: #fefce8;
+      color: #CA8A04;
+    }
+
+    .lint-severity-badge.info {
+      background: #f0f9ff;
+      color: #0369a1;
+    }
+
+    .lint-suggestion-body {
+      display: none;
+      padding: 0 16px 16px;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .lint-suggestion.expanded .lint-suggestion-body {
+      display: block;
+    }
+
+    .lint-suggestion-body p {
+      margin: 12px 0 0;
+      font-size: 14px;
+      color: var(--color-dark);
+    }
+
+    .lint-code-block {
+      background: #1e293b;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lint-code-block pre {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      font-size: 12px;
+      line-height: 1.5;
+      overflow-x: auto;
+    }
+
+    .lint-code-block code {
+      color: #e2e8f0;
+      font-family: 'Fira Code', 'Consolas', monospace;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #94a3b8;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .copy-btn.copied {
+      background: #16a34a;
+      color: #fff;
+    }
+
+    .lint-links {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .lint-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      color: var(--brand-blue);
+      text-decoration: none;
+      padding: 6px 12px;
+      background: rgba(46, 134, 171, 0.1);
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .lint-link:hover {
+      background: rgba(46, 134, 171, 0.2);
+    }
+
+    .expand-icon {
+      transition: transform 0.2s;
+      font-size: 12px;
+    }
+
+    .lint-suggestion.expanded .expand-icon {
+      transform: rotate(180deg);
+    }
+
     /* Code Block */
     pre {
       background: var(--color-dark);
@@ -648,10 +832,13 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
+        gap: 4px;
       }
 
-      nav a {
-        margin: 8px 12px;
+      nav > a,
+      .dropdown-toggle {
+        padding: 6px 10px;
+        font-size: 14px;
       }
     }
   </style>
@@ -666,12 +853,16 @@
       </a>
       <div class="header-nav">
         <nav>
-          <a href="#validate" onclick="switchTab('validate'); return false;">Validate</a>
-          <a href="#simulate" onclick="switchTab('simulate'); return false;">🤖 AI Test</a>
-          <a href="#generate" onclick="switchTab('generate'); return false;">Generate</a>
-          <a href="#schema" onclick="switchTab('schema'); return false;">Schema</a>
+          <div class="dropdown">
+            <span class="dropdown-toggle">Tools</span>
+            <div class="dropdown-menu">
+              <a href="#validate" onclick="switchTab('validate'); closeDropdowns(); return false;">🔍 Validator</a>
+              <a href="#simulate" onclick="switchTab('simulate'); closeDropdowns(); return false;">🤖 AI Simulator</a>
+              <a href="#generate" onclick="switchTab('generate'); closeDropdowns(); return false;">📝 Generator</a>
+              <a href="#schema" onclick="switchTab('schema'); closeDropdowns(); return false;">📊 Schema Builder</a>
+            </div>
+          </div>
           <a href="/learn">Learn</a>
-          <a href="/directory">Directory</a>
           <div class="dropdown">
             <span class="dropdown-toggle">Guides</span>
             <div class="dropdown-menu">
@@ -685,8 +876,8 @@
               <a href="/guides/squarespace">◼️ Squarespace</a>
             </div>
           </div>
-          <a href="#pricing">Pricing</a>
-          <a href="https://ucp.dev/specification/overview/" target="_blank">Docs</a>
+          <a href="/directory">Directory</a>
+          <a href="https://ucp.dev/specification/overview/" target="_blank">Docs ↗</a>
         </nav>
       </div>
       <a href="https://www.producthunt.com/products/ucp-tools?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-ucp-tools"
@@ -1232,6 +1423,45 @@
           </div>
           ` : ''}
 
+          <!-- Lint Suggestions Section (Issue #9) -->
+          ${data.lint_suggestions?.length > 0 ? `
+          <div class="lint-suggestions" style="margin-bottom: 24px;">
+            <h4 style="margin-bottom: 16px; color: var(--color-dark); display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 20px;">🔧</span> How to Fix
+              <span style="font-size: 12px; font-weight: 500; color: var(--color-medium);">(${data.lint_suggestions.length} suggestion${data.lint_suggestions.length > 1 ? 's' : ''})</span>
+            </h4>
+            <div class="lint-suggestions-list">
+              ${data.lint_suggestions.slice(0, 8).map((s, idx) => `
+                <div class="lint-suggestion ${s.severity}" id="lint-${idx}">
+                  <div class="lint-suggestion-header" onclick="toggleLintSuggestion(${idx})">
+                    <div class="lint-suggestion-title">
+                      <h4>${s.title}</h4>
+                      <p>${s.impact}</p>
+                    </div>
+                    <span class="lint-severity-badge ${s.severity}">${s.severity}</span>
+                    <span class="expand-icon">▼</span>
+                  </div>
+                  <div class="lint-suggestion-body">
+                    <p><strong>How to fix:</strong> ${s.fix}</p>
+                    ${s.code_snippet ? `
+                    <div class="lint-code-block">
+                      <button class="copy-btn" onclick="copyLintCode(${idx}, event)">Copy</button>
+                      <pre><code>${escapeHtml(s.code_snippet)}</code></pre>
+                    </div>
+                    ` : ''}
+                    <div class="lint-links">
+                      ${s.doc_link ? `<a href="${s.doc_link}" target="_blank" class="lint-link">📖 Documentation</a>` : ''}
+                      ${s.generator_link ? `<a href="${s.generator_link}" class="lint-link">⚡ Generate</a>` : ''}
+                      ${s.code?.includes('SCHEMA') ? `<a href="/guides" class="lint-link">📋 Platform Guides</a>` : ''}
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+              ${data.lint_suggestions.length > 8 ? `<p style="margin-top: 12px; font-size: 13px; color: var(--color-medium);">...and ${data.lint_suggestions.length - 8} more suggestions</p>` : ''}
+            </div>
+          </div>
+          ` : ''}
+
           <!-- Badge Section -->
           ${score >= 50 ? `
           <div style="margin-top: 24px; padding: 20px; background: linear-gradient(135deg, rgba(46,134,171,0.1), rgba(71,201,122,0.1)); border-radius: 8px; border: 1px solid var(--color-border);">
@@ -1273,6 +1503,39 @@
       navigator.clipboard.writeText(code);
       alert('Badge code copied to clipboard!');
     }
+
+    // Lint Suggestions functions (Issue #9)
+    function toggleLintSuggestion(idx) {
+      const el = document.getElementById('lint-' + idx);
+      if (el) {
+        el.classList.toggle('expanded');
+      }
+    }
+
+    function copyLintCode(idx, event) {
+      event.stopPropagation();
+      const el = document.querySelector('#lint-' + idx + ' .lint-code-block code');
+      if (el) {
+        const text = el.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          const btn = event.target;
+          btn.textContent = 'Copied!';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+          }, 2000);
+        });
+      }
+    }
+
+    // Close dropdowns helper
+    function closeDropdowns() {
+      // Dropdowns auto-close via CSS :hover, but this helps on touch devices
+    }
+
+    // Store lint suggestions data globally for copy functionality
+    window.lintSuggestions = [];
 
     // Generate form
     document.getElementById('generate-form').addEventListener('submit', async (e) => {
