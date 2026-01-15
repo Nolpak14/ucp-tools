@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J5JSHV7H1E"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-J5JSHV7H1E');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squarespace UCP Implementation Guide - AI Commerce Ready | UCP Tools</title>
+    <meta name="description"
+        content="Step-by-step guide to implementing UCP (Universal Commerce Protocol) on Squarespace. Make your beautiful store AI-ready for ChatGPT and AI shopping agents.">
+    <link rel="canonical" href="https://ucptools.dev/guides/squarespace.html">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#000000">
+    <meta property="og:title" content="Squarespace UCP Implementation Guide - AI Commerce Ready">
+    <meta property="og:description"
+        content="Make your Squarespace store AI-ready with UCP. Simple implementation guide.">
+    <meta property="og:image" content="/og-image.png">
+    <meta property="og:type" content="article">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --brand-blue: #2E86AB;
+            --brand-teal: #36B5A2;
+            --brand-green: #47C97A;
+            --brand-gradient: linear-gradient(135deg, #2E86AB 0%, #36B5A2 50%, #47C97A 100%);
+            --platform-color: #000000;
+            --platform-accent: #111111;
+            --color-dark: #1A2B3C;
+            --color-medium: #5A6978;
+            --color-light: #94A3B8;
+            --color-border: #E2E8F0;
+            --color-background: #F8FAFC;
+            --color-card: #FFFFFF;
+            --color-success: #47C97A;
+            --color-warning: #F59E0B;
+            --color-error: #EF4444;
+            --color-info: #2E86AB;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--color-background);
+            color: var(--color-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        a { color: var(--brand-blue); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        header {
+            background: var(--color-card);
+            border-bottom: 1px solid var(--color-border);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .logo:hover { text-decoration: none; }
+        .logo-icon { width: 40px; height: 40px; border-radius: 8px; }
+
+        .logo-text {
+            background: var(--brand-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-suffix { font-weight: 400; -webkit-text-fill-color: var(--color-medium); }
+
+        nav { display: flex; gap: 8px; }
+
+        nav a {
+            padding: 8px 16px;
+            color: var(--color-medium);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--brand-blue);
+            background: rgba(46, 134, 171, 0.08);
+            text-decoration: none;
+        }
+
+        nav a.active {
+            color: var(--brand-blue);
+            background: rgba(46, 134, 171, 0.12);
+        }
+
+        .guide-hero {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #333333 100%);
+            color: white;
+            padding: 80px 0;
+        }
+
+        .guide-hero .container { max-width: 800px; }
+
+        .guide-hero h1 {
+            font-size: 2.75rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .guide-hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .guide-badges { display: flex; gap: 12px; flex-wrap: wrap; }
+
+        .guide-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .guide-content {
+            display: grid;
+            grid-template-columns: 1fr 260px;
+            gap: 60px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        @media (max-width: 968px) {
+            .guide-content { grid-template-columns: 1fr; gap: 40px; }
+            .guide-sidebar { order: -1; }
+        }
+
+        @media (max-width: 600px) {
+            .guide-hero h1 { font-size: 2rem; }
+            .guide-hero p { font-size: 1.1rem; }
+            .header-inner { flex-direction: column; gap: 16px; }
+            nav { flex-wrap: wrap; justify-content: center; }
+        }
+
+        .guide-main section { margin-bottom: 48px; }
+
+        .guide-main h2 {
+            color: var(--color-dark);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .guide-main h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 32px 0 16px;
+            color: var(--color-dark);
+        }
+
+        .guide-main p {
+            margin-bottom: 16px;
+            color: var(--color-medium);
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .guide-main ul, .guide-main ol { margin-bottom: 20px; padding-left: 24px; }
+
+        .guide-main li {
+            margin-bottom: 10px;
+            color: var(--color-medium);
+            line-height: 1.6;
+        }
+
+        .guide-main li strong { color: var(--color-dark); }
+
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 24px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            border: 1px solid #333;
+        }
+
+        code { font-family: 'Fira Code', 'Monaco', 'Consolas', monospace; }
+
+        :not(pre)>code {
+            background: #EEF2F6;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--platform-color);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-right: 12px;
+        }
+
+        .step-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 32px 0 16px;
+            color: var(--color-dark);
+        }
+
+        .tip-box {
+            background: #EFF6FF;
+            border-left: 4px solid var(--brand-blue);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin: 24px 0;
+        }
+
+        .tip-box.warning { background: #FEF3C7; border-color: var(--color-warning); }
+        .tip-box.success { background: #DCFCE7; border-color: var(--color-success); }
+        .tip-box.platform { background: #F5F5F5; border-color: var(--platform-color); }
+
+        .tip-box strong {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--color-dark);
+            font-size: 1rem;
+        }
+
+        .tip-box p, .tip-box { color: var(--color-medium); font-size: 0.95rem; }
+
+        .cta-box {
+            background: var(--brand-gradient);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 32px 0;
+            box-shadow: 0 8px 32px rgba(46, 134, 171, 0.25);
+        }
+
+        .cta-box h3 { color: white; font-size: 1.5rem; margin-bottom: 12px; }
+        .cta-box p { color: rgba(255, 255, 255, 0.9); margin-bottom: 24px; font-size: 1.05rem; }
+
+        .cta-box .btn {
+            background: white;
+            color: var(--brand-blue);
+            padding: 14px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-block;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .cta-box .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--color-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+        }
+
+        th, td {
+            text-align: left;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        th { background: var(--color-background); font-weight: 600; color: var(--color-dark); }
+        tr:last-child td { border-bottom: none; }
+        td code { background: #EEF2F6; padding: 4px 8px; border-radius: 4px; }
+
+        .guide-sidebar { position: sticky; top: 100px; align-self: start; }
+
+        .sidebar-toc {
+            background: var(--color-card);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .sidebar-toc h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-light);
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .sidebar-toc ul { list-style: none; padding: 0; margin: 0; }
+        .sidebar-toc li { margin-bottom: 0; }
+
+        .sidebar-toc a {
+            display: block;
+            padding: 10px 12px;
+            color: var(--color-medium);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .sidebar-toc a:hover {
+            color: var(--platform-color);
+            background: rgba(0, 0, 0, 0.05);
+            text-decoration: none;
+        }
+
+        .other-guides {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .other-guides h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-light);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .other-guides a {
+            display: block;
+            padding: 8px 12px;
+            color: var(--color-medium);
+            font-size: 0.85rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .other-guides a:hover {
+            color: var(--brand-blue);
+            background: rgba(46, 134, 171, 0.08);
+            text-decoration: none;
+        }
+
+        footer {
+            background: var(--color-dark);
+            color: white;
+            padding: 48px 0;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        footer p { margin: 0; opacity: 0.9; }
+        footer a { color: var(--brand-teal); }
+        footer a:hover { color: var(--brand-green); }
+        .footer-links { margin-top: 12px; opacity: 0.7; }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="/" class="logo">
+                <img src="/logo.jpeg" alt="UCP.tools logo" class="logo-icon">
+                <span class="logo-text">UCP<span class="logo-suffix">.tools</span></span>
+            </a>
+            <nav>
+                <a href="/">Validator</a>
+                <a href="/learn.html">Learn</a>
+                <a href="/directory.html">Directory</a>
+                <a href="/guides/squarespace.html" class="active">Squarespace</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="guide-hero">
+        <div class="container">
+            <h1>◼️ Squarespace UCP Implementation</h1>
+            <p>Make your beautiful Squarespace store AI-ready. Enable ChatGPT, Google AI Mode, and AI shopping agents to discover and purchase from your store.</p>
+            <div class="guide-badges">
+                <span class="guide-badge">🤖 AI Agent Ready</span>
+                <span class="guide-badge">🎨 Design First</span>
+                <span class="guide-badge">📄 Code Injection</span>
+                <span class="guide-badge">🔒 Secure</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="guide-content">
+        <main class="guide-main">
+            <section id="overview">
+                <h2>Why Add UCP to Squarespace?</h2>
+                <p>
+                    Squarespace is known for beautiful, design-forward websites. Adding UCP support extends your stunning store to AI shopping agents, allowing ChatGPT, Google AI, and other AI assistants to discover and recommend your products.
+                </p>
+                <ul>
+                    <li><strong>Design Excellence:</strong> Your beautiful products deserve AI visibility</li>
+                    <li><strong>Code Injection:</strong> Add custom functionality without compromising design</li>
+                    <li><strong>Built-in Commerce:</strong> Squarespace Commerce integrates seamlessly</li>
+                    <li><strong>SEO Focus:</strong> Already optimized, now AI-optimized too</li>
+                </ul>
+
+                <div class="tip-box platform">
+                    <strong>◼️ Squarespace Limitation</strong>
+                    Squarespace doesn't support serving files from <code>/.well-known/</code> directly. We'll use a workaround with external hosting and a custom page approach.
+                </div>
+            </section>
+
+            <section id="methods">
+                <h2>Implementation Methods</h2>
+
+                <table>
+                    <tr>
+                        <th>Method</th>
+                        <th>Difficulty</th>
+                        <th>Requirements</th>
+                    </tr>
+                    <tr>
+                        <td><strong>External Hosting + Redirect</strong></td>
+                        <td>Easy</td>
+                        <td>Custom domain, external host</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Code Injection Page</strong></td>
+                        <td>Medium</td>
+                        <td>Business plan or higher</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cloudflare Worker</strong></td>
+                        <td>Medium</td>
+                        <td>Cloudflare DNS</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section id="external-method">
+                <h2>Method 1: External Hosting (Recommended)</h2>
+                <p>Host your UCP profile externally and redirect requests to it.</p>
+
+                <div class="step-title"><span class="step-number">1</span>Generate Your UCP Profile</div>
+                
+                <div class="cta-box">
+                    <h3>Generate Your UCP Profile</h3>
+                    <p>Create a customized UCP profile for your Squarespace store.</p>
+                    <a href="/#generate" class="btn">Open Generator →</a>
+                </div>
+
+                <div class="step-title"><span class="step-number">2</span>Host Your Profile</div>
+                <p>Upload your UCP JSON file to one of these free services:</p>
+
+                <h3>Option A: GitHub Gist (Free)</h3>
+                <ol>
+                    <li>Go to <a href="https://gist.github.com" target="_blank">gist.github.com</a></li>
+                    <li>Create a new gist with your UCP JSON</li>
+                    <li>Click "Raw" to get the direct URL</li>
+                </ol>
+
+                <h3>Option B: JSONBin (Free)</h3>
+                <ol>
+                    <li>Go to <a href="https://jsonbin.io" target="_blank">jsonbin.io</a></li>
+                    <li>Create an account and paste your JSON</li>
+                    <li>Get the public access URL</li>
+                </ol>
+
+                <h3>Option C: Vercel (Free)</h3>
+<pre><span style="color:#6A9955"># Create a simple project</span>
+mkdir ucp-profile && cd ucp-profile
+echo '{}' > vercel.json
+
+<span style="color:#6A9955"># Create public/.well-known/ucp file with your JSON</span>
+mkdir -p public/.well-known
+<span style="color:#6A9955"># Copy your ucp.json content to public/.well-known/ucp</span>
+
+<span style="color:#6A9955"># Deploy</span>
+vercel --prod</pre>
+
+                <div class="step-title"><span class="step-number">3</span>Set Up DNS Redirect</div>
+                <p>If you're using Cloudflare or another DNS provider that supports Page Rules or Workers:</p>
+
+                <h3>Cloudflare Worker Example</h3>
+<pre><span style="color:#DCDCAA">addEventListener</span>(<span style="color:#CE9178">'fetch'</span>, event => {
+    event.respondWith(handleRequest(event.request))
+})
+
+<span style="color:#C586C0">async function</span> <span style="color:#DCDCAA">handleRequest</span>(request) {
+    <span style="color:#C586C0">const</span> url = <span style="color:#C586C0">new</span> URL(request.url)
+    
+    <span style="color:#6A9955">// Intercept .well-known/ucp requests</span>
+    <span style="color:#C586C0">if</span> (url.pathname === <span style="color:#CE9178">'/.well-known/ucp'</span>) {
+        <span style="color:#6A9955">// Fetch from your hosted profile</span>
+        <span style="color:#C586C0">const</span> ucpUrl = <span style="color:#CE9178">'https://your-profile-host.com/ucp.json'</span>
+        <span style="color:#C586C0">const</span> response = <span style="color:#C586C0">await</span> fetch(ucpUrl)
+        <span style="color:#C586C0">const</span> json = <span style="color:#C586C0">await</span> response.text()
+        
+        <span style="color:#C586C0">return new</span> Response(json, {
+            headers: {
+                <span style="color:#CE9178">'Content-Type'</span>: <span style="color:#CE9178">'application/json'</span>,
+                <span style="color:#CE9178">'Access-Control-Allow-Origin'</span>: <span style="color:#CE9178">'*'</span>,
+                <span style="color:#CE9178">'Cache-Control'</span>: <span style="color:#CE9178">'public, max-age=3600'</span>
+            }
+        })
+    }
+    
+    <span style="color:#6A9955">// Pass through to Squarespace for all other requests</span>
+    <span style="color:#C586C0">return</span> fetch(request)
+}</pre>
+            </section>
+
+            <section id="page-method">
+                <h2>Method 2: Code Injection Page</h2>
+                <p>Create a dedicated page that serves your UCP profile (alternative endpoint).</p>
+
+                <div class="step-title"><span class="step-number">1</span>Create a New Page</div>
+                <ol>
+                    <li>In Squarespace, go to <strong>Pages → + → Blank Page</strong></li>
+                    <li>Name it "UCP Profile" or similar</li>
+                    <li>Set the URL slug to <code>ucp-profile</code></li>
+                </ol>
+
+                <div class="step-title"><span class="step-number">2</span>Add Code Block</div>
+                <ol>
+                    <li>Add a <strong>Code Block</strong> to the page</li>
+                    <li>Set display to <strong>HTML</strong></li>
+                    <li>Paste your UCP JSON wrapped in a pre tag:</li>
+                </ol>
+
+<pre><span style="color:#569CD6">&lt;pre</span> <span style="color:#9CDCFE">id</span>=<span style="color:#CE9178">"ucp-profile"</span> <span style="color:#9CDCFE">style</span>=<span style="color:#CE9178">"display:none;"</span><span style="color:#569CD6">&gt;</span>
+{
+  "profile_version": "1.0",
+  "merchant": {
+    "name": "Your Store Name",
+    "url": "https://yourstore.com"
+  }
+}
+<span style="color:#569CD6">&lt;/pre&gt;</span>
+
+<span style="color:#569CD6">&lt;script&gt;</span>
+<span style="color:#6A9955">// Redirect to show raw JSON</span>
+<span style="color:#C586C0">const</span> pre = document.getElementById(<span style="color:#CE9178">'ucp-profile'</span>);
+<span style="color:#C586C0">const</span> json = pre.textContent;
+document.body.innerHTML = <span style="color:#CE9178">'&lt;pre&gt;'</span> + json + <span style="color:#CE9178">'&lt;/pre&gt;'</span>;
+<span style="color:#569CD6">&lt;/script&gt;</span></pre>
+
+                <div class="step-title"><span class="step-number">3</span>Hide from Navigation</div>
+                <ol>
+                    <li>Go to <strong>Pages</strong></li>
+                    <li>Drag the UCP Profile page to <strong>Not Linked</strong> section</li>
+                </ol>
+
+                <div class="tip-box warning">
+                    <strong>⚠️ Important</strong>
+                    This creates an alternative endpoint at <code>/ucp-profile</code>, not the standard <code>/.well-known/ucp</code>. You'll need to specify this URL when validating or registering your store.
+                </div>
+            </section>
+
+            <section id="schema-markup">
+                <h2>Schema.org Markup</h2>
+                <p>
+                    Squarespace automatically adds basic Schema.org markup for products. To enhance it, use Code Injection:
+                </p>
+
+                <ol>
+                    <li>Go to <strong>Settings → Advanced → Code Injection</strong></li>
+                    <li>Add structured data in the <strong>Header</strong> section:</li>
+                </ol>
+
+<pre><span style="color:#569CD6">&lt;script</span> <span style="color:#9CDCFE">type</span>=<span style="color:#CE9178">"application/ld+json"</span><span style="color:#569CD6">&gt;</span>
+{
+  <span style="color:#9CDCFE">"@context"</span>: <span style="color:#CE9178">"https://schema.org"</span>,
+  <span style="color:#9CDCFE">"@type"</span>: <span style="color:#CE9178">"Organization"</span>,
+  <span style="color:#9CDCFE">"name"</span>: <span style="color:#CE9178">"Your Store Name"</span>,
+  <span style="color:#9CDCFE">"url"</span>: <span style="color:#CE9178">"https://yourstore.com"</span>,
+  <span style="color:#9CDCFE">"sameAs"</span>: [
+    <span style="color:#CE9178">"https://instagram.com/yourstore"</span>,
+    <span style="color:#CE9178">"https://twitter.com/yourstore"</span>
+  ]
+}
+<span style="color:#569CD6">&lt;/script&gt;</span></pre>
+
+                <div class="tip-box">
+                    <strong>💡 Pro Tip</strong>
+                    Squarespace Commerce already adds Product schema to product pages. Test with <a href="https://search.google.com/test/rich-results" target="_blank">Google's Rich Results Test</a>.
+                </div>
+            </section>
+
+            <section id="validation">
+                <h2>Validate Your Implementation</h2>
+
+                <div class="cta-box">
+                    <h3>Validate Your Squarespace Store</h3>
+                    <p>Check your UCP implementation and AI commerce readiness.</p>
+                    <a href="/" class="btn">Run Validation →</a>
+                </div>
+            </section>
+
+            <section id="common-issues">
+                <h2>Common Issues & Solutions</h2>
+
+                <table>
+                    <tr>
+                        <th>Issue</th>
+                        <th>Solution</th>
+                    </tr>
+                    <tr>
+                        <td>Can't create <code>/.well-known/</code></td>
+                        <td>Use external hosting with Cloudflare Worker or DNS redirect</td>
+                    </tr>
+                    <tr>
+                        <td>Page shows Squarespace template</td>
+                        <td>Use Code Block with script to replace body content</td>
+                    </tr>
+                    <tr>
+                        <td>CORS errors</td>
+                        <td>Ensure external host sets <code>Access-Control-Allow-Origin</code></td>
+                    </tr>
+                    <tr>
+                        <td>Code injection not working</td>
+                        <td>Ensure you have Business plan or higher</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section id="testing">
+                <h2>🤖 Test with AI Agents</h2>
+
+                <div class="cta-box">
+                    <h3>Run AI Agent Simulation</h3>
+                    <p>Test how AI shopping agents will interact with your Squarespace store.</p>
+                    <a href="/#simulate" class="btn">Open Simulator →</a>
+                </div>
+            </section>
+
+            <section id="resources">
+                <h2>Resources</h2>
+                <ul>
+                    <li><a href="https://ucp.dev" target="_blank">Official UCP Specification</a></li>
+                    <li><a href="https://support.squarespace.com/hc/en-us/articles/205815908-Using-Code-Injection" target="_blank">Squarespace Code Injection Guide</a></li>
+                    <li><a href="https://developers.cloudflare.com/workers/" target="_blank">Cloudflare Workers Documentation</a></li>
+                    <li><a href="/learn.html">UCP Learning Center</a></li>
+                </ul>
+            </section>
+        </main>
+
+        <aside class="guide-sidebar">
+            <div class="sidebar-toc">
+                <h4>On This Page</h4>
+                <ul>
+                    <li><a href="#overview">Why Add UCP?</a></li>
+                    <li><a href="#methods">Implementation Methods</a></li>
+                    <li><a href="#external-method">External Hosting</a></li>
+                    <li><a href="#page-method">Code Injection Page</a></li>
+                    <li><a href="#schema-markup">Schema.org Markup</a></li>
+                    <li><a href="#validation">Validation</a></li>
+                    <li><a href="#common-issues">Common Issues</a></li>
+                    <li><a href="#testing">Test with AI</a></li>
+                    <li><a href="#resources">Resources</a></li>
+                </ul>
+            </div>
+
+            <div class="other-guides">
+                <h4>Other Platforms</h4>
+                <a href="/guides/shopify.html">Shopify</a>
+                <a href="/guides/woocommerce.html">WooCommerce</a>
+                <a href="/guides/magento.html">Magento</a>
+                <a href="/guides/wix.html">Wix</a>
+                <a href="/guides/bigcommerce.html">BigCommerce</a>
+            </div>
+        </aside>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>UCP Tools — Built for the AI Commerce era</p>
+            <p class="footer-links">
+                <a href="https://github.com/Nolpak14/ucp-tools" target="_blank">GitHub</a> ·
+                <a href="https://ucp.dev" target="_blank">UCP Spec</a> ·
+                <a href="/">Validator</a>
+            </p>
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J5JSHV7H1E"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-J5JSHV7H1E');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magento UCP Implementation Guide - AI Commerce Ready | UCP Tools</title>
+    <meta name="description"
+        content="Step-by-step guide to implementing UCP (Universal Commerce Protocol) on Magento / Adobe Commerce. Make your enterprise store AI-ready for ChatGPT and AI shopping agents.">
+    <link rel="canonical" href="https://ucptools.dev/guides/magento.html">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#F26322">
+    <meta property="og:title" content="Magento UCP Implementation Guide - AI Commerce Ready">
+    <meta property="og:description"
+        content="Make your Magento / Adobe Commerce store AI-ready with UCP. Enterprise implementation guide.">
+    <meta property="og:image" content="/og-image.png">
+    <meta property="og:type" content="article">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --brand-blue: #2E86AB;
+            --brand-teal: #36B5A2;
+            --brand-green: #47C97A;
+            --brand-gradient: linear-gradient(135deg, #2E86AB 0%, #36B5A2 50%, #47C97A 100%);
+            --platform-color: #F26322;
+            --platform-dark: #D64D0F;
+            --color-dark: #1A2B3C;
+            --color-medium: #5A6978;
+            --color-light: #94A3B8;
+            --color-border: #E2E8F0;
+            --color-background: #F8FAFC;
+            --color-card: #FFFFFF;
+            --color-success: #47C97A;
+            --color-warning: #F59E0B;
+            --color-error: #EF4444;
+            --color-info: #2E86AB;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--color-background);
+            color: var(--color-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        a { color: var(--brand-blue); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        header {
+            background: var(--color-card);
+            border-bottom: 1px solid var(--color-border);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .logo:hover { text-decoration: none; }
+        .logo-icon { width: 40px; height: 40px; border-radius: 8px; }
+
+        .logo-text {
+            background: var(--brand-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-suffix { font-weight: 400; -webkit-text-fill-color: var(--color-medium); }
+
+        nav { display: flex; gap: 8px; }
+
+        nav a {
+            padding: 8px 16px;
+            color: var(--color-medium);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--brand-blue);
+            background: rgba(46, 134, 171, 0.08);
+            text-decoration: none;
+        }
+
+        nav a.active {
+            color: var(--brand-blue);
+            background: rgba(46, 134, 171, 0.12);
+        }
+
+        .guide-hero {
+            background: linear-gradient(135deg, #D64D0F 0%, #F26322 100%);
+            color: white;
+            padding: 80px 0;
+        }
+
+        .guide-hero .container { max-width: 800px; }
+
+        .guide-hero h1 {
+            font-size: 2.75rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .guide-hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .guide-badges { display: flex; gap: 12px; flex-wrap: wrap; }
+
+        .guide-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .guide-content {
+            display: grid;
+            grid-template-columns: 1fr 260px;
+            gap: 60px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        @media (max-width: 968px) {
+            .guide-content { grid-template-columns: 1fr; gap: 40px; }
+            .guide-sidebar { order: -1; }
+        }
+
+        @media (max-width: 600px) {
+            .guide-hero h1 { font-size: 2rem; }
+            .guide-hero p { font-size: 1.1rem; }
+            .header-inner { flex-direction: column; gap: 16px; }
+            nav { flex-wrap: wrap; justify-content: center; }
+        }
+
+        .guide-main section { margin-bottom: 48px; }
+
+        .guide-main h2 {
+            color: var(--color-dark);
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .guide-main h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 32px 0 16px;
+            color: var(--color-dark);
+        }
+
+        .guide-main p {
+            margin-bottom: 16px;
+            color: var(--color-medium);
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .guide-main ul, .guide-main ol { margin-bottom: 20px; padding-left: 24px; }
+
+        .guide-main li {
+            margin-bottom: 10px;
+            color: var(--color-medium);
+            line-height: 1.6;
+        }
+
+        .guide-main li strong { color: var(--color-dark); }
+
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 24px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            border: 1px solid #333;
+        }
+
+        code { font-family: 'Fira Code', 'Monaco', 'Consolas', monospace; }
+
+        :not(pre)>code {
+            background: #EEF2F6;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: var(--platform-dark);
+            font-weight: 500;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--platform-color);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-right: 12px;
+        }
+
+        .step-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 32px 0 16px;
+            color: var(--color-dark);
+        }
+
+        .tip-box {
+            background: #EFF6FF;
+            border-left: 4px solid var(--brand-blue);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin: 24px 0;
+        }
+
+        .tip-box.warning { background: #FEF3C7; border-color: var(--color-warning); }
+        .tip-box.success { background: #DCFCE7; border-color: var(--color-success); }
+        .tip-box.platform { background: #FEF4EE; border-color: var(--platform-color); }
+
+        .tip-box strong {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--color-dark);
+            font-size: 1rem;
+        }
+
+        .tip-box p, .tip-box { color: var(--color-medium); font-size: 0.95rem; }
+
+        .cta-box {
+            background: var(--brand-gradient);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 32px 0;
+            box-shadow: 0 8px 32px rgba(46, 134, 171, 0.25);
+        }
+
+        .cta-box h3 { color: white; font-size: 1.5rem; margin-bottom: 12px; }
+        .cta-box p { color: rgba(255, 255, 255, 0.9); margin-bottom: 24px; font-size: 1.05rem; }
+
+        .cta-box .btn {
+            background: white;
+            color: var(--brand-blue);
+            padding: 14px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-block;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .cta-box .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--color-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+        }
+
+        th, td {
+            text-align: left;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        th { background: var(--color-background); font-weight: 600; color: var(--color-dark); }
+        tr:last-child td { border-bottom: none; }
+        td code { background: #EEF2F6; padding: 4px 8px; border-radius: 4px; }
+
+        .guide-sidebar { position: sticky; top: 100px; align-self: start; }
+
+        .sidebar-toc {
+            background: var(--color-card);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .sidebar-toc h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-light);
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .sidebar-toc ul { list-style: none; padding: 0; margin: 0; }
+        .sidebar-toc li { margin-bottom: 0; }
+
+        .sidebar-toc a {
+            display: block;
+            padding: 10px 12px;
+            color: var(--color-medium);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .sidebar-toc a:hover {
+            color: var(--platform-color);
+            background: rgba(242, 99, 34, 0.08);
+            text-decoration: none;
+        }
+
+        .other-guides {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .other-guides h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-light);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .other-guides a {
+            display: block;
+            padding: 8px 12px;
+            color: var(--color-medium);
+            font-size: 0.85rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .other-guides a:hover {
+            color: var(--brand-blue);
+            background: rgba(46, 134, 171, 0.08);
+            text-decoration: none;
+        }
+
+        footer {
+            background: var(--color-dark);
+            color: white;
+            padding: 48px 0;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        footer p { margin: 0; opacity: 0.9; }
+        footer a { color: var(--brand-teal); }
+        footer a:hover { color: var(--brand-green); }
+        .footer-links { margin-top: 12px; opacity: 0.7; }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="/" class="logo">
+                <img src="/logo.jpeg" alt="UCP.tools logo" class="logo-icon">
+                <span class="logo-text">UCP<span class="logo-suffix">.tools</span></span>
+            </a>
+            <nav>
+                <a href="/">Validator</a>
+                <a href="/learn.html">Learn</a>
+                <a href="/directory.html">Directory</a>
+                <a href="/guides/magento.html" class="active">Magento</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="guide-hero">
+        <div class="container">
+            <h1>🏢 Magento / Adobe Commerce UCP Guide</h1>
+            <p>Implement UCP on your enterprise Magento or Adobe Commerce store. Enable AI agents to discover and transact with your catalog.</p>
+            <div class="guide-badges">
+                <span class="guide-badge">🤖 AI Agent Ready</span>
+                <span class="guide-badge">🏢 Enterprise Grade</span>
+                <span class="guide-badge">🔧 Module Available</span>
+                <span class="guide-badge">📊 GraphQL Support</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="guide-content">
+        <main class="guide-main">
+            <section id="overview">
+                <h2>Why Add UCP to Magento?</h2>
+                <p>
+                    Magento (Adobe Commerce) powers some of the world's largest online stores. Adding UCP support positions your enterprise for AI-driven commerce, allowing AI agents to discover products, check inventory, and complete transactions.
+                </p>
+                <ul>
+                    <li><strong>Enterprise Scale:</strong> UCP works with Magento's multi-store, multi-language setup</li>
+                    <li><strong>GraphQL Ready:</strong> Magento's GraphQL API integrates seamlessly with UCP</li>
+                    <li><strong>B2B Support:</strong> Expose B2B catalogs and pricing to AI agents</li>
+                    <li><strong>Headless Compatible:</strong> Works with PWA Studio and headless setups</li>
+                </ul>
+
+                <div class="tip-box platform">
+                    <strong>🏢 Adobe Commerce Cloud</strong>
+                    This guide works for both Magento Open Source and Adobe Commerce Cloud. Cloud users should deploy via the standard module deployment process.
+                </div>
+            </section>
+
+            <section id="prerequisites">
+                <h2>Prerequisites</h2>
+                <ul>
+                    <li>Magento 2.4+ or Adobe Commerce</li>
+                    <li>SSH/CLI access to your Magento installation</li>
+                    <li>Composer installed</li>
+                    <li>Basic understanding of Magento module structure</li>
+                </ul>
+            </section>
+
+            <section id="implementation">
+                <h2>Implementation</h2>
+
+                <div class="step-title"><span class="step-number">1</span>Generate Your UCP Profile</div>
+                
+                <div class="cta-box">
+                    <h3>Generate Your UCP Profile</h3>
+                    <p>Create a customized UCP profile for your Magento store.</p>
+                    <a href="/#generate" class="btn">Open Generator →</a>
+                </div>
+
+                <div class="step-title"><span class="step-number">2</span>Create the Module Structure</div>
+                <p>Create a new module to serve the UCP profile:</p>
+
+<pre><span style="color:#6A9955"># Create module directories</span>
+mkdir -p app/code/Vendor/Ucp/Controller/WellKnown
+mkdir -p app/code/Vendor/Ucp/etc</pre>
+
+                <div class="step-title"><span class="step-number">3</span>Create Module Registration</div>
+                <p>Create <code>app/code/Vendor/Ucp/registration.php</code>:</p>
+
+<pre><span style="color:#C586C0">&lt;?php</span>
+<span style="color:#C586C0">use</span> Magento\Framework\Component\ComponentRegistrar;
+
+ComponentRegistrar::register(
+    ComponentRegistrar::MODULE,
+    <span style="color:#CE9178">'Vendor_Ucp'</span>,
+    __DIR__
+);</pre>
+
+                <div class="step-title"><span class="step-number">4</span>Create module.xml</div>
+                <p>Create <code>app/code/Vendor/Ucp/etc/module.xml</code>:</p>
+
+<pre><span style="color:#808080">&lt;?xml version="1.0"?&gt;</span>
+<span style="color:#569CD6">&lt;config</span> <span style="color:#9CDCFE">xmlns:xsi</span>=<span style="color:#CE9178">"http://www.w3.org/2001/XMLSchema-instance"</span>
+        <span style="color:#9CDCFE">xsi:noNamespaceSchemaLocation</span>=<span style="color:#CE9178">"urn:magento:framework:Module/etc/module.xsd"</span><span style="color:#569CD6">&gt;</span>
+    <span style="color:#569CD6">&lt;module</span> <span style="color:#9CDCFE">name</span>=<span style="color:#CE9178">"Vendor_Ucp"</span> <span style="color:#9CDCFE">setup_version</span>=<span style="color:#CE9178">"1.0.0"</span><span style="color:#569CD6">&gt;</span>
+        <span style="color:#569CD6">&lt;sequence&gt;</span>
+            <span style="color:#569CD6">&lt;module</span> <span style="color:#9CDCFE">name</span>=<span style="color:#CE9178">"Magento_Store"</span><span style="color:#569CD6">/&gt;</span>
+        <span style="color:#569CD6">&lt;/sequence&gt;</span>
+    <span style="color:#569CD6">&lt;/module&gt;</span>
+<span style="color:#569CD6">&lt;/config&gt;</span></pre>
+
+                <div class="step-title"><span class="step-number">5</span>Create Routes Configuration</div>
+                <p>Create <code>app/code/Vendor/Ucp/etc/frontend/routes.xml</code>:</p>
+
+<pre><span style="color:#808080">&lt;?xml version="1.0"?&gt;</span>
+<span style="color:#569CD6">&lt;config</span> <span style="color:#9CDCFE">xmlns:xsi</span>=<span style="color:#CE9178">"http://www.w3.org/2001/XMLSchema-instance"</span>
+        <span style="color:#9CDCFE">xsi:noNamespaceSchemaLocation</span>=<span style="color:#CE9178">"urn:magento:framework:App/etc/routes.xsd"</span><span style="color:#569CD6">&gt;</span>
+    <span style="color:#569CD6">&lt;router</span> <span style="color:#9CDCFE">id</span>=<span style="color:#CE9178">"standard"</span><span style="color:#569CD6">&gt;</span>
+        <span style="color:#569CD6">&lt;route</span> <span style="color:#9CDCFE">id</span>=<span style="color:#CE9178">"wellknown"</span> <span style="color:#9CDCFE">frontName</span>=<span style="color:#CE9178">".well-known"</span><span style="color:#569CD6">&gt;</span>
+            <span style="color:#569CD6">&lt;module</span> <span style="color:#9CDCFE">name</span>=<span style="color:#CE9178">"Vendor_Ucp"</span><span style="color:#569CD6">/&gt;</span>
+        <span style="color:#569CD6">&lt;/route&gt;</span>
+    <span style="color:#569CD6">&lt;/router&gt;</span>
+<span style="color:#569CD6">&lt;/config&gt;</span></pre>
+
+                <div class="step-title"><span class="step-number">6</span>Create the Controller</div>
+                <p>Create <code>app/code/Vendor/Ucp/Controller/WellKnown/Ucp.php</code>:</p>
+
+<pre><span style="color:#C586C0">&lt;?php</span>
+<span style="color:#C586C0">namespace</span> Vendor\Ucp\Controller\WellKnown;
+
+<span style="color:#C586C0">use</span> Magento\Framework\App\Action\HttpGetActionInterface;
+<span style="color:#C586C0">use</span> Magento\Framework\Controller\Result\JsonFactory;
+<span style="color:#C586C0">use</span> Magento\Store\Model\StoreManagerInterface;
+<span style="color:#C586C0">use</span> Magento\Framework\App\Config\ScopeConfigInterface;
+
+<span style="color:#C586C0">class</span> <span style="color:#4EC9B0">Ucp</span> <span style="color:#C586C0">implements</span> HttpGetActionInterface
+{
+    <span style="color:#C586C0">private</span> JsonFactory $jsonFactory;
+    <span style="color:#C586C0">private</span> StoreManagerInterface $storeManager;
+    <span style="color:#C586C0">private</span> ScopeConfigInterface $scopeConfig;
+
+    <span style="color:#C586C0">public function</span> <span style="color:#DCDCAA">__construct</span>(
+        JsonFactory $jsonFactory,
+        StoreManagerInterface $storeManager,
+        ScopeConfigInterface $scopeConfig
+    ) {
+        $this->jsonFactory = $jsonFactory;
+        $this->storeManager = $storeManager;
+        $this->scopeConfig = $scopeConfig;
+    }
+
+    <span style="color:#C586C0">public function</span> <span style="color:#DCDCAA">execute</span>()
+    {
+        $store = $this->storeManager->getStore();
+        $baseUrl = $store->getBaseUrl();
+        
+        $profile = [
+            <span style="color:#CE9178">'profile_version'</span> => <span style="color:#CE9178">'1.0'</span>,
+            <span style="color:#CE9178">'merchant'</span> => [
+                <span style="color:#CE9178">'name'</span> => $this->scopeConfig->getValue(<span style="color:#CE9178">'general/store_information/name'</span>),
+                <span style="color:#CE9178">'url'</span> => $baseUrl,
+                <span style="color:#CE9178">'contact'</span> => [
+                    <span style="color:#CE9178">'email'</span> => $this->scopeConfig->getValue(<span style="color:#CE9178">'trans_email/ident_general/email'</span>)
+                ]
+            ],
+            <span style="color:#CE9178">'capabilities'</span> => [<span style="color:#CE9178">'browse'</span>, <span style="color:#CE9178">'search'</span>],
+            <span style="color:#CE9178">'policies'</span> => [
+                <span style="color:#CE9178">'returns_url'</span> => $baseUrl . <span style="color:#CE9178">'returns'</span>,
+                <span style="color:#CE9178">'shipping_url'</span> => $baseUrl . <span style="color:#CE9178">'shipping-policy'</span>,
+                <span style="color:#CE9178">'privacy_url'</span> => $baseUrl . <span style="color:#CE9178">'privacy-policy'</span>
+            ],
+            <span style="color:#CE9178">'service_bindings'</span> => [
+                [
+                    <span style="color:#CE9178">'type'</span> => <span style="color:#CE9178">'REST'</span>,
+                    <span style="color:#CE9178">'base_url'</span> => $baseUrl . <span style="color:#CE9178">'rest/V1'</span>
+                ],
+                [
+                    <span style="color:#CE9178">'type'</span> => <span style="color:#CE9178">'GraphQL'</span>,
+                    <span style="color:#CE9178">'base_url'</span> => $baseUrl . <span style="color:#CE9178">'graphql'</span>
+                ]
+            ]
+        ];
+
+        $result = $this->jsonFactory->create();
+        $result->setHeader(<span style="color:#CE9178">'Access-Control-Allow-Origin'</span>, <span style="color:#CE9178">'*'</span>);
+        $result->setData($profile);
+        
+        <span style="color:#C586C0">return</span> $result;
+    }
+}</pre>
+
+                <div class="step-title"><span class="step-number">7</span>Enable the Module</div>
+<pre><span style="color:#6A9955"># Enable the module</span>
+bin/magento module:enable Vendor_Ucp
+
+<span style="color:#6A9955"># Run setup upgrade</span>
+bin/magento setup:upgrade
+
+<span style="color:#6A9955"># Clear cache</span>
+bin/magento cache:clean</pre>
+
+                <div class="tip-box warning">
+                    <strong>⚠️ Production Deployment</strong>
+                    For Adobe Commerce Cloud, commit the module to your repository and deploy through the standard pipeline.
+                </div>
+            </section>
+
+            <section id="graphql">
+                <h2>GraphQL Integration</h2>
+                <p>
+                    Magento's GraphQL API is ideal for AI agents. Expose your GraphQL endpoint in the UCP profile for efficient product queries.
+                </p>
+
+                <h3>Sample GraphQL Query for AI Agents</h3>
+<pre>{
+  products(search: <span style="color:#CE9178">"laptop"</span>, pageSize: <span style="color:#B5CEA8">10</span>) {
+    items {
+      name
+      sku
+      price_range {
+        minimum_price {
+          final_price {
+            value
+            currency
+          }
+        }
+      }
+      image {
+        url
+      }
+      stock_status
+    }
+  }
+}</pre>
+
+                <div class="tip-box">
+                    <strong>💡 Pro Tip</strong>
+                    Consider creating a dedicated GraphQL schema for AI agents with optimized queries for product discovery.
+                </div>
+            </section>
+
+            <section id="multistore">
+                <h2>Multi-Store Configuration</h2>
+                <p>For multi-store setups, each store view can have its own UCP profile. The module automatically uses the current store context.</p>
+
+                <table>
+                    <tr>
+                        <th>Store View</th>
+                        <th>UCP Endpoint</th>
+                    </tr>
+                    <tr>
+                        <td>Default</td>
+                        <td><code>https://store.com/.well-known/ucp</code></td>
+                    </tr>
+                    <tr>
+                        <td>French</td>
+                        <td><code>https://store.com/fr/.well-known/ucp</code></td>
+                    </tr>
+                    <tr>
+                        <td>German</td>
+                        <td><code>https://store.com/de/.well-known/ucp</code></td>
+                    </tr>
+                </table>
+            </section>
+
+            <section id="validation">
+                <h2>Validate Your Implementation</h2>
+
+                <div class="cta-box">
+                    <h3>Validate Your Magento Store</h3>
+                    <p>Check your UCP implementation and AI commerce readiness.</p>
+                    <a href="/" class="btn">Run Validation →</a>
+                </div>
+            </section>
+
+            <section id="common-issues">
+                <h2>Common Issues & Solutions</h2>
+
+                <table>
+                    <tr>
+                        <th>Issue</th>
+                        <th>Solution</th>
+                    </tr>
+                    <tr>
+                        <td>404 on <code>/.well-known/ucp</code></td>
+                        <td>Run <code>bin/magento cache:clean</code> and check routes.xml</td>
+                    </tr>
+                    <tr>
+                        <td>Module not loading</td>
+                        <td>Run <code>bin/magento setup:upgrade</code></td>
+                    </tr>
+                    <tr>
+                        <td>Empty store name</td>
+                        <td>Configure store name in Stores → Configuration → General</td>
+                    </tr>
+                    <tr>
+                        <td>Varnish caching issues</td>
+                        <td>Add <code>/.well-known/ucp</code> to cache bypass rules</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section id="testing">
+                <h2>🤖 Test with AI Agents</h2>
+
+                <div class="cta-box">
+                    <h3>Run AI Agent Simulation</h3>
+                    <p>Test how AI shopping agents will interact with your Magento store.</p>
+                    <a href="/#simulate" class="btn">Open Simulator →</a>
+                </div>
+            </section>
+
+            <section id="resources">
+                <h2>Resources</h2>
+                <ul>
+                    <li><a href="https://ucp.dev" target="_blank">Official UCP Specification</a></li>
+                    <li><a href="https://developer.adobe.com/commerce/webapi/graphql/" target="_blank">Magento GraphQL Developer Guide</a></li>
+                    <li><a href="https://developer.adobe.com/commerce/php/development/" target="_blank">Magento PHP Developer Guide</a></li>
+                    <li><a href="/learn.html">UCP Learning Center</a></li>
+                </ul>
+            </section>
+        </main>
+
+        <aside class="guide-sidebar">
+            <div class="sidebar-toc">
+                <h4>On This Page</h4>
+                <ul>
+                    <li><a href="#overview">Why Add UCP?</a></li>
+                    <li><a href="#prerequisites">Prerequisites</a></li>
+                    <li><a href="#implementation">Implementation</a></li>
+                    <li><a href="#graphql">GraphQL Integration</a></li>
+                    <li><a href="#multistore">Multi-Store Setup</a></li>
+                    <li><a href="#validation">Validation</a></li>
+                    <li><a href="#common-issues">Common Issues</a></li>
+                    <li><a href="#testing">Test with AI</a></li>
+                    <li><a href="#resources">Resources</a></li>
+                </ul>
+            </div>
+
+            <div class="other-guides">
+                <h4>Other Platforms</h4>
+                <a href="/guides/shopify.html">Shopify</a>
+                <a href="/guides/woocommerce.html">WooCommerce</a>
+                <a href="/guides/wix.html">Wix</a>
+                <a href="/guides/bigcommerce.html">BigCommerce</a>
+                <a href="/guides/squarespace.html">Squarespace</a>
+            </div>
+        </aside>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>UCP Tools — Built for the AI Commerce era</p>
+            <p class="footer-links">
+                <a href="https://github.com/Nolpak14/ucp-tools" target="_blank">GitHub</a> ·
+                <a href="https://ucp.dev" target="_blank">UCP Spec</a> ·
+                <a href="/">Validator</a>
+            </p>
+        </div>
+    </footer>
+</body>
+
+</html>

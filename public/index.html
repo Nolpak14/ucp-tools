@@ -148,6 +148,76 @@
       color: var(--brand-blue);
     }
 
+    /* Dropdown Menu */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+      margin-left: 24px;
+    }
+
+    .dropdown-toggle {
+      color: var(--color-medium);
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s;
+      background: none;
+      border: none;
+      font-size: inherit;
+      font-family: inherit;
+      padding: 0;
+    }
+
+    .dropdown-toggle:hover,
+    .dropdown:hover .dropdown-toggle {
+      color: var(--brand-blue);
+    }
+
+    .dropdown-toggle::after {
+      content: '▼';
+      font-size: 0.6em;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      min-width: 180px;
+      z-index: 1001;
+      padding: 8px 0;
+      margin-top: 8px;
+    }
+
+    .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-menu a {
+      display: block;
+      padding: 10px 16px;
+      color: var(--color-medium);
+      text-decoration: none;
+      margin-left: 0;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .dropdown-menu a:hover {
+      background: rgba(46, 134, 171, 0.08);
+      color: var(--brand-blue);
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background: var(--color-border);
+      margin: 8px 0;
+    }
+
     .ph-badge {
       display: flex;
       align-items: center;
@@ -601,7 +671,19 @@
           <a href="#generate" onclick="switchTab('generate'); return false;">Generate</a>
           <a href="#schema" onclick="switchTab('schema'); return false;">Schema</a>
           <a href="/directory.html">Directory</a>
-          <a href="/guides/fastucp.html">FastUCP</a>
+          <div class="dropdown">
+            <span class="dropdown-toggle">Guides</span>
+            <div class="dropdown-menu">
+              <a href="/guides/fastucp.html">⚡ FastUCP</a>
+              <div class="dropdown-divider"></div>
+              <a href="/guides/shopify.html">🛒 Shopify</a>
+              <a href="/guides/woocommerce.html">🔌 WooCommerce</a>
+              <a href="/guides/magento.html">🧱 Magento</a>
+              <a href="/guides/wix.html">✨ Wix</a>
+              <a href="/guides/bigcommerce.html">📦 BigCommerce</a>
+              <a href="/guides/squarespace.html">◼️ Squarespace</a>
+            </div>
+          </div>
           <a href="#pricing">Pricing</a>
           <a href="https://ucp.dev/specification/overview/" target="_blank">Docs</a>
         </nav>
