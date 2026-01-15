@@ -76,3 +76,30 @@ export type {
   ComplianceSection,
   DataProcessor,
 } from './compliance/index.js';
+
+// Feed Analyzer
+export {
+  analyzeProductFeed,
+  analyzeProductFeedFromHtml,
+  analyzeProduct,
+  extractProductsFromHtml,
+  validateGtin,
+  QUALITY_CHECKS,
+  VALID_AVAILABILITY_VALUES,
+  CATEGORY_WEIGHTS,
+  GRADE_THRESHOLDS,
+} from './feed-analyzer/index.js';
+export type {
+  ProductData,
+  ProductOffer,
+  ProductAnalysis,
+  QualityCheck,
+  FeedAnalysisResult,
+  FeedAnalysisInput,
+  CategoryScores,
+  Recommendation,
+  FeedSummary,
+  GtinValidation,
+  IssueSeverity,
+  CheckCategory,
+} from './feed-analyzer/index.js';

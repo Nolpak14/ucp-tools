@@ -1736,6 +1736,7 @@
         <button class="tab active" data-tab="validate">Check Readiness</button>
         <button class="tab" data-tab="simulate">🤖 AI Agent Test</button>
         <button class="tab" data-tab="security">🔒 Security Scan</button>
+        <button class="tab" data-tab="feed">📦 Feed Analyzer</button>
         <button class="tab" data-tab="compliance">📋 GDPR Generator</button>
         <button class="tab" data-tab="generate">Generate UCP</button>
         <button class="tab" data-tab="schema">Schema Snippets</button>
@@ -1919,6 +1920,37 @@
         <div class="result" id="security-result"></div>
       </div>
 
+      <!-- Feed Analyzer Tab -->
+      <div class="card hidden" id="feed-panel">
+        <h3 style="margin-bottom: 8px;">📦 Product Feed Quality Analyzer</h3>
+        <p style="margin-bottom: 20px; color: var(--color-medium); font-size: 14px;">
+          Deep analysis of your product data quality for AI agent visibility.
+          AI shopping agents evaluate product feed completeness, identifiers, images, and pricing to decide what to recommend.
+        </p>
+
+        <form id="feed-form">
+          <div class="form-group">
+            <label for="feed-url">Product Page or Catalog URL</label>
+            <input type="url" id="feed-url" placeholder="https://yourstore.com/products" required>
+            <small class="text-muted">We'll scan for Schema.org Product markup and analyze data quality</small>
+          </div>
+
+          <div class="form-group">
+            <label for="feed-max-products">Max Products to Analyze</label>
+            <select id="feed-max-products">
+              <option value="10">10 products (quick scan)</option>
+              <option value="25">25 products</option>
+              <option value="50" selected>50 products (recommended)</option>
+              <option value="100">100 products (thorough)</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn" id="feed-btn">🔍 Analyze Product Feed</button>
+        </form>
+
+        <div class="result" id="feed-result"></div>
+      </div>
+
       <!-- GDPR Compliance Generator Tab -->
       <div class="card hidden" id="compliance-panel">
         <h3 style="margin-bottom: 8px;">📋 GDPR/Privacy Compliance Generator</h3>
@@ -2097,6 +2129,7 @@
       document.getElementById('validate-panel').classList.toggle('hidden', tabName !== 'validate');
       document.getElementById('simulate-panel').classList.toggle('hidden', tabName !== 'simulate');
       document.getElementById('security-panel').classList.toggle('hidden', tabName !== 'security');
+      document.getElementById('feed-panel').classList.toggle('hidden', tabName !== 'feed');
       document.getElementById('compliance-panel').classList.toggle('hidden', tabName !== 'compliance');
       document.getElementById('generate-panel').classList.toggle('hidden', tabName !== 'generate');
       document.getElementById('schema-panel').classList.toggle('hidden', tabName !== 'schema');
@@ -3414,6 +3447,183 @@
 
       btn.disabled = false;
       btn.textContent = '🔍 Run Security Scan';
+    });
+
+    // Feed Analyzer form
+    document.getElementById('feed-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('feed-btn');
+      const result = document.getElementById('feed-result');
+      const url = document.getElementById('feed-url').value.trim();
+      const maxProducts = parseInt(document.getElementById('feed-max-products').value);
+
+      btn.disabled = true;
+      btn.textContent = '🔄 Analyzing Feed...';
+      result.className = 'result';
+      result.innerHTML = '';
+
+      try {
+        const res = await fetch('/api/analyze-feed', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url, maxProducts, includeProductDetails: true })
+        });
+        const data = await res.json();
+
+        if (data.error) {
+          throw new Error(data.message || data.error);
+        }
+
+        const score = data.overallScore || 0;
+        const visibilityScore = data.agentVisibilityScore || 0;
+        const grade = data.grade || 'F';
+
+        // Grade colors
+        const gradeColors = {
+          'A': { bg: '#dcfce7', border: '#86efac', text: '#16A34A' },
+          'B': { bg: '#dbeafe', border: '#93c5fd', text: '#2563EB' },
+          'C': { bg: '#fef9c3', border: '#fde047', text: '#CA8A04' },
+          'D': { bg: '#fed7aa', border: '#fdba74', text: '#EA580C' },
+          'F': { bg: '#fee2e2', border: '#fca5a5', text: '#DC2626' },
+        };
+        const colors = gradeColors[grade] || gradeColors['F'];
+
+        // Priority colors
+        const priorityColors = {
+          'high': { bg: 'rgba(220,38,38,0.1)', text: '#DC2626', icon: '🔴' },
+          'medium': { bg: 'rgba(202,138,4,0.1)', text: '#CA8A04', icon: '🟡' },
+          'low': { bg: 'rgba(37,99,235,0.1)', text: '#2563EB', icon: '🔵' },
+        };
+
+        result.className = 'result show';
+        result.style.background = colors.bg;
+        result.style.border = '1px solid ' + colors.border;
+
+        // Calculate percentages for summary
+        const total = data.summary?.totalProducts || 0;
+        const pct = (val) => total > 0 ? Math.round((val / total) * 100) : 0;
+
+        // Render category score bar
+        const renderCategoryBar = (name, score, color) => `
+          <div style="margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 2px; font-size: 12px;">
+              <span>${name}</span>
+              <span style="font-weight: 600;">${score}%</span>
+            </div>
+            <div style="height: 8px; background: rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden;">
+              <div style="height: 100%; width: ${score}%; background: ${color}; border-radius: 4px;"></div>
+            </div>
+          </div>
+        `;
+
+        // Render recommendations
+        const renderRecommendations = (recs) => {
+          if (!recs || recs.length === 0) return '<p style="color: #666; font-size: 13px;">No recommendations - your feed looks great!</p>';
+          return recs.map(r => {
+            const pColors = priorityColors[r.priority] || priorityColors['medium'];
+            return `
+              <div style="padding: 12px 16px; margin: 8px 0; border-radius: 8px; background: ${pColors.bg}; border-left: 4px solid ${pColors.text};">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                  <span>${pColors.icon}</span>
+                  <strong style="color: var(--color-dark);">${r.title}</strong>
+                  <span style="font-size: 11px; padding: 2px 6px; background: rgba(0,0,0,0.1); border-radius: 4px;">${r.affectedCount} products</span>
+                </div>
+                <p style="margin: 0 0 0 28px; font-size: 13px; color: var(--color-medium);">${r.description}</p>
+                <p style="margin: 4px 0 0 28px; font-size: 12px; color: ${pColors.text};"><strong>Impact:</strong> ${r.impact}</p>
+              </div>
+            `;
+          }).join('');
+        };
+
+        result.innerHTML = `
+          <!-- Score Header -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <span class="score-badge ${grade}">${grade} ${score}/100</span>
+              <span style="margin-left: 12px; font-weight: 600; color: ${colors.text};">Feed Quality</span>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 13px; color: #666;">Analyzed: ${data.productsAnalyzed}/${data.productsFound} products</div>
+            </div>
+          </div>
+
+          ${data.warning ? `
+          <div style="padding: 12px 16px; margin-bottom: 20px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; font-size: 13px;">
+            <strong>⚠️ ${data.warning}:</strong> ${data.message}
+          </div>
+          ` : ''}
+
+          <!-- AI Visibility Score -->
+          <div style="padding: 20px; margin-bottom: 20px; background: linear-gradient(135deg, rgba(46,134,171,0.15), rgba(71,201,122,0.15)); border-radius: 12px; text-align: center;">
+            <div style="font-size: 14px; color: #666; margin-bottom: 8px;">AI Agent Visibility Score</div>
+            <div style="font-size: 48px; font-weight: 700; color: ${visibilityScore >= 80 ? '#16A34A' : visibilityScore >= 60 ? '#CA8A04' : '#DC2626'};">${visibilityScore}%</div>
+            <div style="font-size: 13px; color: #666; margin-top: 8px;">
+              ${visibilityScore >= 80 ? '✅ Excellent - AI agents can easily discover and recommend your products' :
+                visibilityScore >= 60 ? '⚠️ Fair - Some products may not be visible to AI shopping agents' :
+                '❌ Low - Many products are invisible to AI shopping agents'}
+            </div>
+          </div>
+
+          <!-- Summary Stats -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 12px; margin-bottom: 20px;">
+            <div style="text-align: center; padding: 12px; background: rgba(22,163,74,0.1); border-radius: 8px;">
+              <div style="font-size: 20px; font-weight: 700; color: #16A34A;">${pct(data.summary?.withName)}%</div>
+              <div style="font-size: 11px; color: #666;">Have Names</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: rgba(37,99,235,0.1); border-radius: 8px;">
+              <div style="font-size: 20px; font-weight: 700; color: #2563EB;">${pct(data.summary?.withPrice)}%</div>
+              <div style="font-size: 11px; color: #666;">Have Prices</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: rgba(147,51,234,0.1); border-radius: 8px;">
+              <div style="font-size: 20px; font-weight: 700; color: #9333EA;">${pct(data.summary?.withImages)}%</div>
+              <div style="font-size: 11px; color: #666;">Have Images</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: rgba(234,88,12,0.1); border-radius: 8px;">
+              <div style="font-size: 20px; font-weight: 700; color: #EA580C;">${pct(data.summary?.withGtin)}%</div>
+              <div style="font-size: 11px; color: #666;">Have GTIN</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: rgba(20,184,166,0.1); border-radius: 8px;">
+              <div style="font-size: 20px; font-weight: 700; color: #14B8A6;">${pct(data.summary?.withDescription)}%</div>
+              <div style="font-size: 11px; color: #666;">Have Desc</div>
+            </div>
+          </div>
+
+          <!-- Category Scores -->
+          <div style="margin-bottom: 20px; padding: 16px; background: rgba(255,255,255,0.5); border-radius: 8px;">
+            <h4 style="margin-bottom: 12px; color: var(--color-dark);">📊 Category Breakdown</h4>
+            ${renderCategoryBar('Completeness', data.categoryScores?.completeness || 0, '#2E86AB')}
+            ${renderCategoryBar('Pricing', data.categoryScores?.pricing || 0, '#16A34A')}
+            ${renderCategoryBar('Images', data.categoryScores?.images || 0, '#9333EA')}
+            ${renderCategoryBar('Identifiers (SKU/GTIN)', data.categoryScores?.identifiers || 0, '#EA580C')}
+            ${renderCategoryBar('Descriptions', data.categoryScores?.descriptions || 0, '#14B8A6')}
+            ${renderCategoryBar('Availability', data.categoryScores?.availability || 0, '#64748B')}
+          </div>
+
+          <!-- Recommendations -->
+          <div style="margin-bottom: 16px;">
+            <h4 style="margin-bottom: 12px; color: var(--color-dark);">💡 Recommendations</h4>
+            ${renderRecommendations(data.recommendations)}
+          </div>
+
+          <!-- Info Box -->
+          <div style="padding: 16px; background: linear-gradient(135deg, rgba(46,134,171,0.1), rgba(71,201,122,0.1)); border-radius: 8px;">
+            <h4 style="margin-bottom: 12px; color: var(--color-dark);">🤖 Why This Matters</h4>
+            <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: var(--color-dark);">
+              <li style="margin-bottom: 8px;">AI shopping agents use Schema.org Product data to understand your catalog</li>
+              <li style="margin-bottom: 8px;">Missing prices mean AI agents can't complete purchases</li>
+              <li style="margin-bottom: 8px;">GTINs enable cross-platform product matching for better visibility</li>
+              <li style="margin-bottom: 8px;">Rich descriptions help AI agents recommend the right products</li>
+            </ul>
+          </div>
+        `;
+
+      } catch (err) {
+        result.className = 'result show error';
+        result.innerHTML = `<p>❌ Feed analysis failed: ${err.message}</p><p style="font-size: 13px; margin-top: 8px;">Make sure the URL is accessible and contains Schema.org Product markup.</p>`;
+      }
+
+      btn.disabled = false;
+      btn.textContent = '🔍 Analyze Product Feed';
     });
 
     // Lawful basis description updates
