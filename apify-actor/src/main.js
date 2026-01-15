@@ -8,20 +8,34 @@ import { Actor } from 'apify';
 const VERSION_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
 async function fetchProfile(domain) {
-  const url = `https://${domain}/.well-known/ucp`;
-  try {
-    const res = await fetch(url, {
-      headers: { 'Accept': 'application/json', 'User-Agent': 'UCP-Validator-Apify/1.0' },
-      signal: AbortSignal.timeout(15000),
-    });
-    if (!res.ok) {
-      return { profile: null, error: `HTTP ${res.status}: ${res.statusText}` };
+  // Try both /.well-known/ucp and /.well-known/ucp.json
+  const urls = [
+    `https://${domain}/.well-known/ucp`,
+    `https://${domain}/.well-known/ucp.json`,
+  ];
+
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, {
+        headers: { 'Accept': 'application/json', 'User-Agent': 'UCP-Validator-Apify/1.0' },
+        signal: AbortSignal.timeout(15000),
+      });
+
+      if (!res.ok) continue;
+
+      const text = await res.text();
+      // Check if response looks like JSON (not HTML)
+      if (text.trim().startsWith('<')) continue;
+
+      const profile = JSON.parse(text);
+      return { profile, profileUrl: url };
+    } catch (e) {
+      // Try next URL
+      continue;
     }
-    const profile = await res.json();
-    return { profile };
-  } catch (e) {
-    return { profile: null, error: e.message || 'Failed to fetch profile' };
   }
+
+  return { profile: null, error: 'No UCP profile found at /.well-known/ucp or /.well-known/ucp.json' };
 }
 
 function validateProfile(profile) {
@@ -114,11 +128,11 @@ if (!input?.domain) {
 }
 
 const domain = input.domain.replace(/^https?:\/\//, '').replace(/\/$/, '');
-const profileUrl = `https://${domain}/.well-known/ucp`;
 
 console.log(`🔍 Validating UCP profile for: ${domain}`);
 
-const { profile, error } = await fetchProfile(domain);
+const { profile, profileUrl: foundProfileUrl, error } = await fetchProfile(domain);
+const profileUrl = foundProfileUrl || `https://${domain}/.well-known/ucp`;
 
 let issues = [];
 let ucpVersion = null;

@@ -72,15 +72,16 @@ export async function validateRemote(
   domain: string,
   options: ValidationOptions = {}
 ): Promise<ValidationReport> {
-  const profileUrl = `https://${domain}/.well-known/ucp`;
   const issues: ValidationIssue[] = [];
 
   // Fetch remote profile
-  const { profile, issues: fetchIssues } = await validateRemoteProfile(domain, {
+  const { profile, profileUrl: foundProfileUrl, issues: fetchIssues } = await validateRemoteProfile(domain, {
     timeoutMs: options.timeoutMs,
     cacheTtlMs: options.cacheTtlMs,
   });
   issues.push(...fetchIssues);
+
+  const profileUrl = foundProfileUrl || `https://${domain}/.well-known/ucp`;
 
   if (!profile) {
     return buildReport(issues, 'network', profileUrl, undefined);

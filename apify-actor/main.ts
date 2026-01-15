@@ -45,13 +45,14 @@ if (!input?.domain) {
 }
 
 const domain = input.domain.replace(/^https?:\/\//, '').replace(/\/$/, '');
-const profileUrl = `https://${domain}/.well-known/ucp`;
 
 console.log(`Validating UCP profile for: ${domain}`);
 
 const report = await validateRemote(domain, {
   mode: input.mode === 'quick' ? 'rules' : 'full',
 });
+
+const profileUrl = report.profile_url || `https://${domain}/.well-known/ucp`;
 
 // Calculate score (0-100)
 const errorWeight = 20;

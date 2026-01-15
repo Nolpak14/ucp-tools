@@ -62,47 +62,46 @@ export async function validateNetwork(
 export async function validateRemoteProfile(
   domain: string,
   options: NetworkValidationOptions = {}
-): Promise<{ profile: UcpProfile | null; issues: ValidationIssue[] }> {
+): Promise<{ profile: UcpProfile | null; profileUrl?: string; issues: ValidationIssue[] }> {
   const issues: ValidationIssue[] = [];
   const timeoutMs = options.timeoutMs || DEFAULT_TIMEOUT_MS;
-  const profileUrl = `https://${domain}/.well-known/ucp`;
 
-  const result = await fetchWithTimeout<unknown>(profileUrl, timeoutMs);
+  // Try both /.well-known/ucp and /.well-known/ucp.json
+  const urls = [
+    `https://${domain}/.well-known/ucp`,
+    `https://${domain}/.well-known/ucp.json`,
+  ];
 
-  if (!result.success) {
-    issues.push({
-      severity: 'error',
-      code: ValidationErrorCodes.PROFILE_FETCH_FAILED,
-      path: '$.well-known/ucp',
-      message: `Failed to fetch profile from ${profileUrl}`,
-      hint: result.error || 'Check that the profile is accessible and returns valid JSON',
-    });
-    return { profile: null, issues };
+  for (const profileUrl of urls) {
+    const result = await fetchProfileWithTimeout(profileUrl, timeoutMs);
+
+    if (!result.success) {
+      // Try next URL
+      continue;
+    }
+
+    // Verify it's an object with ucp field
+    if (!result.data || typeof result.data !== 'object') {
+      continue;
+    }
+
+    const profileData = result.data as Record<string, unknown>;
+    if (!profileData.ucp) {
+      continue;
+    }
+
+    return { profile: result.data as UcpProfile, profileUrl, issues };
   }
 
-  // Verify it's an object with ucp field
-  if (!result.data || typeof result.data !== 'object') {
-    issues.push({
-      severity: 'error',
-      code: ValidationErrorCodes.PROFILE_FETCH_FAILED,
-      path: '$.well-known/ucp',
-      message: 'Profile response is not a valid JSON object',
-    });
-    return { profile: null, issues };
-  }
-
-  const profileData = result.data as Record<string, unknown>;
-  if (!profileData.ucp) {
-    issues.push({
-      severity: 'error',
-      code: ValidationErrorCodes.PROFILE_FETCH_FAILED,
-      path: '$.well-known/ucp',
-      message: 'Profile response missing required "ucp" field',
-    });
-    return { profile: null, issues };
-  }
-
-  return { profile: result.data as UcpProfile, issues };
+  // All URLs failed
+  issues.push({
+    severity: 'error',
+    code: ValidationErrorCodes.PROFILE_FETCH_FAILED,
+    path: '$.well-known/ucp',
+    message: 'No UCP profile found at /.well-known/ucp or /.well-known/ucp.json',
+    hint: 'Check that the profile is accessible and returns valid JSON',
+  });
+  return { profile: null, issues };
 }
 
 /**
@@ -233,6 +232,77 @@ function extractNameFromSchemaId(schemaId: string): string | null {
   } catch {
     // Not a URL, return as-is
     return schemaId;
+  }
+}
+
+/**
+ * Fetch profile URL with timeout, checking for HTML responses
+ */
+async function fetchProfileWithTimeout(
+  url: string,
+  timeoutMs: number
+): Promise<FetchResult<unknown>> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'UCP-Profile-Validator/1.0',
+      },
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error: `HTTP ${response.status}: ${response.statusText}`,
+        statusCode: response.status,
+      };
+    }
+
+    const text = await response.text();
+
+    // Check if response looks like JSON (not HTML)
+    if (text.trim().startsWith('<')) {
+      return {
+        success: false,
+        error: 'Response is HTML, not JSON',
+      };
+    }
+
+    const data = JSON.parse(text);
+    const etag = response.headers.get('etag') || undefined;
+
+    return {
+      success: true,
+      data,
+      statusCode: response.status,
+      etag,
+    };
+  } catch (error) {
+    clearTimeout(timeoutId);
+
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        return {
+          success: false,
+          error: `Request timed out after ${timeoutMs}ms`,
+        };
+      }
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+
+    return {
+      success: false,
+      error: 'Unknown error occurred',
+    };
   }
 }
 
