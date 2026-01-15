@@ -831,8 +831,8 @@ export default async function handler(req, res) {
       validated: true,
       sdk_version: '0.1.0',
       compliant: hasUcp && ucpErrors === 0,
-      badge: hasUcp && ucpErrors === 0 
-        ? 'Validated using Official UCP SDK v0.1.0' 
+      badge: hasUcp && ucpErrors === 0
+        ? 'Validated using Official UCP SDK v0.1.0'
         : null,
     },
 

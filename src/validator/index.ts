@@ -19,10 +19,10 @@ import type { NetworkValidationOptions } from './network-validator.js';
 export { validateStructure } from './structural-validator.js';
 export { validateRules } from './rules-validator.js';
 export { validateNetwork, validateRemoteProfile, clearSchemaCache } from './network-validator.js';
-export { 
-  safeValidateWithSdk, 
-  validateWithSdk, 
-  getSdkVersion, 
+export {
+  safeValidateWithSdk,
+  validateWithSdk,
+  getSdkVersion,
   isSdkCompliant,
   validateServiceWithSdk,
   validateCapabilityWithSdk,
