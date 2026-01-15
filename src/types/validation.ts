@@ -52,6 +52,11 @@ export interface ValidationReport {
   issues: ValidationIssue[];
   validated_at: string;   // ISO timestamp
   validation_mode: ValidationMode;
+  sdk_validation?: {       // Official SDK validation info
+    validated: boolean;    // Whether SDK validation passed
+    sdk_version: string;   // @ucp-js/sdk version used
+    compliant: boolean;    // Whether profile is SDK-compliant
+  };
 }
 
 // Validation modes
