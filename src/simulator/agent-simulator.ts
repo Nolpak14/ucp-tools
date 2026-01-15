@@ -26,6 +26,31 @@ const DEFAULT_TIMEOUT_MS = 30000;
 const DEFAULT_FETCH_TIMEOUT_MS = 10000;
 
 /**
+ * Normalize capability to extract the name string
+ * Handles both string format and object format capabilities
+ */
+function getCapabilityName(cap: unknown): string {
+    if (typeof cap === 'string') {
+        return cap;
+    }
+    if (cap && typeof cap === 'object' && 'name' in cap) {
+        return String((cap as { name: unknown }).name);
+    }
+    return '';
+}
+
+/**
+ * Get capability object (for accessing schema, version, etc.)
+ * Returns null for string-only capabilities
+ */
+function getCapabilityObject(cap: unknown): UcpCapability | null {
+    if (cap && typeof cap === 'object' && 'name' in cap) {
+        return cap as UcpCapability;
+    }
+    return null;
+}
+
+/**
  * Step builder helper
  */
 function createStep(
@@ -216,12 +241,13 @@ export async function simulateDiscoveryFlow(
     const capList = profile?.ucp?.capabilities || [];
     if (capList.length > 0) {
         for (const cap of capList) {
-            capabilities.push(cap.name);
+            const capName = getCapabilityName(cap);
+            if (capName) capabilities.push(capName);
         }
 
         // Check for required checkout capability
-        const hasCheckout = capabilities.some(c => c.includes('checkout'));
-        const hasOrder = capabilities.some(c => c.includes('order'));
+        const hasCheckout = capabilities.some(c => c && c.includes('checkout'));
+        const hasOrder = capabilities.some(c => c && c.includes('order'));
 
         steps.push(createStep(
             'enumerate_capabilities',
@@ -263,28 +289,31 @@ export async function inspectCapabilities(
     const capList = profile.ucp?.capabilities || [];
 
     for (const cap of capList) {
+        const capName = getCapabilityName(cap);
+        const capObj = getCapabilityObject(cap);
+        
         let schemaAccessible = false;
         let specAccessible = false;
 
-        // Check schema URL
-        if (cap.schema) {
-            const schemaResult = await fetchWithTimeout(cap.schema, timeoutMs);
+        // Check schema URL (only for object-format capabilities)
+        if (capObj?.schema) {
+            const schemaResult = await fetchWithTimeout(capObj.schema, timeoutMs);
             schemaAccessible = schemaResult.ok;
         }
 
-        // Check spec URL
-        if (cap.spec) {
-            const specResult = await checkEndpointResponsive(cap.spec, timeoutMs);
+        // Check spec URL (only for object-format capabilities)
+        if (capObj?.spec) {
+            const specResult = await checkEndpointResponsive(capObj.spec, timeoutMs);
             specAccessible = specResult.ok;
         }
 
         results.push({
-            name: cap.name,
-            version: cap.version,
+            name: capName,
+            version: capObj?.version || 'unknown',
             schemaAccessible,
             specAccessible,
-            isExtension: !!cap.extends,
-            parentCapability: cap.extends,
+            isExtension: !!capObj?.extends,
+            parentCapability: capObj?.extends,
         });
     }
 
@@ -469,20 +498,23 @@ export async function simulateCheckoutFlow(
 
     const capabilities = profile.ucp?.capabilities || [];
 
-    // Check for checkout capability
-    const checkoutCap = capabilities.find(c => c.name.includes('checkout'));
-    if (checkoutCap) {
+    // Check for checkout capability (handle both string and object formats)
+    const checkoutCapRaw = capabilities.find(c => getCapabilityName(c).includes('checkout'));
+    const checkoutCapName = checkoutCapRaw ? getCapabilityName(checkoutCapRaw) : null;
+    const checkoutCapObj = checkoutCapRaw ? getCapabilityObject(checkoutCapRaw) : null;
+    
+    if (checkoutCapName) {
         canCreateCheckout = true;
         steps.push(createStep(
             'find_checkout_capability',
             'passed',
-            `Found checkout capability: ${checkoutCap.name}`,
-            `Version: ${checkoutCap.version}`
+            `Found checkout capability: ${checkoutCapName}`,
+            checkoutCapObj?.version ? `Version: ${checkoutCapObj.version}` : 'String-format capability'
         ));
 
-        // Validate checkout schema
-        if (checkoutCap.schema) {
-            const schemaResult = await fetchWithTimeout(checkoutCap.schema, timeoutMs);
+        // Validate checkout schema (only for object-format capabilities)
+        if (checkoutCapObj?.schema) {
+            const schemaResult = await fetchWithTimeout(checkoutCapObj.schema, timeoutMs);
             if (schemaResult.ok && schemaResult.data) {
                 checkoutSchemaValid = true;
                 const schema = schemaResult.data as Record<string, unknown>;
@@ -509,6 +541,15 @@ export async function simulateCheckoutFlow(
                     schemaResult.error || 'Unknown error'
                 ));
             }
+        } else {
+            // String-format capability - no schema to validate, mark as valid for basic functionality
+            checkoutSchemaValid = true;
+            steps.push(createStep(
+                'validate_checkout_schema',
+                'info' as SimulationStepStatus,
+                'No schema URL in capability (string format)',
+                'Capability declared but schema validation skipped'
+            ));
         }
     } else {
         steps.push(createStep(
@@ -520,13 +561,14 @@ export async function simulateCheckoutFlow(
     }
 
     // Check for order capability
-    const orderCap = capabilities.find(c => c.name.includes('order'));
-    if (orderCap) {
+    const orderCapRaw = capabilities.find(c => getCapabilityName(c).includes('order'));
+    const orderCapName = orderCapRaw ? getCapabilityName(orderCapRaw) : null;
+    if (orderCapName) {
         orderFlowSupported = true;
         steps.push(createStep(
             'find_order_capability',
             'passed',
-            `Found order capability: ${orderCap.name}`,
+            `Found order capability: ${orderCapName}`,
             'AI agent can track order status'
         ));
     } else {
@@ -539,13 +581,14 @@ export async function simulateCheckoutFlow(
     }
 
     // Check for fulfillment capability
-    const fulfillmentCap = capabilities.find(c => c.name.includes('fulfillment'));
-    if (fulfillmentCap) {
+    const fulfillmentCapRaw = capabilities.find(c => getCapabilityName(c).includes('fulfillment'));
+    const fulfillmentCapName = fulfillmentCapRaw ? getCapabilityName(fulfillmentCapRaw) : null;
+    if (fulfillmentCapName) {
         fulfillmentSupported = true;
         steps.push(createStep(
             'find_fulfillment_capability',
             'passed',
-            `Found fulfillment capability: ${fulfillmentCap.name}`,
+            `Found fulfillment capability: ${fulfillmentCapName}`,
             'AI agent can track shipping and delivery'
         ));
     } else {
