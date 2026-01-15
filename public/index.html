@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-J5JSHV7H1E"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-J5JSHV7H1E');
   </script>
@@ -14,7 +15,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UCP Tools - AI Commerce Readiness Checker & UCP Validator</title>
-  <meta name="description" content="Check if your store is ready for AI shopping agents. Validates UCP profiles and Schema.org requirements for Google AI Mode, ChatGPT, and Copilot checkout.">
+  <meta name="description"
+    content="Check if your store is ready for AI shopping agents. Validates UCP profiles and Schema.org requirements for Google AI Mode, ChatGPT, and Copilot checkout.">
   <link rel="canonical" href="https://ucptools.dev/">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -24,7 +26,8 @@
   <meta name="theme-color" content="#2E86AB">
   <meta name="google-site-verification" content="Ra49U5gMiADsSr9byqzFnI-GJVA4Gj0_i38nJewkhaU" />
   <meta property="og:title" content="UCP Tools - AI Commerce Readiness">
-  <meta property="og:description" content="Validate and generate Universal Commerce Protocol profiles for your e-commerce store.">
+  <meta property="og:description"
+    content="Validate and generate Universal Commerce Protocol profiles for your e-commerce store.">
   <meta property="og:image" content="/og-image.png">
   <meta property="og:type" content="website">
   <style>
@@ -64,14 +67,24 @@
       --grade-f-text: #DC2626;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--color-background);
       color: var(--color-dark);
       line-height: 1.6;
     }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
 
     /* Header */
     header {
@@ -82,11 +95,13 @@
       top: 0;
       z-index: 1000;
     }
+
     .header-inner {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
+
     .logo {
       display: flex;
       align-items: center;
@@ -95,28 +110,46 @@
       font-weight: 700;
       text-decoration: none;
     }
+
     .logo-icon {
       width: 40px;
       height: 40px;
       border-radius: 8px;
     }
+
     .logo-text {
       background: var(--brand-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
+
     .logo-suffix {
       font-weight: 400;
       -webkit-text-fill-color: var(--color-medium);
     }
+
     nav a {
       margin-left: 24px;
       color: var(--color-medium);
       text-decoration: none;
       transition: color 0.2s;
     }
-    nav a:hover { color: var(--brand-blue); }
+
+    nav a:hover {
+      color: var(--brand-blue);
+    }
+
+    .ph-badge {
+      margin-left: 24px;
+      display: flex;
+      align-items: center;
+    }
+
+    .ph-badge img {
+      height: 40px;
+      width: auto;
+    }
 
     /* Hero */
     .hero {
@@ -124,17 +157,20 @@
       padding: 60px 20px;
       background: linear-gradient(135deg, rgba(46, 134, 171, 0.1) 0%, rgba(54, 181, 162, 0.05) 50%, rgba(71, 201, 122, 0.1) 100%);
     }
+
     .hero h1 {
       font-size: 42px;
       margin-bottom: 16px;
       color: var(--color-dark);
     }
+
     .hero h1 .gradient-text {
       background: var(--brand-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
+
     .hero p {
       font-size: 18px;
       color: var(--color-medium);
@@ -149,6 +185,7 @@
       gap: 8px;
       margin-bottom: 40px;
     }
+
     .tab {
       padding: 12px 24px;
       background: var(--color-card);
@@ -158,7 +195,11 @@
       font-weight: 500;
       transition: all 0.2s;
     }
-    .tab:hover { border-color: var(--brand-blue); }
+
+    .tab:hover {
+      border-color: var(--brand-blue);
+    }
+
     .tab.active {
       background: var(--brand-gradient);
       color: white;
@@ -170,21 +211,27 @@
       background: var(--color-card);
       border-radius: 12px;
       padding: 32px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       border: 1px solid var(--color-border);
       max-width: 700px;
       margin: 0 auto 40px;
     }
 
     /* Forms */
-    .form-group { margin-bottom: 20px; }
+    .form-group {
+      margin-bottom: 20px;
+    }
+
     label {
       display: block;
       font-weight: 500;
       margin-bottom: 8px;
       color: var(--color-dark);
     }
-    input, select, textarea {
+
+    input,
+    select,
+    textarea {
       width: 100%;
       padding: 12px 16px;
       border: 2px solid var(--color-border);
@@ -193,7 +240,10 @@
       font-family: inherit;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    input:focus, select:focus, textarea:focus {
+
+    input:focus,
+    select:focus,
+    textarea:focus {
       outline: none;
       border-color: var(--brand-blue);
       box-shadow: 0 0 0 3px rgba(46, 134, 171, 0.1);
@@ -213,17 +263,28 @@
       transition: transform 0.2s, box-shadow 0.2s;
       text-decoration: none;
     }
+
     .btn:hover {
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(46, 134, 171, 0.4);
     }
-    .btn:active { transform: translateY(0); }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .btn-secondary {
       background: var(--color-card);
       color: var(--color-dark);
       border: 2px solid var(--color-border);
     }
+
     .btn-secondary:hover {
       background: var(--color-background);
       border-color: var(--brand-blue);
@@ -239,9 +300,20 @@
       border-radius: 8px;
       display: none;
     }
-    .result.show { display: block; }
-    .result.success { background: #dcfce7; border: 1px solid #86efac; }
-    .result.error { background: #fee2e2; border: 1px solid #fca5a5; }
+
+    .result.show {
+      display: block;
+    }
+
+    .result.success {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+    }
+
+    .result.error {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+    }
 
     /* Score Badges */
     .score-badge {
@@ -253,24 +325,64 @@
       font-weight: 700;
       font-size: 24px;
     }
-    .score-badge.A { background: var(--grade-a-bg); color: var(--grade-a-text); }
-    .score-badge.B { background: var(--grade-b-bg); color: var(--grade-b-text); }
-    .score-badge.C { background: var(--grade-c-bg); color: var(--grade-c-text); }
-    .score-badge.D { background: var(--grade-d-bg); color: var(--grade-d-text); }
-    .score-badge.F { background: var(--grade-f-bg); color: var(--grade-f-text); }
+
+    .score-badge.A {
+      background: var(--grade-a-bg);
+      color: var(--grade-a-text);
+    }
+
+    .score-badge.B {
+      background: var(--grade-b-bg);
+      color: var(--grade-b-text);
+    }
+
+    .score-badge.C {
+      background: var(--grade-c-bg);
+      color: var(--grade-c-text);
+    }
+
+    .score-badge.D {
+      background: var(--grade-d-bg);
+      color: var(--grade-d-text);
+    }
+
+    .score-badge.F {
+      background: var(--grade-f-bg);
+      color: var(--grade-f-text);
+    }
 
     /* Issues */
-    .issues-list { margin-top: 16px; }
+    .issues-list {
+      margin-top: 16px;
+    }
+
     .issue {
       padding: 12px;
       margin-bottom: 8px;
       border-radius: 6px;
       font-size: 14px;
     }
-    .issue.error { background: #fef2f2; border-left: 3px solid var(--color-error); }
-    .issue.warn { background: #fefce8; border-left: 3px solid var(--color-warning); }
-    .issue.info { background: rgba(46, 134, 171, 0.1); border-left: 3px solid var(--color-info); }
-    .issue code { background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; }
+
+    .issue.error {
+      background: #fef2f2;
+      border-left: 3px solid var(--color-error);
+    }
+
+    .issue.warn {
+      background: #fefce8;
+      border-left: 3px solid var(--color-warning);
+    }
+
+    .issue.info {
+      background: rgba(46, 134, 171, 0.1);
+      border-left: 3px solid var(--color-info);
+    }
+
+    .issue code {
+      background: rgba(0, 0, 0, 0.05);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
 
     /* Code Block */
     pre {
@@ -291,11 +403,13 @@
       padding: 60px 20px;
       background: var(--color-card);
     }
+
     .pricing h2 {
       text-align: center;
       margin-bottom: 40px;
       color: var(--color-dark);
     }
+
     .pricing-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -303,6 +417,7 @@
       max-width: 900px;
       margin: 0 auto;
     }
+
     .pricing-card {
       border: 2px solid var(--color-border);
       border-radius: 12px;
@@ -310,10 +425,12 @@
       text-align: center;
       background: var(--color-card);
     }
+
     .pricing-card.featured {
       border-color: var(--brand-blue);
       position: relative;
     }
+
     .pricing-card.featured::before {
       content: 'Most Popular';
       position: absolute;
@@ -327,10 +444,12 @@
       font-size: 12px;
       font-weight: 600;
     }
+
     .pricing-card h3 {
       margin-bottom: 8px;
       color: var(--color-dark);
     }
+
     .price {
       font-size: 48px;
       font-weight: 700;
@@ -339,21 +458,25 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
+
     .price span {
       font-size: 16px;
       -webkit-text-fill-color: var(--color-medium);
       font-weight: 400;
     }
+
     .pricing-card ul {
       list-style: none;
       margin: 24px 0;
       text-align: left;
     }
+
     .pricing-card li {
       padding: 8px 0;
       border-bottom: 1px solid var(--color-border);
       color: var(--color-dark);
     }
+
     .pricing-card li::before {
       content: '\2713';
       color: var(--color-success);
@@ -369,31 +492,62 @@
       border-top: 1px solid var(--color-border);
       background: var(--color-card);
     }
+
     footer a {
       color: var(--brand-blue);
       text-decoration: none;
     }
-    footer a:hover { color: var(--brand-teal); }
+
+    footer a:hover {
+      color: var(--brand-teal);
+    }
 
     /* Utilities */
-    .hidden { display: none !important; }
-    .text-muted { color: var(--color-medium); }
+    .hidden {
+      display: none !important;
+    }
+
+    .text-muted {
+      color: var(--color-medium);
+    }
+
     .link-brand {
       color: var(--brand-blue);
       text-decoration: none;
     }
-    .link-brand:hover { color: var(--brand-teal); }
+
+    .link-brand:hover {
+      color: var(--brand-teal);
+    }
 
     /* Responsive */
     @media (max-width: 600px) {
-      .hero h1 { font-size: 28px; }
-      .tabs { flex-direction: column; }
-      .header-inner { flex-direction: column; gap: 16px; }
-      nav { display: flex; flex-wrap: wrap; justify-content: center; }
-      nav a { margin: 8px 12px; }
+      .hero h1 {
+        font-size: 28px;
+      }
+
+      .tabs {
+        flex-direction: column;
+      }
+
+      .header-inner {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      nav a {
+        margin: 8px 12px;
+      }
     }
   </style>
 </head>
+
 <body>
   <header>
     <div class="container header-inner">
@@ -410,6 +564,7 @@
         <a href="/guides/fastucp.html">FastUCP</a>
         <a href="#pricing">Pricing</a>
         <a href="https://ucp.dev/specification/overview/" target="_blank">Docs</a>
+        <a href="https://www.producthunt.com/products/ucp-tools?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-ucp-tools" target="_blank" rel="noopener noreferrer" class="ph-badge"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1063017&amp;theme=light&amp;t=1768475714634" alt="UCP Tools on Product Hunt" /></a>
       </nav>
     </div>
   </header>
@@ -417,7 +572,8 @@
   <section class="hero">
     <div class="container">
       <h1>AI Commerce <span class="gradient-text">Readiness</span></h1>
-      <p>Check if your store is ready for ChatGPT, Google AI Mode, and Copilot checkout. Validates UCP profile + Schema.org requirements.</p>
+      <p>Check if your store is ready for ChatGPT, Google AI Mode, and Copilot checkout. Validates UCP profile +
+        Schema.org requirements.</p>
 
       <div class="tabs">
         <button class="tab active" data-tab="validate">Check Readiness</button>
@@ -433,7 +589,8 @@
           <div class="form-group">
             <label for="domain">Your Domain</label>
             <input type="text" id="domain" placeholder="yourstore.com" required>
-            <small class="text-muted">We'll check UCP profile + Schema.org (MerchantReturnPolicy, shippingDetails)</small>
+            <small class="text-muted">We'll check UCP profile + Schema.org (MerchantReturnPolicy,
+              shippingDetails)</small>
           </div>
           <button type="submit" class="btn" id="validate-btn">Check AI Readiness</button>
         </form>
@@ -494,7 +651,8 @@
           </select>
         </div>
 
-        <div id="custom-return" class="hidden" style="background: var(--color-background); padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+        <div id="custom-return" class="hidden"
+          style="background: var(--color-background); padding: 16px; border-radius: 8px; margin-bottom: 20px;">
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <div class="form-group" style="margin-bottom: 0;">
               <label style="font-size: 13px;">Return Window (days)</label>
@@ -523,7 +681,8 @@
           </select>
         </div>
 
-        <div id="custom-shipping" class="hidden" style="background: var(--color-background); padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+        <div id="custom-shipping" class="hidden"
+          style="background: var(--color-background); padding: 16px; border-radius: 8px; margin-bottom: 20px;">
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
             <div class="form-group" style="margin-bottom: 0;">
               <label style="font-size: 13px;">Rate</label>
@@ -565,14 +724,16 @@
       <div class="card hidden" id="simulate-panel">
         <h3 style="margin-bottom: 8px;">🤖 AI Agent Simulation Test</h3>
         <p style="margin-bottom: 20px; color: var(--color-medium); font-size: 14px;">
-          Test how AI shopping agents (ChatGPT, Google AI, Copilot) would actually interact with your UCP implementation. 
+          Test how AI shopping agents (ChatGPT, Google AI, Copilot) would actually interact with your UCP
+          implementation.
           Goes beyond spec compliance to prove real-world functionality.
         </p>
         <form id="simulate-form">
           <div class="form-group">
             <label for="simulate-domain">Your Domain</label>
             <input type="text" id="simulate-domain" placeholder="yourstore.com" required>
-            <small class="text-muted">We'll simulate an AI agent discovering and interacting with your UCP profile</small>
+            <small class="text-muted">We'll simulate an AI agent discovering and interacting with your UCP
+              profile</small>
           </div>
           <button type="submit" class="btn" id="simulate-btn">🚀 Run AI Agent Simulation</button>
         </form>
@@ -613,11 +774,14 @@
   </section>
 
   <!-- Opt-out Info Section -->
-  <section id="optout" style="padding: 40px 20px; background: var(--color-background); border-top: 1px solid var(--color-border);">
+  <section id="optout"
+    style="padding: 40px 20px; background: var(--color-background); border-top: 1px solid var(--color-border);">
     <div class="container" style="max-width: 800px;">
       <h2 style="margin-bottom: 20px; text-align: center;">How to Opt Out of AI Commerce</h2>
-      <div style="background: var(--color-card); border: 1px solid var(--color-border); border-radius: 12px; padding: 24px;">
-        <p style="margin-bottom: 16px;">Shopify's Agentic Storefronts are <strong>enabled by default</strong> starting January 26, 2026. If you want to disable AI agent access to your store:</p>
+      <div
+        style="background: var(--color-card); border: 1px solid var(--color-border); border-radius: 12px; padding: 24px;">
+        <p style="margin-bottom: 16px;">Shopify's Agentic Storefronts are <strong>enabled by default</strong> starting
+          January 26, 2026. If you want to disable AI agent access to your store:</p>
 
         <h4 style="margin: 16px 0 8px; color: var(--brand-blue);">Shopify Stores:</h4>
         <ol style="margin-left: 20px; margin-bottom: 16px;">
@@ -630,12 +794,15 @@
         <h4 style="margin: 16px 0 8px; color: var(--brand-blue);">Block Specific AI Agents:</h4>
         <ul style="margin-left: 20px; margin-bottom: 16px;">
           <li><strong>Amazon Buy for Me:</strong> Use Cloudflare security rules to block Amazon's bot</li>
-          <li><strong>robots.txt:</strong> Add <code>User-agent: GPTBot</code> and <code>Disallow: /</code> to block ChatGPT</li>
+          <li><strong>robots.txt:</strong> Add <code>User-agent: GPTBot</code> and <code>Disallow: /</code> to block
+            ChatGPT</li>
           <li><strong>Google AI:</strong> Currently no opt-out for Google AI Mode with UCP</li>
         </ul>
 
-        <div style="background: #fef9c3; border-left: 4px solid #CA8A04; padding: 12px 16px; border-radius: 0 8px 8px 0;">
-          <strong style="color: #92400E;">Warning:</strong> Opting out means AI shopping agents won't be able to complete purchases on your store. This may reduce discoverability as AI-powered shopping grows.
+        <div
+          style="background: #fef9c3; border-left: 4px solid #CA8A04; padding: 12px 16px; border-radius: 0 8px 8px 0;">
+          <strong style="color: #92400E;">Warning:</strong> Opting out means AI shopping agents won't be able to
+          complete purchases on your store. This may reduce discoverability as AI-powered shopping grows.
         </div>
       </div>
     </div>
@@ -643,8 +810,10 @@
 
   <footer>
     <div class="container">
-      <p><strong>UCP.tools</strong> &bull; <a href="https://github.com/Universal-Commerce-Protocol/ucp">UCP Spec</a> &bull; <a href="#optout">Opt-Out Guide</a> &bull; <a href="mailto:hello@ucptools.dev">Contact</a></p>
-      <p style="margin-top: 8px; font-size: 14px;">Independent project. Not affiliated with Google or Shopify. UCP is an open protocol.</p>
+      <p><strong>UCP.tools</strong> &bull; <a href="https://github.com/Universal-Commerce-Protocol/ucp">UCP Spec</a>
+        &bull; <a href="#optout">Opt-Out Guide</a> &bull; <a href="mailto:hello@ucptools.dev">Contact</a></p>
+      <p style="margin-top: 8px; font-size: 14px;">Independent project. Not affiliated with Google or Shopify. UCP is an
+        open protocol.</p>
     </div>
   </footer>
 
@@ -846,9 +1015,9 @@
           <div style="margin-bottom: 16px; padding: 16px; background: rgba(46,134,171,0.1); border-radius: 8px;">
             <h4 style="margin-bottom: 8px; color: #2E86AB;">UCP Profile (/.well-known/ucp)</h4>
             ${data.ucp?.found
-              ? `<p style="color: #16A34A; margin-bottom: 8px;">\u2713 Profile found</p>`
-              : `<p style="color: #DC2626; margin-bottom: 8px;">\u2717 No profile - create one at /.well-known/ucp</p>`
-            }
+            ? `<p style="color: #16A34A; margin-bottom: 8px;">\u2713 Profile found</p>`
+            : `<p style="color: #DC2626; margin-bottom: 8px;">\u2717 No profile - create one at /.well-known/ucp</p>`
+          }
             ${ucpIssues.length > 0 ? `
               <div class="issues-list">
                 <small><strong>${ucpErrors} error(s), ${ucpWarnings} warning(s)</strong></small>
@@ -867,9 +1036,9 @@
           <div style="margin-bottom: 16px; padding: 16px; background: rgba(71,201,122,0.1); border-radius: 8px;">
             <h4 style="margin-bottom: 8px; color: #36B5A2;">Schema.org (Jan 2026 Requirements)</h4>
             ${data.schema?.checked
-              ? `<p style="margin-bottom: 8px; font-size: 13px;">Found: ${data.schema.stats?.products || 0} Product(s), ${data.schema.stats?.returnPolicies || 0} ReturnPolicy</p>`
-              : `<p style="color: #CA8A04; margin-bottom: 8px;">Could not check schema</p>`
-            }
+            ? `<p style="margin-bottom: 8px; font-size: 13px;">Found: ${data.schema.stats?.products || 0} Product(s), ${data.schema.stats?.returnPolicies || 0} ReturnPolicy</p>`
+            : `<p style="color: #CA8A04; margin-bottom: 8px;">Could not check schema</p>`
+          }
             ${schemaIssues.length > 0 ? `
               <div class="issues-list">
                 <small><strong>${schemaErrors} error(s), ${schemaWarnings} warning(s)</strong></small>
@@ -1076,7 +1245,7 @@
 
         const score = data.score || 0;
         const grade = data.grade || 'F';
-        
+
         // Grade colors
         const gradeColors = {
           'A': { bg: '#dcfce7', border: '#86efac', text: '#16A34A' },
@@ -1225,4 +1394,5 @@
     });
   </script>
 </body>
+
 </html>
