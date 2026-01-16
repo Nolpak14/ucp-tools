@@ -1,7 +1,7 @@
 {
-  "name": "ucp-profile-manager",
-  "version": "1.0.0",
-  "description": "UCP Business Profile Generator, Validator, and Hosting Service",
+  "name": "@ucptools/validator",
+  "version": "1.0.1",
+  "description": "Validate and generate UCP (Universal Commerce Protocol) Business Profiles",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {

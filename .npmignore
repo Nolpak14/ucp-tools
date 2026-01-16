@@ -1,0 +1,49 @@
+# Source files (publish dist/ only)
+src/
+tests/
+*.ts
+!*.d.ts
+
+# Web application (not part of npm package)
+public/
+api/
+vercel.json
+
+# Apify actor
+apify-actor/
+
+# Documentation (keep README, LICENSE, CONTRIBUTING)
+docs/
+docs-private/
+CLAUDE.md
+
+# Database
+drizzle/
+drizzle.config.ts
+
+# Scripts
+scripts/
+
+# Development
+.env*
+.git/
+.github/
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+
+# Test fixtures
+tests/
+
+# Social media assets
+*.png
+*.jpeg
+*.jpg
+*.ico
+*.PNG
+
+# Misc
+*.log
+*.tgz
