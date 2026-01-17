@@ -1698,6 +1698,53 @@
         text-align: center;
       }
     }
+
+    /* Platform selector buttons */
+    .platform-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 16px;
+      background: var(--color-card);
+      border: 2px solid var(--color-border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text);
+      min-height: 90px;
+    }
+    .platform-btn:hover {
+      border-color: var(--brand-blue);
+      background: rgba(46, 134, 171, 0.05);
+      transform: translateY(-2px);
+    }
+    .platform-flow {
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tip boxes */
+    .tip-box {
+      padding: 16px;
+      border-radius: 8px;
+      border-left: 4px solid var(--brand-blue);
+      background: rgba(46, 134, 171, 0.08);
+      font-size: 14px;
+    }
+    .tip-box.warning {
+      border-left-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.08);
+    }
+    .tip-box strong {
+      display: block;
+      margin-bottom: 4px;
+    }
   </style>
 </head>
 
@@ -1780,37 +1827,185 @@
 
       <!-- Generate Tab -->
       <div class="card hidden" id="generate-panel">
-        <h3 style="margin-bottom: 20px;">Generate UCP Profile</h3>
-        <form id="generate-form">
+        <h3 style="margin-bottom: 8px;">UCP Setup Wizard</h3>
+        <p style="margin-bottom: 20px; color: var(--color-medium); font-size: 14px;">
+          Get your store ready for AI shopping agents. Select your platform to get started.
+        </p>
+
+        <!-- Platform Selector -->
+        <div id="platform-selector">
           <div class="form-group">
-            <label for="gen-domain">Your Domain</label>
-            <input type="text" id="gen-domain" placeholder="yourstore.com" required>
-          </div>
-          <div class="form-group">
-            <label for="gen-endpoint">REST API Endpoint</label>
-            <input type="url" id="gen-endpoint" placeholder="https://api.yourstore.com/ucp/v1" required>
-          </div>
-          <div class="form-group">
-            <label>Capabilities</label>
-            <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px;">
-              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
-                <input type="checkbox" id="cap-checkout" checked disabled> Checkout (required)
-              </label>
-              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
-                <input type="checkbox" id="cap-order"> Order
-              </label>
-              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
-                <input type="checkbox" id="cap-fulfillment"> Fulfillment
-              </label>
-              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
-                <input type="checkbox" id="cap-discount"> Discount
-              </label>
+            <label>What platform is your store on?</label>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px;">
+              <button type="button" class="platform-btn" onclick="showPlatformFlow('shopify')">
+                <span style="font-size: 24px;">🛒</span><br>Shopify
+              </button>
+              <button type="button" class="platform-btn" onclick="showPlatformFlow('woocommerce')">
+                <span style="font-size: 24px;">🔌</span><br>WooCommerce
+              </button>
+              <button type="button" class="platform-btn" onclick="showPlatformFlow('magento')">
+                <span style="font-size: 24px;">🧱</span><br>Magento
+              </button>
+              <button type="button" class="platform-btn" onclick="showPlatformFlow('bigcommerce')">
+                <span style="font-size: 24px;">📦</span><br>BigCommerce
+              </button>
+              <button type="button" class="platform-btn" onclick="showPlatformFlow('wix')">
+                <span style="font-size: 24px;">✨</span><br>Wix
+              </button>
+              <button type="button" class="platform-btn" onclick="showPlatformFlow('developer')">
+                <span style="font-size: 24px;">🔧</span><br>Custom / Other
+              </button>
             </div>
           </div>
-          <button type="submit" class="btn" id="generate-btn">Generate Profile</button>
-        </form>
+        </div>
 
-        <div class="result" id="generate-result"></div>
+        <!-- Shopify Flow -->
+        <div id="flow-shopify" class="platform-flow hidden">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+            <button type="button" class="btn-link" onclick="showPlatformSelector()" style="padding: 0; background: none; border: none; color: var(--brand-blue); cursor: pointer;">&larr; Back</button>
+            <h4 style="margin: 0;">Shopify UCP Setup</h4>
+          </div>
+
+          <div class="tip-box" style="background: rgba(16, 185, 129, 0.1); border-left-color: #10b981;">
+            <strong>Good news!</strong> Shopify provides native UCP support through Checkout Kit. You don't need to generate a profile manually.
+          </div>
+
+          <div style="margin-top: 20px;">
+            <div class="form-group">
+              <label for="shopify-domain">Your Shopify Store Domain</label>
+              <input type="text" id="shopify-domain" placeholder="yourstore.myshopify.com">
+            </div>
+            <button type="button" class="btn" onclick="checkShopifyUCP()">Check My Store's UCP Status</button>
+          </div>
+
+          <div style="margin-top: 24px; padding: 16px; background: var(--color-background); border-radius: 8px;">
+            <h5 style="margin: 0 0 12px 0;">How Shopify UCP Works:</h5>
+            <ol style="margin: 0; padding-left: 20px; color: var(--color-medium);">
+              <li>Shopify automatically provides UCP endpoints for eligible stores</li>
+              <li>Your profile is available at <code>yourstore.myshopify.com/.well-known/ucp</code></li>
+              <li>AI agents like ChatGPT and Google AI Mode can discover and transact with your store</li>
+            </ol>
+            <p style="margin: 12px 0 0 0; font-size: 13px; color: var(--color-medium);">
+              <a href="https://shopify.dev/docs/agents/checkout" target="_blank">Learn more about Shopify Checkout Kit</a>
+            </p>
+          </div>
+
+          <div class="result" id="shopify-result"></div>
+        </div>
+
+        <!-- WooCommerce Flow -->
+        <div id="flow-woocommerce" class="platform-flow hidden">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+            <button type="button" class="btn-link" onclick="showPlatformSelector()" style="padding: 0; background: none; border: none; color: var(--brand-blue); cursor: pointer;">&larr; Back</button>
+            <h4 style="margin: 0;">WooCommerce UCP Setup</h4>
+          </div>
+
+          <div class="tip-box warning">
+            <strong>Plugin Required:</strong> WooCommerce requires the UCP Connect plugin to enable AI agent commerce.
+          </div>
+
+          <div style="margin-top: 20px; padding: 16px; background: var(--color-background); border-radius: 8px;">
+            <h5 style="margin: 0 0 12px 0;">Setup Steps:</h5>
+            <ol style="margin: 0; padding-left: 20px; color: var(--color-medium);">
+              <li><strong>Install the plugin:</strong> Search for "UCP Connect" in Plugins &rarr; Add New, or download from WordPress.org</li>
+              <li><strong>Configure:</strong> Go to WooCommerce &rarr; Settings &rarr; UCP tab</li>
+              <li><strong>Verify:</strong> Check your store at <code>yourstore.com/.well-known/ucp</code></li>
+            </ol>
+          </div>
+
+          <div style="margin-top: 20px;">
+            <div class="form-group">
+              <label for="woo-domain">Your WooCommerce Store Domain</label>
+              <input type="text" id="woo-domain" placeholder="yourstore.com">
+            </div>
+            <button type="button" class="btn" onclick="checkWooCommerceUCP()">Verify My UCP Setup</button>
+          </div>
+
+          <div class="result" id="woo-result"></div>
+        </div>
+
+        <!-- Unsupported Platform Flow -->
+        <div id="flow-unsupported" class="platform-flow hidden">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+            <button type="button" class="btn-link" onclick="showPlatformSelector()" style="padding: 0; background: none; border: none; color: var(--brand-blue); cursor: pointer;">&larr; Back</button>
+            <h4 style="margin: 0;" id="unsupported-platform-title">Platform UCP Setup</h4>
+          </div>
+
+          <div class="tip-box warning">
+            <strong>Limited Native Support:</strong> This platform doesn't have native UCP support yet. Here are your options.
+          </div>
+
+          <div style="margin-top: 20px; display: grid; gap: 16px;">
+            <div style="padding: 16px; background: var(--color-background); border-radius: 8px;">
+              <h5 style="margin: 0 0 8px 0;">Option 1: Wait for Platform Support</h5>
+              <p style="margin: 0; color: var(--color-medium); font-size: 14px;">
+                Most major platforms are expected to add UCP support throughout 2026.
+                Check your platform's announcements for updates.
+              </p>
+            </div>
+
+            <div style="padding: 16px; background: var(--color-background); border-radius: 8px;">
+              <h5 style="margin: 0 0 8px 0;">Option 2: Developer Implementation</h5>
+              <p style="margin: 0; color: var(--color-medium); font-size: 14px;">
+                If you have development resources, you can build a custom UCP integration.
+                <br><a href="#" onclick="showPlatformFlow('developer'); return false;">Use the Developer Generator &rarr;</a>
+              </p>
+            </div>
+
+            <div style="padding: 16px; background: var(--color-background); border-radius: 8px;">
+              <h5 style="margin: 0 0 8px 0;">Option 3: View Platform Guide</h5>
+              <p style="margin: 0; color: var(--color-medium); font-size: 14px;">
+                See our detailed implementation guide for your platform.
+                <br><a href="" id="unsupported-guide-link" target="_blank">View Guide &rarr;</a>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Developer Flow (Original Generator) -->
+        <div id="flow-developer" class="platform-flow hidden">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+            <button type="button" class="btn-link" onclick="showPlatformSelector()" style="padding: 0; background: none; border: none; color: var(--brand-blue); cursor: pointer;">&larr; Back</button>
+            <h4 style="margin: 0;">Developer: Custom UCP Implementation</h4>
+          </div>
+
+          <div class="tip-box warning">
+            <strong>For Developers Only:</strong> This generator is for developers who have already built UCP-compatible REST API endpoints.
+            If you're using Shopify, WooCommerce, or another platform, <a href="#" onclick="showPlatformSelector(); return false;">use the Platform Setup wizard</a> instead.
+          </div>
+
+          <form id="generate-form" style="margin-top: 20px;">
+            <div class="form-group">
+              <label for="gen-domain">Your Domain</label>
+              <input type="text" id="gen-domain" placeholder="yourstore.com" required>
+            </div>
+            <div class="form-group">
+              <label for="gen-endpoint">REST API Endpoint</label>
+              <input type="url" id="gen-endpoint" placeholder="https://api.yourstore.com/ucp/v1" required>
+              <small class="text-muted">Your UCP-compliant API endpoint that implements checkout, order, and other capabilities</small>
+            </div>
+            <div class="form-group">
+              <label>Capabilities</label>
+              <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                  <input type="checkbox" id="cap-checkout" checked disabled> Checkout (required)
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                  <input type="checkbox" id="cap-order"> Order
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                  <input type="checkbox" id="cap-fulfillment"> Fulfillment
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                  <input type="checkbox" id="cap-discount"> Discount
+                </label>
+              </div>
+            </div>
+            <button type="submit" class="btn" id="generate-btn">Generate Profile</button>
+          </form>
+
+          <div class="result" id="generate-result"></div>
+        </div>
       </div>
 
       <!-- Schema Snippets Tab -->
@@ -3073,6 +3268,138 @@
     // Close dropdowns helper
     function closeDropdowns() {
       // Dropdowns auto-close via CSS :hover, but this helps on touch devices
+    }
+
+    // Platform flow functions
+    function showPlatformFlow(platform) {
+      // Hide all flows and platform selector
+      document.getElementById('platform-selector').classList.add('hidden');
+      document.querySelectorAll('.platform-flow').forEach(el => el.classList.add('hidden'));
+
+      if (platform === 'shopify') {
+        document.getElementById('flow-shopify').classList.remove('hidden');
+      } else if (platform === 'woocommerce') {
+        document.getElementById('flow-woocommerce').classList.remove('hidden');
+      } else if (platform === 'developer') {
+        document.getElementById('flow-developer').classList.remove('hidden');
+      } else {
+        // Unsupported platforms: magento, bigcommerce, wix, squarespace
+        const titles = {
+          magento: 'Magento / Adobe Commerce',
+          bigcommerce: 'BigCommerce',
+          wix: 'Wix',
+          squarespace: 'Squarespace'
+        };
+        document.getElementById('unsupported-platform-title').textContent = (titles[platform] || platform) + ' UCP Setup';
+        document.getElementById('unsupported-guide-link').href = '/guides/' + platform;
+        document.getElementById('flow-unsupported').classList.remove('hidden');
+      }
+    }
+
+    function showPlatformSelector() {
+      document.querySelectorAll('.platform-flow').forEach(el => el.classList.add('hidden'));
+      document.getElementById('platform-selector').classList.remove('hidden');
+    }
+
+    async function checkShopifyUCP() {
+      const domain = document.getElementById('shopify-domain').value.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+      const result = document.getElementById('shopify-result');
+
+      if (!domain) {
+        result.innerHTML = '<div class="error">Please enter your Shopify store domain</div>';
+        return;
+      }
+
+      result.innerHTML = '<div class="loading">Checking your store\'s UCP status...</div>';
+
+      try {
+        const response = await fetch('/v1/profiles/validate-remote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ domain })
+        });
+        const data = await response.json();
+
+        if (data.ok || (data.report && data.report.issues && data.report.issues.filter(i => i.severity === 'error').length === 0)) {
+          result.innerHTML = `
+            <div class="success" style="margin-top: 20px;">
+              <strong>Your store has UCP enabled!</strong><br>
+              AI shopping agents can discover and transact with your store.
+              <br><br>
+              <a href="https://${domain}/.well-known/ucp" target="_blank">View your UCP profile &rarr;</a>
+            </div>`;
+        } else if (data.report && data.report.issues) {
+          result.innerHTML = `
+            <div class="error" style="margin-top: 20px;">
+              <strong>UCP not detected or has issues</strong><br>
+              Your store may not have UCP enabled yet. Check with Shopify support or ensure Checkout Kit is configured.
+              <br><br>
+              <a href="https://shopify.dev/docs/agents/checkout" target="_blank">Learn about Shopify Checkout Kit &rarr;</a>
+            </div>`;
+        } else {
+          result.innerHTML = `
+            <div class="error" style="margin-top: 20px;">
+              <strong>Could not check UCP status</strong><br>
+              We couldn't reach your store's UCP endpoint. Make sure the domain is correct.
+            </div>`;
+        }
+      } catch (err) {
+        result.innerHTML = `
+          <div class="error" style="margin-top: 20px;">
+            <strong>Error checking UCP status</strong><br>
+            ${err.message}
+          </div>`;
+      }
+    }
+
+    async function checkWooCommerceUCP() {
+      const domain = document.getElementById('woo-domain').value.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+      const result = document.getElementById('woo-result');
+
+      if (!domain) {
+        result.innerHTML = '<div class="error">Please enter your WooCommerce store domain</div>';
+        return;
+      }
+
+      result.innerHTML = '<div class="loading">Checking your store\'s UCP status...</div>';
+
+      try {
+        const response = await fetch('/v1/profiles/validate-remote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ domain })
+        });
+        const data = await response.json();
+
+        if (data.ok || (data.report && data.report.issues && data.report.issues.filter(i => i.severity === 'error').length === 0)) {
+          result.innerHTML = `
+            <div class="success" style="margin-top: 20px;">
+              <strong>UCP Connect plugin detected!</strong><br>
+              Your store is ready for AI shopping agents.
+              <br><br>
+              <a href="https://${domain}/.well-known/ucp" target="_blank">View your UCP profile &rarr;</a>
+            </div>`;
+        } else {
+          result.innerHTML = `
+            <div class="error" style="margin-top: 20px;">
+              <strong>UCP not detected</strong><br>
+              Make sure the UCP Connect plugin is installed and activated.
+              <br><br>
+              <ol style="margin: 12px 0 0 0; padding-left: 20px;">
+                <li>Install "UCP Connect for WooCommerce" plugin</li>
+                <li>Go to WooCommerce &rarr; Settings &rarr; UCP</li>
+                <li>Configure and save your settings</li>
+                <li>Try checking again</li>
+              </ol>
+            </div>`;
+        }
+      } catch (err) {
+        result.innerHTML = `
+          <div class="error" style="margin-top: 20px;">
+            <strong>Error checking UCP status</strong><br>
+            ${err.message}
+          </div>`;
+      }
     }
 
     // Generate form
