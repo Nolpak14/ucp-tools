@@ -545,10 +545,15 @@
 
                 <h3>Option A: Using Shopify Files (Recommended)</h3>
                 <ol>
-                    <li>Go to <strong>Settings → Files</strong> in your Shopify admin</li>
+                    <li>Go to <strong>Content → Files</strong> in your Shopify admin</li>
                     <li>Click <strong>Upload files</strong></li>
                     <li>Upload your <code>ucp.json</code> file (generated in Step 1)</li>
-                    <li>Copy the file URL (it will look like <code>https://cdn.shopify.com/s/files/...</code>)</li>
+                    <li>Copy the file URL. You can use either:
+                        <ul>
+                            <li>The CDN URL (<code>https://cdn.shopify.com/s/files/...</code>), or</li>
+                            <li>Your store domain URL (<code>https://yourstore.com/cdn/shop/files/ucp.json</code>) - recommended for better compatibility</li>
+                        </ul>
+                    </li>
                 </ol>
 
                 <div class="step-title"><span class="step-number">3</span>Add the Redirect</div>
@@ -569,12 +574,12 @@
                 </ol>
 
                 <div class="tip-box warning">
-                    <strong>⚠️ Important: CORS Headers</strong>
-                    Shopify's CDN automatically serves files with proper CORS headers, so AI agents from different origins can access your UCP profile.
+                    <strong>⚠️ About CORS Headers</strong>
+                    In most cases, files hosted on Shopify are accessible to external AI agents. If a validator flags CORS issues, use the store domain URL format (<code>yourstore.com/cdn/shop/files/...</code>) instead of the raw <code>cdn.shopify.com</code> URL, or consider hosting the file on infrastructure you control.
                 </div>
 
                 <h3>Option B: Using Theme Liquid (Advanced)</h3>
-                <p>For more control, you can serve the UCP profile directly from your theme:</p>
+                <p>For dynamic profiles that pull data from your shop settings, you can serve the UCP profile from a Liquid template. Note: Shopify pages typically return HTML content-type, so the redirect-to-CDN method (Option A) is generally more reliable for AI agent compatibility.</p>
                 <ol>
                     <li>Go to <strong>Online Store → Themes → Edit code</strong></li>
                     <li>Create a new template: <strong>Templates → Add a new template</strong></li>

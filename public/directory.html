@@ -121,6 +121,7 @@
     .dropdown-toggle:hover, .dropdown:hover .dropdown-toggle { color: var(--brand-blue); }
     .dropdown-toggle::after { content: '▼'; font-size: 0.6em; margin-left: 4px; vertical-align: middle; }
     .dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: var(--color-card); border: 1px solid var(--color-border); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); min-width: 180px; z-index: 1001; padding: 8px 0; margin-top: 8px; }
+    .dropdown-menu::before { content: ''; position: absolute; top: -8px; left: 0; right: 0; height: 8px; }
     .dropdown:hover .dropdown-menu { display: block; }
     .dropdown-menu a { display: block; padding: 10px 16px; color: var(--color-medium); text-decoration: none; margin-left: 0; }
     .dropdown-menu a:hover { background: rgba(46,134,171,0.08); color: var(--brand-blue); }
