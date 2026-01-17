@@ -478,9 +478,9 @@
             <p>Make your Shopify store AI-ready. Enable ChatGPT, Google AI Mode, and autonomous shopping agents to discover and transact with your products.</p>
             <div class="guide-badges">
                 <span class="guide-badge">🤖 AI Agent Ready</span>
-                <span class="guide-badge">⚡ 15 min setup</span>
+                <span class="guide-badge">⚡ Native Support</span>
                 <span class="guide-badge">📱 No coding required</span>
-                <span class="guide-badge">🔒 Secure</span>
+                <span class="guide-badge">🔒 Powered by Checkout Kit</span>
             </div>
         </div>
     </div>
@@ -499,67 +499,88 @@
                     <li><strong>Future-Proof:</strong> Ready for the AI commerce revolution</li>
                 </ul>
 
-                <div class="tip-box platform">
-                    <strong>🛍️ Shopify Advantage</strong>
-                    Shopify's flexible file hosting and theme customization make UCP implementation straightforward. You can add a UCP profile without any apps or coding.
+                <div class="tip-box success">
+                    <strong>🎉 Great News: Shopify Has Native UCP Support</strong>
+                    Shopify co-developed UCP with Google and provides native support through <a href="https://shopify.dev/docs/agents/checkout" target="_blank">Checkout Kit</a>. Most Shopify stores already have UCP enabled automatically — you just need to verify it's working.
                 </div>
             </section>
 
-            <section id="prerequisites">
-                <h2>Prerequisites</h2>
-                <ul>
-                    <li>A Shopify store (any plan)</li>
-                    <li>Admin access to your store</li>
-                    <li>Your store's domain (e.g., <code>yourstore.myshopify.com</code> or custom domain)</li>
-                    <li>Basic understanding of your store's policies (returns, shipping, etc.)</li>
-                </ul>
-            </section>
-
-            <section id="implementation">
-                <h2>Step-by-Step Implementation</h2>
-
-                <div class="step-title"><span class="step-number">1</span>Generate Your UCP Profile</div>
+            <section id="check-status">
+                <h2>Step 1: Check Your UCP Status</h2>
                 <p>
-                    First, use the UCP Tools generator to create a UCP profile customized for your store. This will create a JSON file with your store's capabilities, policies, and product information.
+                    Before doing anything else, check if your store already has UCP enabled. Shopify provides UCP endpoints automatically for eligible stores.
                 </p>
 
                 <div class="cta-box">
-                    <h3>Generate Your UCP Profile</h3>
-                    <p>Enter your store details and we'll create a UCP-compliant profile for you.</p>
-                    <a href="/#generate" class="btn">Open Generator →</a>
+                    <h3>Check Your Store's UCP Status</h3>
+                    <p>Enter your store domain to see if UCP is already enabled.</p>
+                    <a href="/#generate" class="btn">Check Status →</a>
                 </div>
 
-                <p>When generating, you'll need:</p>
-                <ul>
-                    <li>Your store name and description</li>
-                    <li>Store URL (your Shopify domain)</li>
-                    <li>Return policy URL (usually <code>/policies/refund-policy</code>)</li>
-                    <li>Shipping policy URL (usually <code>/policies/shipping-policy</code>)</li>
-                    <li>Contact email for customer support</li>
-                </ul>
+                <p>You can also manually check by visiting:</p>
+                <pre>https://yourstore.myshopify.com/.well-known/ucp</pre>
+                <p>If you see a JSON response with UCP profile data, your store is already AI-ready!</p>
+            </section>
 
-                <div class="step-title"><span class="step-number">2</span>Create the .well-known Folder</div>
+            <section id="if-enabled">
+                <h2>If UCP Is Already Enabled</h2>
                 <p>
-                    Shopify doesn't have a native way to serve files from <code>/.well-known/</code>, but you can use a workaround with theme files and a redirect.
+                    If your store already has UCP enabled (you saw a JSON response at <code>/.well-known/ucp</code>), congratulations! Your store is AI-ready.
+                </p>
+                <div class="tip-box success">
+                    <strong>✅ You're All Set!</strong>
+                    AI shopping agents like ChatGPT and Google AI Mode can already discover and transact with your store. No additional setup is required.
+                </div>
+                <p>You can still run our validator to check for any issues or optimizations:</p>
+                <div class="cta-box">
+                    <h3>Validate Your UCP Implementation</h3>
+                    <p>Check that everything is configured correctly.</p>
+                    <a href="/" class="btn">Run Validation →</a>
+                </div>
+            </section>
+
+            <section id="if-not-enabled">
+                <h2>If UCP Is Not Enabled</h2>
+                <p>
+                    If your store doesn't have UCP enabled yet, here are your options:
                 </p>
 
-                <h3>Option A: Using Shopify Files (Recommended)</h3>
+                <h3>Option 1: Contact Shopify Support (Recommended)</h3>
+                <p>
+                    Since Shopify provides native UCP support through Checkout Kit, the best approach is to contact Shopify support to enable it for your store. This ensures you get the full, officially-supported UCP implementation.
+                </p>
+                <ul>
+                    <li>Contact <a href="https://help.shopify.com" target="_blank">Shopify Support</a></li>
+                    <li>Ask about enabling UCP and Checkout Kit for AI commerce</li>
+                    <li>Reference <a href="https://shopify.dev/docs/agents/checkout" target="_blank">Shopify's Agent Checkout documentation</a></li>
+                </ul>
+
+                <h3>Option 2: Wait for Automatic Enablement</h3>
+                <p>
+                    Shopify is rolling out UCP support to stores progressively throughout 2026. Your store may be enabled automatically in a future update.
+                </p>
+
+                <div class="tip-box warning">
+                    <strong>⚠️ About Manual Implementation</strong>
+                    The manual methods below create a basic discovery profile, but they do not provide the full UCP checkout capabilities that Shopify's native implementation offers. For full AI agent checkout support, native Shopify UCP is required.
+                </div>
+            </section>
+
+            <section id="manual-setup">
+                <h2>Manual Setup (Fallback Option)</h2>
+                <p>
+                    If you need a basic UCP presence before native support is available, you can manually create a discovery profile. Note that this provides limited functionality compared to native UCP.
+                </p>
+
+                <div class="step-title"><span class="step-number">1</span>Upload a UCP Profile</div>
                 <ol>
                     <li>Go to <strong>Content → Files</strong> in your Shopify admin</li>
                     <li>Click <strong>Upload files</strong></li>
-                    <li>Upload your <code>ucp.json</code> file (generated in Step 1)</li>
-                    <li>Copy the file URL. You can use either:
-                        <ul>
-                            <li>The CDN URL (<code>https://cdn.shopify.com/s/files/...</code>), or</li>
-                            <li>Your store domain URL (<code>https://yourstore.com/cdn/shop/files/ucp.json</code>) - recommended for better compatibility</li>
-                        </ul>
-                    </li>
+                    <li>Create a file named <code>ucp.json</code> with basic merchant information</li>
+                    <li>Copy the file URL (use <code>https://yourstore.com/cdn/shop/files/ucp.json</code> format)</li>
                 </ol>
 
-                <div class="step-title"><span class="step-number">3</span>Add the Redirect</div>
-                <p>
-                    Now create a redirect so AI agents can find your UCP profile at the standard location.
-                </p>
+                <div class="step-title"><span class="step-number">2</span>Create the Redirect</div>
                 <ol>
                     <li>Go to <strong>Online Store → Navigation</strong></li>
                     <li>Scroll down to <strong>URL Redirects</strong></li>
@@ -567,54 +588,13 @@
                     <li>Set the redirect:
                         <ul>
                             <li><strong>Redirect from:</strong> <code>/.well-known/ucp</code></li>
-                            <li><strong>Redirect to:</strong> Your CDN file URL from Step 2</li>
+                            <li><strong>Redirect to:</strong> Your file URL from Step 1</li>
                         </ul>
                     </li>
                     <li>Click <strong>Save redirect</strong></li>
                 </ol>
 
-                <div class="tip-box warning">
-                    <strong>⚠️ About CORS Headers</strong>
-                    In most cases, files hosted on Shopify are accessible to external AI agents. If a validator flags CORS issues, use the store domain URL format (<code>yourstore.com/cdn/shop/files/...</code>) instead of the raw <code>cdn.shopify.com</code> URL, or consider hosting the file on infrastructure you control.
-                </div>
-
-                <h3>Option B: Using Theme Liquid (Advanced)</h3>
-                <p>For dynamic profiles that pull data from your shop settings, you can serve the UCP profile from a Liquid template. Note: Shopify pages typically return HTML content-type, so the redirect-to-CDN method (Option A) is generally more reliable for AI agent compatibility.</p>
-                <ol>
-                    <li>Go to <strong>Online Store → Themes → Edit code</strong></li>
-                    <li>Create a new template: <strong>Templates → Add a new template</strong></li>
-                    <li>Select <strong>page</strong> as the type and name it <code>ucp</code></li>
-                    <li>Replace the content with:</li>
-                </ol>
-
-<pre><span style="color:#808080">{%- layout none -%}</span>
-<span style="color:#808080">{%- comment -%}</span>
-  UCP Profile - Universal Commerce Protocol
-  Generated by UCP Tools
-<span style="color:#808080">{%- endcomment -%}</span>
-{
-  <span style="color:#9CDCFE">"profile_version"</span>: <span style="color:#CE9178">"1.0"</span>,
-  <span style="color:#9CDCFE">"merchant"</span>: {
-    <span style="color:#9CDCFE">"name"</span>: <span style="color:#CE9178">"{{ shop.name }}"</span>,
-    <span style="color:#9CDCFE">"url"</span>: <span style="color:#CE9178">"{{ shop.url }}"</span>,
-    <span style="color:#9CDCFE">"contact"</span>: {
-      <span style="color:#9CDCFE">"email"</span>: <span style="color:#CE9178">"{{ shop.email }}"</span>
-    }
-  },
-  <span style="color:#9CDCFE">"capabilities"</span>: [<span style="color:#CE9178">"browse"</span>, <span style="color:#CE9178">"search"</span>],
-  <span style="color:#9CDCFE">"policies"</span>: {
-    <span style="color:#9CDCFE">"returns_url"</span>: <span style="color:#CE9178">"{{ shop.url }}/policies/refund-policy"</span>,
-    <span style="color:#9CDCFE">"shipping_url"</span>: <span style="color:#CE9178">"{{ shop.url }}/policies/shipping-policy"</span>,
-    <span style="color:#9CDCFE">"privacy_url"</span>: <span style="color:#CE9178">"{{ shop.url }}/policies/privacy-policy"</span>
-  }
-}</pre>
-
-                <ol start="5">
-                    <li>Create a page with the handle <code>well-known-ucp</code></li>
-                    <li>Add the redirect from <code>/.well-known/ucp</code> to <code>/pages/well-known-ucp</code></li>
-                </ol>
-
-                <div class="step-title"><span class="step-number">4</span>Add Schema.org Markup</div>
+                <div class="step-title"><span class="step-number">3</span>Add Schema.org Markup</div>
                 <p>
                     For maximum AI compatibility, add Schema.org markup to your product pages. Shopify themes often include this by default, but verify it's present.
                 </p>
@@ -662,16 +642,20 @@
                 </table>
             </section>
 
-            <section id="shopify-apps">
-                <h2>Shopify Apps for UCP</h2>
-                <p>While you can implement UCP manually, there are apps that simplify the process:</p>
+            <section id="shopify-native">
+                <h2>Shopify's Native UCP Integration</h2>
+                <p>Shopify co-developed UCP with Google and provides native support through several tools:</p>
+
+                <ul>
+                    <li><strong><a href="https://www.shopify.com/checkout-kit" target="_blank">Checkout Kit</a>:</strong> Powers UCP checkout capabilities for AI agents</li>
+                    <li><strong><a href="https://shopify.dev/docs/agents/checkout" target="_blank">Checkout MCP Server</a>:</strong> Implements create_checkout, update_checkout, and complete_checkout tools</li>
+                    <li><strong>Embedded Commerce Protocol (ECP):</strong> Enables agents to render checkout as an embedded experience</li>
+                </ul>
 
                 <div class="tip-box platform">
-                    <strong>🔌 Coming Soon</strong>
-                    We're working with Shopify app developers to create dedicated UCP apps. Check back soon or <a href="mailto:hello@ucptools.dev">contact us</a> for updates.
+                    <strong>🛍️ Shopify Winter '26 Edition</strong>
+                    Shopify's Winter '26 Edition includes 150+ updates for AI commerce, including native UCP support. <a href="https://www.shopify.com/news/winter-26-edition-dev" target="_blank">Learn more →</a>
                 </div>
-
-                <p>In the meantime, manual implementation is straightforward and gives you full control over your UCP profile.</p>
             </section>
 
             <section id="testing">
@@ -701,10 +685,12 @@
                 <h4>On This Page</h4>
                 <ul>
                     <li><a href="#overview">Why Add UCP?</a></li>
-                    <li><a href="#prerequisites">Prerequisites</a></li>
-                    <li><a href="#implementation">Implementation Steps</a></li>
+                    <li><a href="#check-status">Check Your Status</a></li>
+                    <li><a href="#if-enabled">If Already Enabled</a></li>
+                    <li><a href="#if-not-enabled">If Not Enabled</a></li>
+                    <li><a href="#manual-setup">Manual Setup</a></li>
                     <li><a href="#common-issues">Common Issues</a></li>
-                    <li><a href="#shopify-apps">Shopify Apps</a></li>
+                    <li><a href="#shopify-native">Native Integration</a></li>
                     <li><a href="#testing">Test with AI Agents</a></li>
                     <li><a href="#resources">Resources</a></li>
                 </ul>

@@ -450,8 +450,8 @@
             <p>Make your WordPress + WooCommerce store AI-ready. Enable ChatGPT, Google AI Mode, and autonomous shopping agents to transact with your products.</p>
             <div class="guide-badges">
                 <span class="guide-badge">🤖 AI Agent Ready</span>
-                <span class="guide-badge">📦 Plugin Available</span>
-                <span class="guide-badge">🔧 Developer Friendly</span>
+                <span class="guide-badge">🔌 Plugin Required</span>
+                <span class="guide-badge">🔧 Developer Options</span>
                 <span class="guide-badge">🔒 Secure</span>
             </div>
         </div>
@@ -471,9 +471,14 @@
                     <li><strong>Plugin Ecosystem:</strong> Dedicated UCP plugins available</li>
                 </ul>
 
+                <div class="tip-box warning">
+                    <strong>⚠️ Important: UCP Requires Working API Endpoints</strong>
+                    UCP is not just a static JSON file — it requires functional REST API endpoints that AI agents can interact with. For WooCommerce, this means installing a plugin that implements UCP-compatible endpoints, or building custom API integration.
+                </div>
+
                 <div class="tip-box platform">
-                    <strong>🔌 WooUCP Plugin</strong>
-                    The easiest way to add UCP support is with the <a href="https://github.com/search?q=wooucp" target="_blank">WooUCP plugin</a>, which automatically generates your UCP profile from your WooCommerce settings.
+                    <strong>🔌 Recommended: UCP Connect Plugin</strong>
+                    The easiest way to add UCP support is with the <a href="https://lobehub.com/mcp/joellobo1234-ucp-connect-woocommerce" target="_blank">UCP Connect for WooCommerce</a> plugin, which handles both the UCP profile and the required API endpoints. Search "UCP Connect" in Plugins → Add New.
                 </div>
             </section>
 
@@ -488,36 +493,42 @@
                         <th>Best For</th>
                     </tr>
                     <tr>
-                        <td><strong>WooUCP Plugin</strong></td>
+                        <td><strong>UCP Connect Plugin</strong></td>
                         <td>Easy</td>
-                        <td>Quick setup, non-developers</td>
+                        <td>Store owners, non-developers (Recommended)</td>
                     </tr>
                     <tr>
                         <td><strong>Manual (functions.php)</strong></td>
-                        <td>Medium</td>
-                        <td>Full control, developers</td>
+                        <td>Advanced</td>
+                        <td>Developers building custom UCP API endpoints</td>
                     </tr>
                     <tr>
                         <td><strong>Custom Plugin</strong></td>
-                        <td>Advanced</td>
-                        <td>Enterprise, custom requirements</td>
+                        <td>Expert</td>
+                        <td>Enterprise with full UCP API implementation</td>
                     </tr>
                 </table>
+
+                <div class="tip-box">
+                    <strong>💡 Note for Store Owners</strong>
+                    If you're not a developer, the plugin method is your best option. The manual methods below require building UCP-compatible REST API endpoints, which is a significant development effort.
+                </div>
             </section>
 
             <section id="plugin-method">
-                <h2>Method 1: Using a Plugin (Recommended)</h2>
+                <h2>Method 1: Using UCP Connect Plugin (Recommended)</h2>
+                <p>The UCP Connect plugin handles everything: it creates the UCP profile, implements the required API endpoints, and enables AI agent checkout capabilities.</p>
 
-                <div class="step-title"><span class="step-number">1</span>Install WooUCP Plugin</div>
+                <div class="step-title"><span class="step-number">1</span>Install UCP Connect Plugin</div>
                 <ol>
                     <li>Go to <strong>Plugins → Add New</strong> in your WordPress admin</li>
-                    <li>Search for "WooUCP" or "UCP Commerce"</li>
+                    <li>Search for "UCP Connect" or "UCP WooCommerce"</li>
                     <li>Click <strong>Install Now</strong>, then <strong>Activate</strong></li>
                 </ol>
 
                 <div class="tip-box">
-                    <strong>💡 Alternative</strong>
-                    If the plugin isn't in the repository yet, you can download it from GitHub and upload via <strong>Plugins → Add New → Upload Plugin</strong>.
+                    <strong>💡 Manual Installation</strong>
+                    If the plugin isn't in the repository yet, download from <a href="https://lobehub.com/mcp/joellobo1234-ucp-connect-woocommerce" target="_blank">UCP Connect for WooCommerce</a> and upload via <strong>Plugins → Add New → Upload Plugin</strong>.
                 </div>
 
                 <div class="step-title"><span class="step-number">2</span>Configure the Plugin</div>
@@ -530,11 +541,22 @@
 
                 <div class="step-title"><span class="step-number">3</span>Verify Installation</div>
                 <p>Visit <code>https://yourstore.com/.well-known/ucp</code> to see your generated UCP profile.</p>
+
+                <div class="cta-box">
+                    <h3>Validate Your WooCommerce Store</h3>
+                    <p>After installing the plugin, validate your UCP implementation.</p>
+                    <a href="/" class="btn">Run Validation →</a>
+                </div>
             </section>
 
             <section id="manual-method">
-                <h2>Method 2: Manual Implementation</h2>
-                <p>For full control, implement UCP manually using WordPress functions.</p>
+                <h2>Method 2: Manual Implementation (Developers Only)</h2>
+                <p>For full control, implement UCP manually using WordPress functions. This method is for developers who need custom UCP implementations.</p>
+
+                <div class="tip-box warning">
+                    <strong>⚠️ Developer Notice</strong>
+                    This method only creates a basic UCP discovery profile. For full AI agent checkout capabilities, you must also implement UCP-compatible REST API endpoints that handle product queries, cart operations, and checkout flows. The code below is a starting point, not a complete UCP implementation.
+                </div>
 
                 <div class="step-title"><span class="step-number">1</span>Generate Your UCP Profile</div>
                 <div class="cta-box">
@@ -702,8 +724,8 @@
                 <ul>
                     <li><a href="#overview">Why Add UCP?</a></li>
                     <li><a href="#methods">Implementation Methods</a></li>
-                    <li><a href="#plugin-method">Plugin Method</a></li>
-                    <li><a href="#manual-method">Manual Method</a></li>
+                    <li><a href="#plugin-method">UCP Connect Plugin</a></li>
+                    <li><a href="#manual-method">Manual (Developers)</a></li>
                     <li><a href="#schema-markup">Schema.org Markup</a></li>
                     <li><a href="#validation">Validation</a></li>
                     <li><a href="#common-issues">Common Issues</a></li>
