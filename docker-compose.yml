@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  ucptools-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ucptools-api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:3000"
+    environment:
+      - DATABASE_URL=postgresql://ucptools:${POSTGRES_PASSWORD}@ucptools-postgres:5432/ucptools
+      - REDIS_URL=redis://ucptools-redis:6379
+      - NODE_ENV=production
+      - PORT=3000
+      - LOG_LEVEL=info
+    depends_on:
+      ucptools-postgres:
+        condition: service_healthy
+      ucptools-redis:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ucptools-network
+
+  ucptools-postgres:
+    image: postgres:16-alpine
+    container_name: ucptools-postgres
+    restart: unless-stopped
+    volumes:
+      - ucptools-pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=ucptools
+      - POSTGRES_USER=ucptools
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ucptools -d ucptools"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ucptools-network
+
+  ucptools-redis:
+    image: redis:7-alpine
+    container_name: ucptools-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - ucptools-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ucptools-network
+
+volumes:
+  ucptools-pgdata:
+    name: ucptools-pgdata
+  ucptools-redis-data:
+    name: ucptools-redis-data
+
+networks:
+  ucptools-network:
+    name: ucptools-network
+    driver: bridge
